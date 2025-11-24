@@ -79,12 +79,6 @@ jobs:
           SAFE_ACTOR=$(echo "${GITHUB_ACTOR}" | sed 's/-/_/g' | sed 's/[^a-zA-Z0-9_]//g')
           APP_ID="com.github.${SAFE_ACTOR}.${SAFE_REPO_NAME}"
 
-          # If android platform directory exists from a previous run, remove it first
-          if [ -d "android" ]; then
-            echo "⚠️  'android' directory already exists — removing to ensure a clean add."
-            rm -rf android
-          fi
-
           cap init "$APP_NAME" "$APP_ID" --web-dir=dist
           cap add android
 
@@ -193,10 +187,11 @@ jobs:
           sed -i '1i def keystorePropertiesFile = rootProject.file("key.properties")\ndef keystoreProperties = new Properties()\nif (keystorePropertiesFile.exists()) {\n    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))\n}\n' "$BUILD_GRADLE"
           
           # Add signingConfigs block before buildTypes
-          sed -i '/android {/a \    signingConfigs {\n        release {\n            if (keystorePropertiesFile.exists()) {\n                keyAlias keystoreProperties[\"keyAlias\"]\n                keyPassword keystoreProperties[\"keyPassword\"]\n                storeFile file(keystoreProperties[\"storeFile\"])\n                storePassword keystoreProperties[\"storePassword\"]\n            }\n        }\n    }\n' "$BUILD_GRADLE"
+          sed -i '/android {/a \    signingConfigs {\n        release {\n            if (keystorePropertiesFile.exists()) {\n                keyAlias keystoreProperties["keyAlias"]\n                keyPassword keystoreProperties["keyPassword"]\n                storeFile file(keystoreProperties["storeFile"])\n                storePassword keystoreProperties["storePassword"]\n            }\n        }\n    }' "$BUILD_GRADLE"
           
           # Update release buildType to use signing config
-          sed -i '/buildTypes {/,/release {/{ /release {/a \            signingConfig signingConfigs.release\n            minifyEnabled false\n          }' "$BUILD_GRADLE"
+          sed -i '/buildTypes {/,/release {/{ /release {/a \            signingConfig signingConfigs.release\n            minifyEnabled false
+          }' "$BUILD_GRADLE"
           
           echo "✅ Signing configuration added to build.gradle"
 

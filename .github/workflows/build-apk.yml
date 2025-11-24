@@ -79,8 +79,21 @@ jobs:
           SAFE_ACTOR=$(echo "${GITHUB_ACTOR}" | sed 's/-/_/g' | sed 's/[^a-zA-Z0-9_]//g')
           APP_ID="com.github.${SAFE_ACTOR}.${SAFE_REPO_NAME}"
 
-          cap init "$APP_NAME" "$APP_ID" --web-dir=dist
-          cap add android
+          # If android platform already exists, skip cap init/add and perform a safe sync/update
+          if [ ! -d "android" ]; then
+            echo "Android platform not found. Initializing Capacitor and adding Android platform..."
+            npx cap init "$APP_NAME" "$APP_ID" --web-dir=dist
+            npx cap add android
+          else
+            echo "Android platform already exists. Skipping cap init/add and syncing project..."
+            # Ensure capacitor.config.json is present in the native project assets (so native uses the same config)
+            mkdir -p android/app/src/main/assets
+            cp -f capacitor.config.json android/app/src/main/assets/ || true
+
+            # Use npx cap sync to update native project with web assets & installed plugins.
+            # If sync fails, fall back to cap update as a best-effort.
+            npx cap sync android || npx cap update android || true
+          fi
 
       - name: Copy Capacitor config to Android assets
         run: |
@@ -184,14 +197,17 @@ jobs:
           BUILD_GRADLE="android/app/build.gradle"
           
           # Add signing config loading at the top of the file
-          sed -i '1i def keystorePropertiesFile = rootProject.file("key.properties")\ndef keystoreProperties = new Properties()\nif (keystorePropertiesFile.exists()) {\n    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))\n}\n' "$BUILD_GRADLE"
+          sed -i '1i def keystorePropertiesFile = rootProject.file("key.properties")\ndef keystoreProperties = new Properties()\nif (keystorePropertiesFile.exists()) {\n    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))\n}\n' "$BUILD_GRADLE" || true
           
-          # Add signingConfigs block before buildTypes
-          sed -i '/android {/a \    signingConfigs {\n        release {\n            if (keystorePropertiesFile.exists()) {\n                keyAlias keystoreProperties["keyAlias"]\n                keyPassword keystoreProperties["keyPassword"]\n                storeFile file(keystoreProperties["storeFile"])\n                storePassword keystoreProperties["storePassword"]\n            }\n        }\n    }' "$BUILD_GRADLE"
+          # Add signingConfigs block before buildTypes if not present
+          if ! grep -q "signingConfigs" "$BUILD_GRADLE"; then
+            sed -i '/android {/a \    signingConfigs {\n        release {\n            if (keystorePropertiesFile.exists()) {\n                keyAlias keystoreProperties[\"keyAlias\"]\n                keyPassword keystoreProperties[\"keyPassword\"]\n                storeFile file(keystoreProperties[\"storeFile\"])\n                storePassword keystoreProperties[\"storePassword\"]\n            }\n        }\n    }\n' "$BUILD_GRADLE" || true
+          fi
           
-          # Update release buildType to use signing config
-          sed -i '/buildTypes {/,/release {/{ /release {/a \            signingConfig signingConfigs.release\n            minifyEnabled false
-          }' "$BUILD_GRADLE"
+          # Update release buildType to use signing config (if not already present)
+          if ! grep -q "signingConfig signingConfigs.release" "$BUILD_GRADLE"; then
+            sed -i "/buildTypes {/,/}/ { /release {/,/}/ { /}/ s/}/            signingConfig signingConfigs.release\n            minifyEnabled false\n        }\n    }/ }" "$BUILD_GRADLE" || true
+          fi
           
           echo "✅ Signing configuration added to build.gradle"
 

@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# Keystore
+keystore-latest.tar.gz
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

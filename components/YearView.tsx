@@ -63,27 +63,31 @@ export const YearView: React.FC<YearViewProps> = ({ dailyData, onBack }) => {
   const handleNextYear = () => setYear(y => y + 1);
 
   return (
-    <main className="space-y-6 animate-fade-in-up">
-      <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-md p-5 flex justify-between items-center">
-        <button onClick={onBack} className="text-purple-600 font-bold py-2 px-4 rounded-lg hover:bg-purple-100 transition-colors">
-          &larr; {t.backToDashboard}
-        </button>
-        <div className="flex items-center gap-4">
-          <button onClick={handlePrevYear} className="p-2 rounded-full hover:bg-slate-200 transition-colors" aria-label="Previous year">
-            <ChevronLeft className="w-6 h-6 text-slate-600" />
-          </button>
-          <h2 className="text-2xl font-bold text-slate-700 w-24 text-center">{year}</h2>
-          <button onClick={handleNextYear} className="p-2 rounded-full hover:bg-slate-200 transition-colors" aria-label="Next year">
-            <ChevronRight className="w-6 h-6 text-slate-600" />
-          </button>
-        </div>
-        <div style={{ width: '184px' }}></div> {/* Spacer to balance the header */}
+    <div className="bg-gradient-to-b from-sky-50 to-cyan-100 min-h-screen font-sans">
+      <div className="container mx-auto p-4 sm:p-5 lg:p-6 max-w-5xl">
+        <main className="space-y-6 animate-fade-in-up pb-24">
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-md p-5 flex justify-between items-center">
+            <button onClick={onBack} className="text-purple-600 font-bold py-2 px-4 rounded-lg hover:bg-purple-100 transition-colors">
+              &larr; {t.backToDashboard}
+            </button>
+            <div className="flex items-center gap-4">
+              <button onClick={handlePrevYear} className="p-2 rounded-full hover:bg-slate-200 transition-colors" aria-label="Previous year">
+                <ChevronLeft className="w-6 h-6 text-slate-600" />
+              </button>
+              <h2 className="text-2xl font-bold text-slate-700 w-24 text-center">{year}</h2>
+              <button onClick={handleNextYear} className="p-2 rounded-full hover:bg-slate-200 transition-colors" aria-label="Next year">
+                <ChevronRight className="w-6 h-6 text-slate-600" />
+              </button>
+            </div>
+            <div style={{ width: '184px' }}></div> {/* Spacer to balance the header */}
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {Array.from({ length: 12 }).map((_, i) => (
+              <MonthGrid key={i} year={year} month={i} dailyData={dailyData} locale={locale} weekDays={t.weekDays} t={t} />
+            ))}
+          </div>
+        </main>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {Array.from({ length: 12 }).map((_, i) => (
-          <MonthGrid key={i} year={year} month={i} dailyData={dailyData} locale={locale} weekDays={t.weekDays} t={t} />
-        ))}
-      </div>
-    </main>
+    </div>
   );
 };

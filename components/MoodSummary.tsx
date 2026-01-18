@@ -155,14 +155,16 @@ export const MoodSummary: React.FC<MoodSummaryProps> = ({ dailyData }) => {
 
   return (
     <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-md p-5 h-full">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold text-slate-700">{t.moodSummary}</h2>
-        <div className="flex items-center bg-slate-100 rounded-full p-1">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-0 mb-4">
+        <h2 className="text-lg sm:text-xl font-bold text-slate-700 break-words leading-tight min-w-0 flex-shrink">
+          {t.moodSummary}
+        </h2>
+        <div className="flex items-center bg-slate-100 rounded-full p-1 self-start sm:self-auto">
           {[30, 60, 90].map(days => (
             <button
               key={days}
               onClick={() => setTimeRange(days)}
-              className={`px-3 py-1 text-sm font-semibold rounded-full transition-colors duration-200 ${
+              className={`px-2 sm:px-3 py-1 text-xs sm:text-sm font-semibold rounded-full transition-colors duration-200 ${
                 timeRange === days
                   ? 'bg-purple-600 text-white shadow'
                   : 'text-slate-600 hover:bg-slate-200'
@@ -179,9 +181,9 @@ export const MoodSummary: React.FC<MoodSummaryProps> = ({ dailyData }) => {
           <div className="text-3xl font-bold">{totalEntries}</div>
           <div className="text-sm">{t.totalEntries}</div>
         </div>
-        <div className={`p-4 rounded-2xl text-center transition-colors duration-300 ${mostCommonMoodData ? `${mostCommonMoodData.bgColor} ${mostCommonMoodData.textColor}` : 'bg-slate-100 text-slate-800'}`}>
-          <div className="text-xl font-bold">{mostCommonMood ? t[mostCommonMood] : t.noMood}</div>
-          <div className="text-sm">{t.mostCommon}</div>
+        <div className={`p-3 sm:p-4 rounded-2xl text-center transition-colors duration-300 ${mostCommonMoodData ? `${mostCommonMoodData.bgColor} ${mostCommonMoodData.textColor}` : 'bg-slate-100 text-slate-800'}`}>
+          <div className="text-lg sm:text-xl font-bold break-words leading-tight">{mostCommonMood ? t[mostCommonMood] : t.noMood}</div>
+          <div className="text-xs sm:text-sm mt-1">{t.mostCommon}</div>
         </div>
       </div>
       

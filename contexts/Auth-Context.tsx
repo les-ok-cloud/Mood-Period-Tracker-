@@ -23,6 +23,7 @@ interface AuthContextType {
   signInWithEmail: (email: string, pass: string) => Promise<any>;
   signUpWithEmail: (email: string, pass: string) => Promise<any>;
   signInAsGuest: () => Promise<void>;
+  deleteUserAccount: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -88,7 +89,19 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  const value = { user, loading, signInWithGoogle, signOutUser, signInWithEmail, signUpWithEmail, signInAsGuest };
+  const deleteUserAccount = async () => {
+    try {
+      if (user) {
+        await user.delete();
+        // Note: Firebase will automatically sign out the user after deletion
+      }
+    } catch (error) {
+      console.error("Error deleting account", error);
+      throw error; // Re-throw so the UI can handle it
+    }
+  };
+
+  const value = { user, loading, signInWithGoogle, signOutUser, signInWithEmail, signUpWithEmail, signInAsGuest, deleteUserAccount };
 
   return (
     <AuthContext.Provider value={value}>

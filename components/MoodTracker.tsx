@@ -21,7 +21,7 @@ export const MoodTracker: React.FC<MoodTrackerProps> = ({ selectedMood, onSelect
           <div
             key={mood}
             onClick={() => onSelect(mood)}
-            className="flex flex-col items-center gap-3 cursor-pointer group w-24 text-center"
+            className="flex flex-col items-center gap-3 cursor-pointer group min-w-[4rem] max-w-[7rem] sm:max-w-[8rem] flex-1 text-center px-2"
             aria-label={t.selectMood.replace('{mood}', t[mood])}
             role="button"
             tabIndex={0}
@@ -29,14 +29,14 @@ export const MoodTracker: React.FC<MoodTrackerProps> = ({ selectedMood, onSelect
           >
             <div
               className={`
-                text-5xl transition-transform duration-200 transform group-hover:scale-110
+                text-4xl sm:text-5xl transition-transform duration-200 transform group-hover:scale-110
                 ${isSelected ? 'scale-110' : ''}
               `}
             >
               {data.emoji}
             </div>
             <span
-              className={`text-sm font-medium transition-colors ${isSelected ? `${data.textColor} font-bold` : 'text-slate-600'}`}
+              className={`text-xs sm:text-sm font-medium transition-colors leading-tight break-words ${isSelected ? `${data.textColor} font-bold` : 'text-slate-600'}`}
             >
               {t[mood]}
             </span>

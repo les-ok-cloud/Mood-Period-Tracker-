@@ -17,3 +17,9 @@ export interface DailyEntry {
   cycle: CycleFlow | null;
   note?: string;
 }
+
+export interface ReflectionEntry {
+  date: string;
+  goodFeeling?: string;
+  drainedEnergy?: string;
+}

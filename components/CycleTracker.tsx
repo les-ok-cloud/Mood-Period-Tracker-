@@ -77,7 +77,7 @@ export const CycleTracker: React.FC<CycleTrackerProps> = ({ selectedCycle, onSel
   return (
     <div>
       <h3 className="text-lg font-bold text-slate-700 mb-2">{t.trackCycle}</h3>
-      <div className="flex justify-around items-center pt-2 pb-4">
+      <div className="flex justify-around items-center pt-2 pb-4 gap-2 sm:gap-4">
         {CYCLE_ORDER.map((flow) => {
           const data = CYCLE_DATA[flow];
           const isSelected = selectedCycle === flow;
@@ -86,8 +86,9 @@ export const CycleTracker: React.FC<CycleTrackerProps> = ({ selectedCycle, onSel
               key={flow}
               onClick={() => onSelect(isSelected ? null : flow)}
               className={`
-                flex flex-col items-center justify-center gap-2 p-3 rounded-2xl w-24 h-24
-                border-2 transition-all duration-200 transform
+                flex flex-col items-center justify-center gap-2 p-2 sm:p-3 rounded-2xl
+                min-w-[4rem] sm:min-w-[5rem] max-w-[6rem] h-20 sm:h-24
+                border-2 transition-all duration-200 transform flex-1
                 ${
                   isSelected
                     ? `${data.bgColor} ${data.ringColor} ring-2 scale-105 shadow-lg`
@@ -99,10 +100,10 @@ export const CycleTracker: React.FC<CycleTrackerProps> = ({ selectedCycle, onSel
             >
               <div className="flex">
                 {Array.from({ length: data.drops }).map((_, i) => (
-                  <WaterDrop key={i} className="w-6 h-6" />
+                  <WaterDrop key={i} className="w-5 h-5 sm:w-6 sm:h-6" />
                 ))}
               </div>
-              <span className={`text-sm font-medium ${isSelected ? data.color : 'text-slate-600'}`}>
+              <span className={`text-xs sm:text-sm font-medium leading-tight break-words text-center ${isSelected ? data.color : 'text-slate-600'}`}>
                 {t[flow]}
               </span>
             </button>
@@ -110,7 +111,7 @@ export const CycleTracker: React.FC<CycleTrackerProps> = ({ selectedCycle, onSel
         })}
       </div>
       {cycleStatus && (
-        <div className="text-center text-sm font-medium text-purple-700 bg-purple-100/70 p-2 rounded-lg mt-2">
+        <div className="text-center text-xs sm:text-sm font-medium text-purple-700 bg-purple-100/70 p-2 sm:p-3 rounded-lg mt-2 leading-relaxed break-words max-w-full">
           {cycleStatus}
         </div>
       )}

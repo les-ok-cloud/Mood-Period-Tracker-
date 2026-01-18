@@ -78,6 +78,77 @@ export const RussianFlagIcon: React.FC<{ className?: string }> = ({ className })
   </svg>
 );
 
+export const SpanishFlagIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 500" className={className} aria-hidden="true">
+    <rect width="750" height="500" fill="#c60b1e"/>
+    <rect width="750" height="167" y="167" fill="#ffc400"/>
+    <rect width="750" height="166" y="334" fill="#c60b1e"/>
+  </svg>
+);
+
+export const PortugueseFlagIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" className={className} aria-hidden="true">
+    <rect width="600" height="400" fill="#006600"/>
+    <rect width="200" height="400" fill="#ffcc00"/>
+    <circle cx="300" cy="200" r="80" fill="#ff0000"/>
+    <circle cx="300" cy="200" r="40" fill="#ffffff"/>
+    <circle cx="300" cy="200" r="20" fill="#ff0000"/>
+  </svg>
+);
+
+export const FrenchFlagIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600" className={className} aria-hidden="true">
+    <rect width="900" height="600" fill="#002654"/>
+    <rect width="300" height="600" x="300" fill="#ffffff"/>
+    <rect width="300" height="600" x="600" fill="#ed2939"/>
+  </svg>
+);
+
+export const GermanFlagIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 5 3" className={className} aria-hidden="true">
+    <rect width="5" height="3" fill="#000"/>
+    <rect width="5" height="1" y="1" fill="#dd0000"/>
+    <rect width="5" height="1" y="2" fill="#ffcc00"/>
+  </svg>
+);
+
+export const HindiFlagIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 135 90" className={className} aria-hidden="true">
+    <rect width="135" height="90" fill="#ff9933"/>
+    <rect width="135" height="30" y="30" fill="#ffffff"/>
+    <rect width="135" height="30" y="60" fill="#128807"/>
+    <circle cx="67.5" cy="45" r="12" fill="#000080"/>
+    <circle cx="67.5" cy="45" r="8" fill="#ffffff"/>
+    <path d="M67.5 37 L67.5 53 M59.5 45 L75.5 45 M62 39 L73 51 M73 39 L62 51" stroke="#000080" strokeWidth="1" fill="none"/>
+  </svg>
+);
+
+export const IndonesianFlagIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600" className={className} aria-hidden="true">
+    <rect width="900" height="300" fill="#ce1126"/>
+    <rect width="900" height="300" y="300" fill="#ffffff"/>
+  </svg>
+);
+
+export const TurkishFlagIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" className={className} aria-hidden="true">
+    <rect width="1200" height="800" fill="#e30a17"/>
+    <circle cx="425" cy="400" r="200" fill="#ffffff"/>
+    <circle cx="475" cy="400" r="180" fill="#e30a17"/>
+    <path d="M675 400 L750 350 L750 450 Z" fill="#ffffff"/>
+    <path d="M725 400 L800 350 L800 450 Z" fill="#ffffff"/>
+  </svg>
+);
+
+export const ArabicFlagIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600" className={className} aria-hidden="true">
+    <rect width="900" height="200" fill="#ce1126"/>
+    <rect width="900" height="200" y="200" fill="#ffffff"/>
+    <rect width="900" height="200" y="400" fill="#000000"/>
+    <polygon points="0,0 150,300 0,600" fill="#007a3d"/>
+  </svg>
+);
+
 export const ExclamationTriangleIcon: React.FC<{ className?: string }> = ({ className }) => (
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
       <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
@@ -102,6 +173,24 @@ export const UserIcon: React.FC<{ className?: string }> = ({ className }) => (
   </svg>
 );
 
+export const ShareIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z" />
+  </svg>
+);
+
+export const StarIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" />
+  </svg>
+);
+
+export const BookIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
+  </svg>
+);
+
 export const DownloadIcon: React.FC<{ className?: string }> = ({ className }) => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
     <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
@@ -111,5 +200,11 @@ export const DownloadIcon: React.FC<{ className?: string }> = ({ className }) =>
 export const UploadIcon: React.FC<{ className?: string }> = ({ className }) => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
     <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
+  </svg>
+);
+
+export const HomeIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
   </svg>
 );

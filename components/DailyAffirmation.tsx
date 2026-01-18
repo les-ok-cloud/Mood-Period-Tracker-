@@ -25,15 +25,15 @@ export const DailyAffirmation: React.FC = () => {
   }, [t]);
 
   return (
-    <div className="bg-gradient-to-r from-purple-200 via-pink-100 to-rose-200 text-center p-3 text-purple-800 font-medium shadow-sm w-full">
-      <div className="flex items-center justify-center gap-2 animate-fade-in">
-        <SparkleIcon className="w-5 h-5 text-yellow-500 flex-shrink-0" />
-        <p className="text-sm sm:text-base">
-            <>
-              <span className="font-semibold mr-2 text-purple-700/90">{t.affirmationLabel}</span>
-              <span className="text-purple-900">{affirmation}</span>
-            </>
-        </p>
+    <div className="bg-gradient-to-r from-purple-200 via-pink-100 to-rose-200 text-center p-3 sm:p-4 text-purple-800 font-medium shadow-sm w-full">
+      <div className="flex items-start sm:items-center justify-center gap-2 animate-fade-in max-w-4xl mx-auto">
+        <SparkleIcon className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-500 flex-shrink-0 mt-0.5 sm:mt-0" />
+        <div className="text-sm sm:text-base leading-relaxed">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+            <span className="font-semibold text-purple-700/90 text-xs sm:text-sm whitespace-nowrap">{t.affirmationLabel}</span>
+            <span className="text-purple-900 break-words leading-relaxed">{affirmation}</span>
+          </div>
+        </div>
       </div>
     </div>
   );

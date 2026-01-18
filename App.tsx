@@ -4,7 +4,6 @@ import { MoodTracker } from './components/MoodTracker';
 import { CycleTracker } from './components/CycleTracker';
 import { Calendar } from './components/Calendar';
 import { MoodSummary } from './components/MoodSummary';
-import { Settings } from './components/Settings';
 import { SettingsIcon, CalendarDaysIcon, SignOutIcon } from './components/Icons';
 import { DailyAffirmation } from './components/DailyAffirmation';
 import { Mood, CycleFlow, DailyEntry } from './types';
@@ -13,12 +12,56 @@ import { useLanguage } from './contexts/LanguageContext';
 import { LanguageSwitcher } from './components/LanguageSwitcher';
 import { predictFutureCycles, type CyclePredictions } from './utils/predictions';
 import { YearView } from './components/YearView';
+import { Profile } from './components/Profile';
+import { MicroDiary } from './components/MicroDiary';
+import { BottomTabBar, type TabType } from './components/BottomTabBar';
 import { useAuth } from './contexts/AuthContext';
 import { Login } from './components/Login';
 import { db } from './lib/firebase';
 
 declare const firebase: any;
 const GUEST_DATA_KEY = 'moodTrackerGuestData';
+
+// Add RTL support styles
+const rtlStyles = `
+  .rtl {
+    direction: rtl;
+  }
+  .rtl .text-left {
+    text-align: right;
+  }
+  .rtl .text-right {
+    text-align: left;
+  }
+  .rtl .ml-auto {
+    margin-left: 0;
+    margin-right: auto;
+  }
+  .rtl .mr-auto {
+    margin-right: 0;
+    margin-left: auto;
+  }
+  .rtl .flex-row {
+    flex-direction: row-reverse;
+  }
+  .rtl .space-x-1 > * + * {
+    margin-left: 0;
+    margin-right: 0.25rem;
+  }
+  .rtl .space-x-2 > * + * {
+    margin-left: 0;
+    margin-right: 0.5rem;
+  }
+  .rtl .space-x-4 > * + * {
+    margin-left: 0;
+    margin-right: 1rem;
+  }
+`;
+
+// Inject RTL styles
+const styleSheet = document.createElement('style');
+styleSheet.textContent = rtlStyles;
+document.head.appendChild(styleSheet);
 
 const UserAvatar: React.FC<{ user: NonNullable<ReturnType<typeof useAuth>['user']> }> = ({ user }) => {
     if (user.photoURL) {
@@ -43,14 +86,13 @@ const UserAvatar: React.FC<{ user: NonNullable<ReturnType<typeof useAuth>['user'
 
 const App: React.FC = () => {
   const { user, loading: authLoading, signOutUser } = useAuth();
-  const { t, locale } = useLanguage();
+  const { t, locale, isRTL } = useLanguage();
 
   const [isDataLoading, setIsDataLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [dailyData, setDailyData] = useState<Record<string, DailyEntry>>({});
   
-  const [showSettings, setShowSettings] = useState(false);
-  const [currentView, setCurrentView] = useState<'main' | 'year'>('main');
+  const [activeTab, setActiveTab] = useState<TabType>('log');
   const [showCycleTracker, setShowCycleTracker] = useState<boolean>(true);
   const [remindersEnabled, setRemindersEnabled] = useState<boolean>(false);
   const [notificationPermission, setNotificationPermission] = useState('Notification' in window ? Notification.permission : 'denied');
@@ -363,73 +405,35 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className="bg-gradient-to-b from-sky-50 to-cyan-100 min-h-screen font-sans">
-      <DailyAffirmation />
-      <div className="container mx-auto p-4 sm:p-5 lg:p-6 max-w-5xl">
-        <header className="text-center py-2 mb-2 relative">
-          <h1 className="text-5xl font-bold text-purple-400">
-            <span>
-              {t.title_part1}
-              {showCycleTracker && (
-                <span className="font-handwritten text-red-500 text-5xl font-normal">
-                  {' '}{t.title_part2_cycle}
-                </span>
-              )}
-              {t.title_part3 && <span>{' '}{t.title_part3}</span>}
-            </span>
-          </h1>
-          <p className="text-slate-500 mt-2 text-lg">
+    <div className={`bg-gradient-to-b from-sky-50 to-cyan-100 min-h-screen font-sans ${isRTL ? 'rtl' : 'ltr'}`}>
+      <div className="container mx-auto p-4 sm:p-5 lg:p-6 max-w-5xl pb-24">
+        <DailyAffirmation />
+        <div className="mb-4"></div>
+        <header className="py-2 mb-2 relative">
+          <div className="text-center">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-purple-400 leading-tight break-words inline-block">
+              <span className="inline-block">
+                {t.title_part1}
+                {showCycleTracker && (
+                  <span className="font-handwritten text-red-500 text-3xl sm:text-4xl lg:text-5xl font-normal block sm:inline">
+                    {' '}{t.title_part2_cycle}
+                  </span>
+                )}
+                {t.title_part3 && <span className="block sm:inline">{' '}{t.title_part3}</span>}
+              </span>
+            </h1>
+          </div>
+          <div className={`absolute top-2 ${isRTL ? 'left-4 sm:left-6' : 'right-4 sm:right-6'} z-10`}>
+            <LanguageSwitcher />
+          </div>
+          <p className="text-slate-500 text-base sm:text-lg leading-relaxed break-words max-w-2xl mx-auto px-4 mt-2 text-center">
             {t.subtitle}
           </p>
         </header>
 
-        <div className="mb-6 flex justify-between items-center">
-          <button
-            onClick={() => setCurrentView(currentView === 'main' ? 'year' : 'main')}
-            className="text-slate-700 bg-white/70 backdrop-blur-sm py-2 px-4 rounded-full shadow-md hover:bg-slate-200 hover:shadow-lg hover:text-slate-800 transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 flex items-center gap-2"
-            aria-label={t.yearView}
-          >
-            <CalendarDaysIcon className="w-5 h-5" />
-            <span className="font-semibold">{t.yearView}</span>
-          </button>
-          <div className="flex items-center gap-2">
-            <LanguageSwitcher />
-            <button
-              onClick={() => setShowSettings(true)}
-              className="text-slate-600 bg-white/70 backdrop-blur-sm p-3 rounded-full shadow-lg hover:bg-slate-50 hover:shadow-xl hover:text-slate-800 transition-all duration-200 transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2"
-              aria-label={t.settings}
-            >
-              <SettingsIcon className="w-6 h-6" />
-            </button>
-            <div className="w-px h-8 bg-slate-300 mx-1"></div>
-            <div className="flex items-center gap-2">
-                <UserAvatar user={user} />
-                <button
-                    onClick={signOutUser}
-                    className="text-slate-600 bg-white/70 backdrop-blur-sm p-3 rounded-full shadow-lg hover:bg-red-50 hover:shadow-xl hover:text-red-600 transition-all duration-200 transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2"
-                    aria-label="Sign Out"
-                >
-                    <SignOutIcon className="w-6 h-6" />
-                </button>
-            </div>
-          </div>
-        </div>
 
-        {showSettings && (
-          <Settings
-            showCycleTracker={showCycleTracker}
-            onToggleCycleTracker={handleToggleCycleTracker}
-            onClose={() => setShowSettings(false)}
-            remindersEnabled={remindersEnabled}
-            onToggleReminders={handleToggleReminders}
-            notificationPermission={notificationPermission}
-            dailyData={dailyData}
-            onImportData={handleImportData}
-          />
-        )}
-
-        {currentView === 'main' ? (
-          <main className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {activeTab === 'log' && (
+          <main className="grid grid-cols-1 lg:grid-cols-3 gap-6 pb-24">
             <div className="lg:col-span-2 space-y-6">
               <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-md p-5 relative">
                 {user.isAnonymous && (
@@ -437,7 +441,7 @@ const App: React.FC = () => {
                         GUEST MODE - Data is saved on this device only
                     </div>
                 )}
-                <h2 className="text-xl font-bold text-slate-700 mb-2">
+                <h2 className="text-lg sm:text-xl font-bold text-slate-700 mb-2 leading-tight break-words">
                   {t.howAreYouFeeling.replace('{date}', selectedDate.toLocaleDateString(locale, { month: 'long', day: 'numeric' }))}
                 </h2>
                 <p className="text-sm text-slate-500 mb-4">
@@ -448,7 +452,7 @@ const App: React.FC = () => {
                     : t.viewingPastEntry}
                 </p>
                 <MoodTracker selectedMood={selectedMood} onSelect={setSelectedMood} />
-                
+
                 {showCycleTracker && (
                   <>
                     <div className="my-3 border-t border-slate-200"></div>
@@ -472,13 +476,13 @@ const App: React.FC = () => {
                     aria-label="Daily note"
                   />
                 </div>
-                
-                <div className="mt-8 text-center flex justify-center items-center gap-4">
+
+                <div className="mt-8 text-center flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-4">
                   {selectedMood && (
                     <button
                       onClick={handleSaveEntry}
                       disabled={isFuture}
-                      className="bg-purple-600 text-white font-bold py-3 px-8 rounded-full hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-all duration-200 shadow-lg transform hover:scale-105 disabled:bg-slate-400 disabled:cursor-not-allowed disabled:transform-none"
+                      className="bg-purple-600 text-white font-bold py-3 px-4 sm:px-6 lg:px-8 rounded-full hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-all duration-200 shadow-lg transform hover:scale-105 disabled:bg-slate-400 disabled:cursor-not-allowed disabled:transform-none min-w-[120px] max-w-[200px] text-sm sm:text-base break-words leading-tight"
                       aria-label={entryExists ? t.updateEntryAria.replace('{date}', selectedDate.toLocaleDateString(locale)) : t.saveEntryAria.replace('{date}', selectedDate.toLocaleDateString(locale))}
                     >
                       {entryExists ? t.updateEntry : t.saveEntry}
@@ -488,7 +492,7 @@ const App: React.FC = () => {
                     <button
                       onClick={handleDeleteEntry}
                       disabled={isFuture}
-                      className="bg-red-600 text-white font-bold py-3 px-8 rounded-full hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-200 shadow-lg transform hover:scale-105 disabled:bg-slate-400 disabled:cursor-not-allowed disabled:transform-none"
+                      className="bg-red-600 text-white font-bold py-3 px-4 sm:px-6 lg:px-8 rounded-full hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-200 shadow-lg transform hover:scale-105 disabled:bg-slate-400 disabled:cursor-not-allowed disabled:transform-none min-w-[120px] max-w-[200px] text-sm sm:text-base break-words leading-tight"
                       aria-label={t.deleteEntryAria.replace('{date}', selectedDate.toLocaleDateString(locale))}
                     >
                       {t.deleteEntry}
@@ -512,9 +516,27 @@ const App: React.FC = () => {
               <MoodSummary dailyData={dailyData} />
             </div>
           </main>
-        ) : (
-          <YearView dailyData={dailyData} onBack={() => setCurrentView('main')} />
         )}
+
+        {activeTab === 'year' && (
+          <YearView dailyData={dailyData} onBack={() => setActiveTab('log')} />
+        )}
+
+        {activeTab === 'diary' && <MicroDiary />}
+
+        {activeTab === 'profile' && (
+          <Profile
+            showCycleTracker={showCycleTracker}
+            onToggleCycleTracker={handleToggleCycleTracker}
+            remindersEnabled={remindersEnabled}
+            onToggleReminders={handleToggleReminders}
+            notificationPermission={notificationPermission}
+            dailyData={dailyData}
+            onImportData={handleImportData}
+          />
+        )}
+
+        <BottomTabBar activeTab={activeTab} onTabChange={setActiveTab} />
       </div>
     </div>
   );

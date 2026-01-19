@@ -4,6 +4,8 @@ import { useAuth } from '../contexts/AuthContext';
 import { ReflectionEntry } from '../types';
 import { getFormattedDate } from '../utils/dateUtils';
 import { BookIcon, HeartIcon, SparklesIcon, ClockIcon, NewspaperIcon } from './Icons';
+import { TextareaWithLimit } from './TextareaWithLimit';
+import { InputWithLimit } from './InputWithLimit';
 
 interface Practice {
   id: string;
@@ -197,30 +199,27 @@ const GratitudePractice: React.FC<{ onBack: () => void }> = ({ onBack }) => {
       <div className="space-y-4 mb-8">
         <div>
           <label className="block text-sm font-medium text-slate-600 mb-2">1.</label>
-          <input
-            type="text"
+          <InputWithLimit
             value={gratitude1}
-            onChange={(e) => setGratitude1(e.target.value)}
+            onChange={setGratitude1}
             placeholder="Something you're grateful for..."
             className="w-full p-3 bg-slate-50 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:bg-white transition-all duration-200 text-slate-700"
           />
         </div>
         <div>
           <label className="block text-sm font-medium text-slate-600 mb-2">2.</label>
-          <input
-            type="text"
+          <InputWithLimit
             value={gratitude2}
-            onChange={(e) => setGratitude2(e.target.value)}
+            onChange={setGratitude2}
             placeholder="Another thing you're grateful for..."
             className="w-full p-3 bg-slate-50 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:bg-white transition-all duration-200 text-slate-700"
           />
         </div>
         <div>
           <label className="block text-sm font-medium text-slate-600 mb-2">3.</label>
-          <input
-            type="text"
+          <InputWithLimit
             value={gratitude3}
-            onChange={(e) => setGratitude3(e.target.value)}
+            onChange={setGratitude3}
             placeholder="One more thing you're grateful for..."
             className="w-full p-3 bg-slate-50 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:bg-white transition-all duration-200 text-slate-700"
           />
@@ -524,11 +523,11 @@ const MicroDiaryContent: React.FC<{ onBack: () => void }> = ({ onBack }) => {
               <label className="block text-sm font-medium text-slate-600 mb-2">
                 {t.reflectionPrompt1}
               </label>
-              <textarea
+              <TextareaWithLimit
                 value={goodFeeling}
-                onChange={(e) => setGoodFeeling(e.target.value)}
+                onChange={setGoodFeeling}
                 placeholder="Optional - share what brought you joy today..."
-                className="w-full p-3 bg-slate-50 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:bg-white transition-all duration-200 resize-none text-slate-700"
+                className="w-full p-3 bg-slate-50 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:bg-white transition-all duration-200 text-slate-700"
                 rows={2}
               />
             </div>
@@ -537,9 +536,9 @@ const MicroDiaryContent: React.FC<{ onBack: () => void }> = ({ onBack }) => {
               <label className="block text-sm font-medium text-slate-600 mb-2">
                 {t.reflectionPrompt2}
               </label>
-              <textarea
+              <TextareaWithLimit
                 value={drainedEnergy}
-                onChange={(e) => setDrainedEnergy(e.target.value)}
+                onChange={setDrainedEnergy}
                 placeholder="Optional - share what challenged you today..."
                 className="w-full p-3 bg-slate-50 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:bg-white transition-all duration-200 resize-none text-slate-700"
                 rows={2}

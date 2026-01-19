@@ -14,6 +14,7 @@ import { predictFutureCycles, type CyclePredictions } from './utils/predictions'
 import { YearView } from './components/YearView';
 import { Profile } from './components/Profile';
 import { MicroDiary } from './components/MicroDiary';
+import { Practices } from './components/Practices';
 import { BottomTabBar, type TabType } from './components/BottomTabBar';
 import { useAuth } from './contexts/AuthContext';
 import { Login } from './components/Login';
@@ -431,6 +432,8 @@ const App: React.FC = () => {
           </p>
         </header>
 
+
+        {activeTab === 'practices' && <Practices />}
 
         {activeTab === 'log' && (
           <main className="grid grid-cols-1 lg:grid-cols-3 gap-6 pb-24">

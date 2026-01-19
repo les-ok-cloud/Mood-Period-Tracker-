@@ -6,6 +6,8 @@ import { getFormattedDate } from '../utils/dateUtils';
 import { BookIcon, HeartIcon, SparklesIcon, ClockIcon, NewspaperIcon } from './Icons';
 import { TextareaWithLimit } from './TextareaWithLimit';
 import { InputWithLimit } from './InputWithLimit';
+import { PDFExportModal } from './PDFExportModal';
+import { reflectionPDFExporter, PDFExportFilters } from '../utils/pdfExport';
 
 interface Practice {
   id: string;
@@ -423,6 +425,8 @@ const MicroDiaryContent: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   const [drainedEnergy, setDrainedEnergy] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [savedMessage, setSavedMessage] = useState('');
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
 
   const today = new Date();
   const todayKey = getFormattedDate(today);
@@ -481,6 +485,22 @@ const MicroDiaryContent: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
     // Clear saved message after 3 seconds
     setTimeout(() => setSavedMessage(''), 3000);
+  };
+
+  const handleExportPDF = async (filters: PDFExportFilters) => {
+    setIsExporting(true);
+    try {
+      const filename = `reflection-history-${new Date().toISOString().split('T')[0]}.pdf`;
+      await reflectionPDFExporter.downloadPDF(reflections, filters, filename, 'Mood Period Tracker');
+      setIsExportModalOpen(false);
+      // Show success message
+      alert('PDF exported successfully! Check your downloads folder.');
+    } catch (error) {
+      console.error('PDF export failed:', error);
+      alert('Failed to export PDF. Please try again.');
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   const getSortedReflections = () => {
@@ -574,7 +594,15 @@ const MicroDiaryContent: React.FC<{ onBack: () => void }> = ({ onBack }) => {
       {/* Reflection History */}
       <div className="mb-8">
         <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-md p-6">
-          <h2 className="text-xl font-bold text-slate-700 mb-6">{t.reflectionHistory}</h2>
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-bold text-slate-700">{t.reflectionHistory}</h2>
+            <button
+              onClick={() => setIsExportModalOpen(true)}
+              className="bg-purple-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-purple-700 transition-colors text-sm"
+            >
+              {t.exportHistoryAsPDF}
+            </button>
+          </div>
 
           {Object.keys(reflections).length === 0 ? (
             <p className="text-slate-500 text-center py-8">{t.noReflections}</p>
@@ -618,6 +646,13 @@ const MicroDiaryContent: React.FC<{ onBack: () => void }> = ({ onBack }) => {
           {t.backToPractices}
         </button>
       </div>
+
+      <PDFExportModal
+        isOpen={isExportModalOpen}
+        onClose={() => setIsExportModalOpen(false)}
+        onExport={handleExportPDF}
+        isExporting={isExporting}
+      />
     </div>
   );
 };

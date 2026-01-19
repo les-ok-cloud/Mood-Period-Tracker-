@@ -201,6 +201,7 @@ export const translations = {
 
     // Settings
     settingsTitle: 'Settings',
+    language: 'Language',
     closeSettings: 'Close settings',
     enableCycleTracking: 'Enable Cycle Tracking',
     cycleTrackingDescription: 'Turn this off to hide cycle tracking and predictions from the calendar.',
@@ -384,6 +385,7 @@ export const translations = {
 
     // Settings
     settingsTitle: 'Configuración',
+    language: 'Idioma',
     closeSettings: 'Cerrar configuración',
     enableCycleTracking: 'Habilitar seguimiento del ciclo',
     cycleTrackingDescription: 'Desactívalo para ocultar el seguimiento del ciclo y las predicciones en el calendario.',
@@ -631,6 +633,7 @@ export const translations = {
 
     // Settings
     settingsTitle: 'Configurações',
+    language: 'Idioma',
     closeSettings: 'Fechar configurações',
     enableCycleTracking: 'Habilitar rastreamento de ciclo',
     cycleTrackingDescription: 'Desative para ocultar o rastreamento de ciclo e previsões no calendário.',
@@ -878,6 +881,7 @@ export const translations = {
 
     // Settings
     settingsTitle: 'Paramètres',
+    language: 'Langue',
     closeSettings: 'Fermer les paramètres',
     enableCycleTracking: 'Activer le suivi du cycle',
     cycleTrackingDescription: 'Désactivez pour masquer le suivi du cycle et les prédictions dans le calendrier.',
@@ -1125,6 +1129,7 @@ export const translations = {
 
     // Settings
     settingsTitle: 'Einstellungen',
+    language: 'Sprache',
     closeSettings: 'Einstellungen schließen',
     enableCycleTracking: 'Zyklus-Tracking aktivieren',
     cycleTrackingDescription: 'Deaktiviere dies, um Zyklus-Tracking und Vorhersagen im Kalender auszublenden.',
@@ -1372,6 +1377,7 @@ export const translations = {
 
     // Settings
     settingsTitle: 'सेटिंग्स',
+    language: 'भाषा',
     closeSettings: 'सेटिंग्स बंद करें',
     enableCycleTracking: 'साइकल ट्रैकिंग इनेबल करें',
     cycleTrackingDescription: 'कैलेंडर में साइकल ट्रैकिंग और प्रेडिक्शन्स को हाइड करने के लिए इसे डिसेबल करें।',
@@ -1618,6 +1624,7 @@ export const translations = {
 
     // Settings
     settingsTitle: 'Pengaturan',
+    language: 'Bahasa',
     closeSettings: 'Tutup pengaturan',
     enableCycleTracking: 'Aktifkan Pelacakan Siklus',
     cycleTrackingDescription: 'Nonaktifkan untuk menyembunyikan pelacakan siklus dan prediksi di kalender.',
@@ -1864,6 +1871,7 @@ export const translations = {
 
     // Settings
     settingsTitle: 'Ayarlar',
+    language: 'Dil',
     closeSettings: 'Ayarları kapat',
     enableCycleTracking: 'Döngü Takibini Etkinleştir',
     cycleTrackingDescription: 'Takvimde döngü takibini ve tahminleri gizlemek için bunu devre dışı bırakın.',
@@ -2110,6 +2118,7 @@ export const translations = {
 
     // Settings
     settingsTitle: 'الإعدادات',
+    language: 'اللغة',
     closeSettings: 'إغلاق الإعدادات',
     enableCycleTracking: 'تمكين تتبع الدورة',
     cycleTrackingDescription: 'عطل هذا لإخفاء تتبع الدورة والتوقعات في التقويم.',
@@ -2357,6 +2366,7 @@ export const translations = {
 
     // Settings
     settingsTitle: 'Настройки',
+    language: 'Язык',
     closeSettings: 'Закрыть настройки',
     enableCycleTracking: 'Включить отслеживание цикла',
     cycleTrackingDescription: 'Отключите, чтобы скрыть отслеживание цикла и прогнозы в календаре.',

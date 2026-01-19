@@ -1,2 +1,3 @@
 always commit your changes
 never run npm run dev and npm run build if server already running
+always add text color classes to form inputs with light backgrounds (e.g. text-slate-700 with bg-slate-50) to prevent white text on white background

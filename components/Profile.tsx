@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
-import { SignOutIcon, UserIcon, DownloadIcon, UploadIcon, ShareIcon, StarIcon } from './Icons';
+import { SignOutIcon, UserIcon, DownloadIcon, UploadIcon, ShareIcon, StarIcon, ChevronRight } from './Icons';
 import type { DailyEntry } from '../types';
 import { getFormattedDate } from '../utils/dateUtils';
 
@@ -25,6 +25,95 @@ const ToggleSwitch: React.FC<{ checked: boolean; onChange: (checked: boolean) =>
     </div>
   </label>
 );
+
+// Language setting component
+type Language = 'en' | 'ru' | 'es' | 'pt-BR' | 'fr' | 'de' | 'hi' | 'id' | 'tr' | 'ar';
+
+const LanguageSetting: React.FC = () => {
+  const { language, setLanguage, isRTL, t } = useLanguage();
+  const [isOpen, setIsOpen] = useState(false);
+
+  const languages = [
+    { code: 'en', label: 'EN', englishName: 'English', nativeName: 'English' },
+    { code: 'ar', label: 'AR', englishName: 'Arabic', nativeName: 'العربية' },
+    { code: 'de', label: 'DE', englishName: 'German', nativeName: 'Deutsch' },
+    { code: 'es', label: 'ES', englishName: 'Spanish', nativeName: 'Español' },
+    { code: 'fr', label: 'FR', englishName: 'French', nativeName: 'Français' },
+    { code: 'hi', label: 'HI', englishName: 'Hindi', nativeName: 'हिन्दी' },
+    { code: 'id', label: 'ID', englishName: 'Indonesian', nativeName: 'Bahasa Indonesia' },
+    { code: 'pt-BR', label: 'PT', englishName: 'Portuguese (Brazil)', nativeName: 'Português (Brasil)' },
+    { code: 'ru', label: 'RU', englishName: 'Russian', nativeName: 'Русский' },
+    { code: 'tr', label: 'TR', englishName: 'Turkish', nativeName: 'Türkçe' },
+  ].sort((a, b) => a.englishName.localeCompare(b.englishName));
+
+  const currentLanguage = languages.find(lang => lang.code === language);
+
+  const handleLanguageSelect = (langCode: typeof languages[number]['code']) => {
+    setLanguage(langCode as Language);
+    setIsOpen(false);
+  };
+
+  const handleClickOutside = (e: MouseEvent) => {
+    if (!(e.target as Element).closest('.language-dropdown')) {
+      setIsOpen(false);
+    }
+  };
+
+  React.useEffect(() => {
+    if (isOpen) {
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [isOpen]);
+
+  if (!currentLanguage) return null;
+
+  return (
+    <div className="language-dropdown relative">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className={`w-full flex items-center justify-between text-slate-700 font-medium hover:bg-slate-200/50 transition-colors duration-200 ${isRTL ? 'flex-row-reverse' : ''}`}
+        aria-haspopup="listbox"
+        aria-expanded={isOpen}
+        aria-label="Select language"
+      >
+        <span>{t.language}</span>
+        <div className={`flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
+          <span className="text-slate-500 text-sm">{currentLanguage.nativeName}</span>
+          <ChevronRight className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${isOpen ? 'rotate-90' : ''} ${isRTL ? 'rotate-180' : ''}`} />
+        </div>
+      </button>
+
+      {isOpen && (
+        <div
+          className={`absolute top-full mt-2 bg-white/95 backdrop-blur-sm border border-slate-300 rounded-lg shadow-md z-50 min-w-[280px] max-w-[320px] max-h-60 overflow-y-auto ${isRTL ? 'right-0' : 'left-0'}`}
+          role="listbox"
+          aria-label="Language options"
+        >
+          {languages.map(({ code, englishName, nativeName }) => (
+            <button
+              key={code}
+              onClick={() => handleLanguageSelect(code)}
+              className={`w-full flex flex-col px-4 py-3 text-left hover:bg-slate-50 focus:bg-slate-50 focus:outline-none transition-colors duration-150 ${
+                language === code ? 'bg-purple-50 text-purple-900' : 'text-slate-700'
+              } ${language === code ? 'font-medium' : ''} ${isRTL ? 'text-right' : ''}`}
+              role="option"
+              aria-selected={language === code}
+            >
+              <span className="text-sm font-medium truncate">{englishName}</span>
+              <span className="text-xs text-slate-500 break-words leading-tight">{nativeName}</span>
+              {language === code && (
+                <svg className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                </svg>
+              )}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
 
 export const Profile: React.FC<ProfileProps> = ({
   showCycleTracker,
@@ -173,8 +262,8 @@ export const Profile: React.FC<ProfileProps> = ({
   if (!user) return null;
 
   return (
-    <div className="bg-gradient-to-b from-sky-50 to-cyan-100 min-h-screen font-sans mobile-scroll">
-      <div className="container mx-auto p-4 sm:p-5 lg:p-6 max-w-5xl pb-24">
+    <div className="bg-gradient-to-b from-sky-50 to-cyan-100 min-h-screen font-sans">
+      <div className="container mx-auto p-4 sm:p-5 lg:p-6 max-w-5xl safe-bottom">
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-md p-6">
           <div className="text-center mb-8">
             <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-purple-100 flex items-center justify-center">
@@ -241,9 +330,8 @@ export const Profile: React.FC<ProfileProps> = ({
                     {notificationPermission === 'denied' ? t.remindersDeniedDescription : t.remindersDescription}
                   </p>
                 </div>
-                <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                  <span className="text-slate-700">Language</span>
-                  <span className="text-slate-500 text-sm">Set via language switcher above</span>
+                <div className="bg-slate-100/50 p-3 rounded-lg">
+                  <LanguageSetting />
                 </div>
               </div>
             </div>
@@ -344,9 +432,6 @@ export const Profile: React.FC<ProfileProps> = ({
           </div>
         </div>
       )}
-
-      {/* Bottom padding to account for tab bar */}
-      <div className="pb-24"></div>
     </div>
   );
 };

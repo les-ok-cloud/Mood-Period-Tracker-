@@ -37,7 +37,7 @@ export const BottomTabBar: React.FC<BottomTabBarProps> = ({ activeTab, onTabChan
   const { t, isRTL } = useLanguage();
 
   return (
-    <div className={`fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-slate-200 px-4 py-2 ${isRTL ? 'rtl' : 'ltr'}`}>
+    <div className={`fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-slate-200 px-4 py-2 ${isRTL ? 'rtl' : 'ltr'}`} style={{ paddingBottom: `calc(0.5rem + env(safe-area-inset-bottom))` }}>
       <div className="flex justify-around items-center max-w-md mx-auto">
         {tabs.map(({ id, icon: Icon, getLabel, isSpecial }) => {
           const isActive = activeTab === id;

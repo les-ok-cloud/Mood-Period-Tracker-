@@ -9,7 +9,6 @@ import { DailyAffirmation } from './components/DailyAffirmation';
 import { Mood, CycleFlow, DailyEntry } from './types';
 import { getFormattedDate, isSameDay, isFutureDate } from './utils/dateUtils';
 import { useLanguage } from './contexts/LanguageContext';
-import { LanguageSwitcher } from './components/LanguageSwitcher';
 import { predictFutureCycles, type CyclePredictions } from './utils/predictions';
 import { YearView } from './components/YearView';
 import { Profile } from './components/Profile';
@@ -427,7 +426,7 @@ const App: React.FC = () => {
       <div className="container mx-auto p-4 sm:p-5 lg:p-6 max-w-5xl safe-bottom">
         <DailyAffirmation />
         <div className="mb-4"></div>
-        <header className="py-2 mb-2 relative">
+        <header className="py-2 mb-2">
           <div className="text-center">
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-purple-400 leading-tight break-words inline-block">
               <span className="inline-block">
@@ -440,13 +439,10 @@ const App: React.FC = () => {
                 {t.title_part3 && <span className="block sm:inline">{' '}{t.title_part3}</span>}
               </span>
             </h1>
+            <p className="text-slate-500 text-base sm:text-lg leading-relaxed break-words max-w-2xl mx-auto px-4 mt-2">
+              {t.subtitle}
+            </p>
           </div>
-          <div className={`absolute top-2 ${isRTL ? 'left-4 sm:left-6' : 'right-4 sm:right-6'} z-10`}>
-            <LanguageSwitcher />
-          </div>
-          <p className="text-slate-500 text-base sm:text-lg leading-relaxed break-words max-w-2xl mx-auto px-4 mt-2 text-center">
-            {t.subtitle}
-          </p>
         </header>
 
 

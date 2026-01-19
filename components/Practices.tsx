@@ -617,7 +617,13 @@ const MicroDiaryContent: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                   {reflection.goodFeeling && (
                     <div className="mb-2 flex items-start gap-2">
                       <span className="text-green-600 font-bold text-lg leading-none mt-0.5">+</span>
-                      <p className="text-slate-700 leading-relaxed flex-1 overflow-wrap-break-word word-break-break-word">
+                      <p className="text-slate-700 leading-relaxed flex-1 overflow-wrap-anywhere"
+                         style={{
+                           wordWrap: 'break-word',
+                           overflowWrap: 'break-word',
+                           wordBreak: 'break-word',
+                           hyphens: 'auto'
+                         }}>
                         {reflection.goodFeeling.startsWith('+ ') ? reflection.goodFeeling.substring(2) : reflection.goodFeeling}
                       </p>
                     </div>
@@ -626,7 +632,13 @@ const MicroDiaryContent: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                   {reflection.drainedEnergy && (
                     <div className="flex items-start gap-2">
                       <span className="text-orange-600 font-bold text-lg leading-none mt-0.5">-</span>
-                      <p className="text-slate-700 leading-relaxed flex-1 overflow-wrap-break-word word-break-break-word">
+                      <p className="text-slate-700 leading-relaxed flex-1 overflow-wrap-anywhere"
+                         style={{
+                           wordWrap: 'break-word',
+                           overflowWrap: 'break-word',
+                           wordBreak: 'break-word',
+                           hyphens: 'auto'
+                         }}>
                         {reflection.drainedEnergy.startsWith('- ') ? reflection.drainedEnergy.substring(2) : reflection.drainedEnergy}
                       </p>
                     </div>

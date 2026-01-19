@@ -42,8 +42,15 @@ export const TextareaWithLimit: React.FC<TextareaWithLimitProps> = ({
         value={value}
         onChange={handleChange}
         placeholder={placeholder}
-        className={`${className} resize-none overflow-wrap-break-word word-break-break-word`}
+        className={`${className} resize-none overflow-wrap-anywhere`}
         rows={rows}
+        style={{
+          wordWrap: 'break-word',
+          overflowWrap: 'break-word',
+          wordBreak: 'break-word',
+          hyphens: 'auto',
+          overflowX: 'hidden'
+        }}
       />
       <div className="flex justify-between items-center text-xs text-slate-500">
         <div className={`transition-opacity duration-300 ${showHelper ? 'opacity-100' : 'opacity-0'}`}>

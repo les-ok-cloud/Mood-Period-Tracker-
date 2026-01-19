@@ -43,7 +43,13 @@ export const InputWithLimit: React.FC<InputWithLimitProps> = ({
         value={value}
         onChange={handleChange}
         placeholder={placeholder}
-        className={`${className} overflow-wrap-break-word word-break-break-word`}
+        className={`${className} overflow-wrap-anywhere`}
+        style={{
+          wordWrap: 'break-word',
+          overflowWrap: 'break-word',
+          wordBreak: 'break-word',
+          hyphens: 'auto'
+        }}
       />
       <div className="flex justify-between items-center text-xs text-slate-500">
         <div className={`transition-opacity duration-300 ${showHelper ? 'opacity-100' : 'opacity-0'}`}>

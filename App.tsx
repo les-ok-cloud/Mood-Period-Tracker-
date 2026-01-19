@@ -22,7 +22,7 @@ import { db } from './lib/firebase';
 declare const firebase: any;
 const GUEST_DATA_KEY = 'moodTrackerGuestData';
 
-// Add RTL support and keyboard handling styles
+// Add RTL support styles and bottom safe area padding
 const rtlStyles = `
   .rtl {
     direction: rtl;
@@ -52,24 +52,23 @@ const rtlStyles = `
     margin-left: 0;
     margin-right: 0.5rem;
   }
-
-  /* Ensure content scrolls above bottom navigation */
-  .content-container {
-    padding-bottom: 6rem; /* 96px to account for navigation */
-    min-height: 100vh;
+  
+  /* Bottom safe area padding for fixed navigation bar */
+  /* Tab bar height: ~80px (64px special tab + 16px padding) + safe area */
+  .safe-bottom {
+    padding-bottom: calc(5.5rem + env(safe-area-inset-bottom));
   }
-
-  /* Keyboard handling for inputs */
-  @media (max-width: 768px) {
-    input:focus, textarea:focus {
-      scroll-margin-bottom: 6rem;
+  
+  /* Ensure scrollable content respects bottom navigation */
+  .scroll-container {
+    padding-bottom: calc(5.5rem + env(safe-area-inset-bottom));
+  }
+  
+  /* Ensure inputs scroll into view when keyboard opens */
+  @supports (padding: max(0px)) {
+    .safe-bottom {
+      padding-bottom: max(5.5rem, calc(5.5rem + env(safe-area-inset-bottom)));
     }
-  }
-
-  /* Ensure proper scrolling on mobile */
-  .mobile-scroll {
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior: contain;
   }
   .rtl .space-x-4 > * + * {
     margin-left: 0;
@@ -424,8 +423,8 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className={`bg-gradient-to-b from-sky-50 to-cyan-100 min-h-screen font-sans mobile-scroll ${isRTL ? 'rtl' : 'ltr'}`}>
-      <div className="container mx-auto p-4 sm:p-5 lg:p-6 max-w-5xl pb-24">
+    <div className={`bg-gradient-to-b from-sky-50 to-cyan-100 min-h-screen font-sans ${isRTL ? 'rtl' : 'ltr'}`}>
+      <div className="container mx-auto p-4 sm:p-5 lg:p-6 max-w-5xl safe-bottom">
         <DailyAffirmation />
         <div className="mb-4"></div>
         <header className="py-2 mb-2 relative">
@@ -454,7 +453,7 @@ const App: React.FC = () => {
         {activeTab === 'practices' && <Practices />}
 
         {activeTab === 'log' && (
-          <main className="grid grid-cols-1 lg:grid-cols-3 gap-6 pb-24">
+          <main className="grid grid-cols-1 lg:grid-cols-3 gap-6 safe-bottom">
             <div className="lg:col-span-2 space-y-6">
               <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-md p-5 relative">
                 {user.isAnonymous && (
@@ -493,7 +492,7 @@ const App: React.FC = () => {
                     onChange={(e) => setNote(e.target.value)}
                     placeholder={isFuture ? t.addNotePlaceholderFuture : t.addNotePlaceholder}
                     disabled={isFuture}
-                    className="w-full p-3 bg-slate-100 rounded-lg border-2 border-transparent focus:ring-2 focus:ring-purple-400 focus:bg-white transition-all duration-200 disabled:bg-slate-50 disabled:cursor-not-allowed"
+                    className="w-full p-3 bg-slate-100 rounded-lg border-2 border-transparent focus:ring-2 focus:ring-purple-400 focus:bg-white transition-all duration-200 disabled:bg-slate-50 disabled:cursor-not-allowed text-slate-700"
                     aria-label="Daily note"
                   />
                 </div>

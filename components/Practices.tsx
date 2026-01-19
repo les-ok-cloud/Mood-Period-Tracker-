@@ -202,7 +202,7 @@ const GratitudePractice: React.FC<{ onBack: () => void }> = ({ onBack }) => {
             value={gratitude1}
             onChange={(e) => setGratitude1(e.target.value)}
             placeholder="Something you're grateful for..."
-            className="w-full p-3 bg-slate-50 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:bg-white transition-all duration-200"
+            className="w-full p-3 bg-slate-50 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:bg-white transition-all duration-200 text-slate-700"
           />
         </div>
         <div>
@@ -212,7 +212,7 @@ const GratitudePractice: React.FC<{ onBack: () => void }> = ({ onBack }) => {
             value={gratitude2}
             onChange={(e) => setGratitude2(e.target.value)}
             placeholder="Another thing you're grateful for..."
-            className="w-full p-3 bg-slate-50 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:bg-white transition-all duration-200"
+            className="w-full p-3 bg-slate-50 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:bg-white transition-all duration-200 text-slate-700"
           />
         </div>
         <div>
@@ -222,7 +222,7 @@ const GratitudePractice: React.FC<{ onBack: () => void }> = ({ onBack }) => {
             value={gratitude3}
             onChange={(e) => setGratitude3(e.target.value)}
             placeholder="One more thing you're grateful for..."
-            className="w-full p-3 bg-slate-50 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:bg-white transition-all duration-200"
+            className="w-full p-3 bg-slate-50 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:bg-white transition-all duration-200 text-slate-700"
           />
         </div>
       </div>

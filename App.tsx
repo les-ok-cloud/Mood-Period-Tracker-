@@ -13,6 +13,7 @@ import { predictFutureCycles, type CyclePredictions } from './utils/predictions'
 import { YearView } from './components/YearView';
 import { Profile } from './components/Profile';
 import { Practices } from './components/Practices';
+import { SimpleHeader } from './components/SimpleHeader';
 import { BottomTabBar, type TabType } from './components/BottomTabBar';
 import { useAuth } from './contexts/AuthContext';
 import { Login } from './components/Login';
@@ -72,6 +73,14 @@ const rtlStyles = `
   .rtl .space-x-4 > * + * {
     margin-left: 0;
     margin-right: 1rem;
+  }
+
+  /* Header animations */
+  @keyframes headerFadeIn {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 `;
 
@@ -424,29 +433,64 @@ const App: React.FC = () => {
   return (
     <div className={`bg-gradient-to-b from-sky-50 to-cyan-100 min-h-screen font-sans ${isRTL ? 'rtl' : 'ltr'}`}>
       <div className="container mx-auto p-4 sm:p-5 lg:p-6 max-w-5xl safe-bottom">
-        <DailyAffirmation />
-        <div className="mb-4"></div>
-        <header className="py-2 mb-2">
-          <div className="text-center">
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-purple-400 leading-tight break-words inline-block">
-              <span className="inline-block">
-                {t.title_part1}
-                {showCycleTracker && (
-                  <span className="font-handwritten text-red-500 text-3xl sm:text-4xl lg:text-5xl font-normal block sm:inline">
-                    {' '}{t.title_part2_cycle}
+        {activeTab === 'log' && (
+          <>
+            <DailyAffirmation />
+            <div className="mb-4"></div>
+            <header className="py-2 mb-2">
+              <div className="text-center">
+                <h1
+                  className="font-bold text-purple-400 leading-tight inline-block max-w-full"
+                  style={{
+                    fontSize: 'clamp(1.5rem, 5vw, 3rem)',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    minWidth: 'max-content',
+                    animation: 'headerFadeIn 280ms ease-out forwards',
+                    opacity: 0,
+                    transform: 'translateY(4px)'
+                  }}
+                >
+                  <span className="inline-block">
+                    {t.title_part1}
+                    {showCycleTracker && (
+                      <span
+                        className="font-handwritten text-red-500 font-normal inline"
+                        style={{
+                          fontSize: 'clamp(1.5rem, 5vw, 3rem)',
+                        }}
+                      >
+                        {' '}{t.title_part2_cycle}
+                      </span>
+                    )}
+                    {t.title_part3 && <span className="inline">{' '}{t.title_part3}</span>}
                   </span>
-                )}
-                {t.title_part3 && <span className="block sm:inline">{' '}{t.title_part3}</span>}
-              </span>
-            </h1>
-            <p className="text-slate-500 text-base sm:text-lg leading-relaxed break-words max-w-2xl mx-auto px-4 mt-2">
-              {t.subtitle}
-            </p>
-          </div>
-        </header>
+                </h1>
+                <p
+                  className="text-slate-500 text-base sm:text-lg leading-relaxed break-words max-w-2xl mx-auto px-4 mt-2"
+                  style={{
+                    animation: 'headerFadeIn 280ms ease-out 100ms forwards',
+                    opacity: 0,
+                    transform: 'translateY(4px)'
+                  }}
+                >
+                  {t.subtitle}
+                </p>
+              </div>
+            </header>
+          </>
+        )}
 
-
-        {activeTab === 'practices' && <Practices />}
+        {activeTab === 'practices' && (
+          <>
+            <SimpleHeader
+              title={t.practicesTitle || 'Practices'}
+              subtitle={t.practicesSubtitle || 'Gentle tools for mood awareness'}
+            />
+            <Practices />
+          </>
+        )}
 
         {activeTab === 'log' && (
           <main className="grid grid-cols-1 lg:grid-cols-3 gap-6 safe-bottom">
@@ -493,7 +537,7 @@ const App: React.FC = () => {
                   />
                 </div>
 
-                <div className="mt-8 text-center flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-4">
+                <div className="mt-8 text-center flex flex-row justify-center items-center gap-3 sm:gap-4">
                   {selectedMood && (
                     <button
                       onClick={handleSaveEntry}
@@ -535,19 +579,25 @@ const App: React.FC = () => {
         )}
 
         {activeTab === 'year' && (
-          <YearView dailyData={dailyData} onBack={() => setActiveTab('log')} />
+          <>
+            <SimpleHeader title={t.yearOverviewTitle || 'Year Overview'} />
+            <YearView dailyData={dailyData} onBack={() => setActiveTab('log')} />
+          </>
         )}
 
         {activeTab === 'profile' && (
-          <Profile
-            showCycleTracker={showCycleTracker}
-            onToggleCycleTracker={handleToggleCycleTracker}
-            remindersEnabled={remindersEnabled}
-            onToggleReminders={handleToggleReminders}
-            notificationPermission={notificationPermission}
-            dailyData={dailyData}
-            onImportData={handleImportData}
-          />
+          <>
+            <SimpleHeader title={t.profileTitle || 'Profile'} />
+            <Profile
+              showCycleTracker={showCycleTracker}
+              onToggleCycleTracker={handleToggleCycleTracker}
+              remindersEnabled={remindersEnabled}
+              onToggleReminders={handleToggleReminders}
+              notificationPermission={notificationPermission}
+              dailyData={dailyData}
+              onImportData={handleImportData}
+            />
+          </>
         )}
 
         <BottomTabBar activeTab={activeTab} onTabChange={setActiveTab} />

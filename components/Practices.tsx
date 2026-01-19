@@ -456,8 +456,8 @@ const MicroDiaryContent: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
     const newReflection: ReflectionEntry = {
       date: todayKey,
-      goodFeeling: goodFeeling.trim() || undefined,
-      drainedEnergy: drainedEnergy.trim() || undefined,
+      goodFeeling: goodFeeling.trim() ? `+ ${goodFeeling.trim()}` : undefined,
+      drainedEnergy: drainedEnergy.trim() ? `- ${drainedEnergy.trim()}` : undefined,
     };
 
     const updatedReflections = {
@@ -489,6 +489,16 @@ const MicroDiaryContent: React.FC<{ onBack: () => void }> = ({ onBack }) => {
       day: 'numeric',
       year: 'numeric'
     });
+  };
+
+  // Helper function to format reflection answers for display
+  const formatReflectionAnswer = (answer: string, isGoodFeeling: boolean) => {
+    // If answer already has prefix (new format), return as-is
+    if (answer.startsWith('+ ') || answer.startsWith('- ')) {
+      return answer;
+    }
+    // If answer doesn't have prefix (old format), add appropriate prefix
+    return isGoodFeeling ? `+ ${answer}` : `- ${answer}`;
   };
 
   return (
@@ -569,16 +579,20 @@ const MicroDiaryContent: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                   </div>
 
                   {reflection.goodFeeling && (
-                    <div className="mb-3">
-                      <p className="text-sm font-medium text-green-700 mb-1">{t.reflectionPrompt1}</p>
-                      <p className="text-slate-600 leading-relaxed">{reflection.goodFeeling}</p>
+                    <div className="mb-2 flex items-start gap-2">
+                      <span className="text-green-600 font-bold text-lg leading-none mt-0.5">+</span>
+                      <p className="text-slate-700 leading-relaxed flex-1">
+                        {reflection.goodFeeling.startsWith('+ ') ? reflection.goodFeeling.substring(2) : reflection.goodFeeling}
+                      </p>
                     </div>
                   )}
 
                   {reflection.drainedEnergy && (
-                    <div>
-                      <p className="text-sm font-medium text-orange-700 mb-1">{t.reflectionPrompt2}</p>
-                      <p className="text-slate-600 leading-relaxed">{reflection.drainedEnergy}</p>
+                    <div className="flex items-start gap-2">
+                      <span className="text-orange-600 font-bold text-lg leading-none mt-0.5">-</span>
+                      <p className="text-slate-700 leading-relaxed flex-1">
+                        {reflection.drainedEnergy.startsWith('- ') ? reflection.drainedEnergy.substring(2) : reflection.drainedEnergy}
+                      </p>
                     </div>
                   )}
                 </div>

@@ -22,7 +22,7 @@ import { db } from './lib/firebase';
 declare const firebase: any;
 const GUEST_DATA_KEY = 'moodTrackerGuestData';
 
-// Add RTL support styles
+// Add RTL support and keyboard handling styles
 const rtlStyles = `
   .rtl {
     direction: rtl;
@@ -51,6 +51,25 @@ const rtlStyles = `
   .rtl .space-x-2 > * + * {
     margin-left: 0;
     margin-right: 0.5rem;
+  }
+
+  /* Ensure content scrolls above bottom navigation */
+  .content-container {
+    padding-bottom: 6rem; /* 96px to account for navigation */
+    min-height: 100vh;
+  }
+
+  /* Keyboard handling for inputs */
+  @media (max-width: 768px) {
+    input:focus, textarea:focus {
+      scroll-margin-bottom: 6rem;
+    }
+  }
+
+  /* Ensure proper scrolling on mobile */
+  .mobile-scroll {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
   }
   .rtl .space-x-4 > * + * {
     margin-left: 0;
@@ -405,7 +424,7 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className={`bg-gradient-to-b from-sky-50 to-cyan-100 min-h-screen font-sans ${isRTL ? 'rtl' : 'ltr'}`}>
+    <div className={`bg-gradient-to-b from-sky-50 to-cyan-100 min-h-screen font-sans mobile-scroll ${isRTL ? 'rtl' : 'ltr'}`}>
       <div className="container mx-auto p-4 sm:p-5 lg:p-6 max-w-5xl pb-24">
         <DailyAffirmation />
         <div className="mb-4"></div>

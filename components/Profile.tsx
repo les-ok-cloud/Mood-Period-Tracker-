@@ -173,8 +173,8 @@ export const Profile: React.FC<ProfileProps> = ({
   if (!user) return null;
 
   return (
-    <div className="bg-gradient-to-b from-sky-50 to-cyan-100 min-h-screen font-sans">
-      <div className="container mx-auto p-4 sm:p-5 lg:p-6 max-w-5xl">
+    <div className="bg-gradient-to-b from-sky-50 to-cyan-100 min-h-screen font-sans mobile-scroll">
+      <div className="container mx-auto p-4 sm:p-5 lg:p-6 max-w-5xl pb-24">
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-md p-6">
           <div className="text-center mb-8">
             <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-purple-100 flex items-center justify-center">

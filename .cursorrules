@@ -1,1 +1,2 @@
 always commit your changes
+never run npm run dev and npm run build if server already running

@@ -63,9 +63,9 @@ export const YearView: React.FC<YearViewProps> = ({ dailyData, onBack }) => {
   const handleNextYear = () => setYear(y => y + 1);
 
   return (
-    <div className="bg-gradient-to-b from-sky-50 to-cyan-100 min-h-screen font-sans">
-      <div className="container mx-auto p-4 sm:p-5 lg:p-6 max-w-5xl">
-        <main className="space-y-6 animate-fade-in-up pb-24">
+    <div className="bg-gradient-to-b from-sky-50 to-cyan-100 min-h-screen font-sans mobile-scroll">
+      <div className="container mx-auto p-4 sm:p-5 lg:p-6 max-w-5xl pb-24">
+        <main className="space-y-6 animate-fade-in-up">
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-md p-5 flex justify-between items-center">
             <button onClick={onBack} className="text-purple-600 font-bold py-2 px-4 rounded-lg hover:bg-purple-100 transition-colors">
               &larr; {t.backToDashboard}

@@ -66,8 +66,8 @@ export const Practices: React.FC = () => {
   }
 
   return (
-    <div className="bg-gradient-to-b from-sky-50 to-cyan-100 min-h-screen font-sans">
-      <div className="container mx-auto p-4 sm:p-5 lg:p-6 max-w-5xl">
+    <div className="bg-gradient-to-b from-sky-50 to-cyan-100 min-h-screen font-sans mobile-scroll">
+      <div className="container mx-auto p-4 sm:p-5 lg:p-6 max-w-5xl pb-24">
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold text-slate-700 mb-2">{t.practices}</h1>
           <p className="text-slate-600">{t.practicesSubtitle}</p>
@@ -161,8 +161,8 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ practiceId, onBack }) =
   };
 
   return (
-    <div className="bg-gradient-to-b from-sky-50 to-cyan-100 min-h-screen font-sans">
-      <div className="container mx-auto p-4 sm:p-5 lg:p-6 max-w-5xl">
+    <div className="bg-gradient-to-b from-sky-50 to-cyan-100 min-h-screen font-sans mobile-scroll">
+      <div className="container mx-auto p-4 sm:p-5 lg:p-6 max-w-5xl pb-24">
         <button
           onClick={onBack}
           className="mb-6 flex items-center gap-2 text-slate-600 hover:text-slate-800 transition-colors"
@@ -492,7 +492,7 @@ const MicroDiaryContent: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-4xl mx-auto mobile-scroll">
       {/* Today's Reflection */}
       <div className="mb-8">
         <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-md p-6">

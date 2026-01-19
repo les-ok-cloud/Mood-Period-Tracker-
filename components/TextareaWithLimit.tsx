@@ -42,7 +42,7 @@ export const TextareaWithLimit: React.FC<TextareaWithLimitProps> = ({
         value={value}
         onChange={handleChange}
         placeholder={placeholder}
-        className={`${className} resize-none`}
+        className={`${className} resize-none overflow-wrap-break-word word-break-break-word`}
         rows={rows}
       />
       <div className="flex justify-between items-center text-xs text-slate-500">

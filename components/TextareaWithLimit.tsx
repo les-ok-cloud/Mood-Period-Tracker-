@@ -9,6 +9,7 @@ interface TextareaWithLimitProps {
   rows?: number;
   maxLength?: number;
   showHelperAt?: number;
+  unlimited?: boolean;
 }
 
 export const TextareaWithLimit: React.FC<TextareaWithLimitProps> = ({
@@ -19,6 +20,7 @@ export const TextareaWithLimit: React.FC<TextareaWithLimitProps> = ({
   rows = 2,
   maxLength = 200,
   showHelperAt = 180,
+  unlimited = false,
 }) => {
   const { t } = useLanguage();
   const [showHelper, setShowHelper] = useState(false);
@@ -30,8 +32,8 @@ export const TextareaWithLimit: React.FC<TextareaWithLimitProps> = ({
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newValue = e.target.value;
-    // Prevent typing beyond max length
-    if (newValue.length <= maxLength) {
+    // Prevent typing beyond max length unless unlimited is true
+    if (unlimited || newValue.length <= maxLength) {
       onChange(newValue);
     }
   };
@@ -57,7 +59,7 @@ export const TextareaWithLimit: React.FC<TextareaWithLimitProps> = ({
           {showHelper && t.shortNotesEnough}
         </div>
         <div className="ml-auto">
-          {value.length} / {maxLength}
+          {unlimited ? value.length : `${value.length} / ${maxLength}`}
         </div>
       </div>
     </div>

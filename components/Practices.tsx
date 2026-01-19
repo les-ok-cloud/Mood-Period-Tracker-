@@ -558,6 +558,7 @@ const MicroDiaryContent: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                 placeholder="Optional - share what brought you joy today..."
                 className="w-full p-3 bg-slate-50 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:bg-white transition-all duration-200 text-slate-700"
                 rows={2}
+                unlimited={true}
               />
             </div>
 
@@ -571,6 +572,7 @@ const MicroDiaryContent: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                 placeholder="Optional - share what challenged you today..."
                 className="w-full p-3 bg-slate-50 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:bg-white transition-all duration-200 resize-none text-slate-700"
                 rows={2}
+                unlimited={true}
               />
             </div>
 

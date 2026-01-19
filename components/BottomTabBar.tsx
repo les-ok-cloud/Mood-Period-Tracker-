@@ -2,7 +2,7 @@ import React from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { CalendarDaysIcon, HomeIcon, UserIcon, BookIcon, SparklesIcon } from './Icons';
 
-export type TabType = 'log' | 'year' | 'practices' | 'diary' | 'profile';
+export type TabType = 'log' | 'year' | 'practices' | 'profile';
 
 interface BottomTabBarProps {
   activeTab: TabType;
@@ -25,11 +25,6 @@ const tabs = [
     id: 'practices' as TabType,
     icon: SparklesIcon,
     getLabel: (t: any) => 'Practices',
-  },
-  {
-    id: 'diary' as TabType,
-    icon: BookIcon,
-    getLabel: (t: any) => t.microDiary,
   },
   {
     id: 'profile' as TabType,

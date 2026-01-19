@@ -13,7 +13,6 @@ import { LanguageSwitcher } from './components/LanguageSwitcher';
 import { predictFutureCycles, type CyclePredictions } from './utils/predictions';
 import { YearView } from './components/YearView';
 import { Profile } from './components/Profile';
-import { MicroDiary } from './components/MicroDiary';
 import { Practices } from './components/Practices';
 import { BottomTabBar, type TabType } from './components/BottomTabBar';
 import { useAuth } from './contexts/AuthContext';
@@ -524,8 +523,6 @@ const App: React.FC = () => {
         {activeTab === 'year' && (
           <YearView dailyData={dailyData} onBack={() => setActiveTab('log')} />
         )}
-
-        {activeTab === 'diary' && <MicroDiary />}
 
         {activeTab === 'profile' && (
           <Profile

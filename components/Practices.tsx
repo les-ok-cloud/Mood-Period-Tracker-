@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useAuth } from '../contexts/AuthContext';
+import { ReflectionEntry } from '../types';
+import { getFormattedDate } from '../utils/dateUtils';
 import { BookIcon, HeartIcon, SparklesIcon, ClockIcon, NewspaperIcon } from './Icons';
 
 interface Practice {
@@ -138,19 +141,7 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ practiceId, onBack }) =
   const renderPracticeContent = () => {
     switch (practiceId) {
       case 'reflection':
-        return (
-          <div className="text-center py-12">
-            <BookIcon className="w-16 h-16 text-purple-600 mx-auto mb-4" />
-            <h2 className="text-xl font-bold text-slate-700 mb-2">{t.dailyReflection}</h2>
-            <p className="text-slate-600 mb-6">Opening your Micro-Diary...</p>
-            <button
-              onClick={onBack}
-              className="bg-purple-600 text-white font-medium py-2 px-6 rounded-lg hover:bg-purple-700 transition-colors"
-            >
-              {t.backToPractices}
-            </button>
-          </div>
-        );
+        return <MicroDiaryContent onBack={onBack} />;
 
       case 'gratitude':
         return <GratitudePractice onBack={onBack} />;
@@ -416,6 +407,191 @@ const HelpfulReadingPractice: React.FC<{ onBack: () => void }> = ({ onBack }) =>
         <button
           onClick={onBack}
           className="bg-orange-600 text-white font-medium py-3 px-8 rounded-lg hover:bg-orange-700 transition-colors"
+        >
+          {t.backToPractices}
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// MicroDiary Content Component - adapted for Practices context
+const MicroDiaryContent: React.FC<{ onBack: () => void }> = ({ onBack }) => {
+  const { t } = useLanguage();
+  const { user } = useAuth();
+  const [reflections, setReflections] = useState<Record<string, ReflectionEntry>>({});
+  const [goodFeeling, setGoodFeeling] = useState('');
+  const [drainedEnergy, setDrainedEnergy] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+  const [savedMessage, setSavedMessage] = useState('');
+
+  const today = new Date();
+  const todayKey = getFormattedDate(today);
+
+  // Load reflections from localStorage
+  useEffect(() => {
+    const savedReflections = localStorage.getItem('moodTrackerReflections');
+    if (savedReflections) {
+      try {
+        setReflections(JSON.parse(savedReflections));
+      } catch (error) {
+        console.error('Error loading reflections:', error);
+      }
+    }
+  }, []);
+
+  // Load today's reflection if it exists
+  useEffect(() => {
+    const todayReflection = reflections[todayKey];
+    if (todayReflection) {
+      setGoodFeeling(todayReflection.goodFeeling || '');
+      setDrainedEnergy(todayReflection.drainedEnergy || '');
+    }
+  }, [reflections, todayKey]);
+
+  const saveReflection = async () => {
+    if (!goodFeeling.trim() && !drainedEnergy.trim()) return;
+
+    setIsSaving(true);
+
+    const newReflection: ReflectionEntry = {
+      date: todayKey,
+      goodFeeling: goodFeeling.trim() || undefined,
+      drainedEnergy: drainedEnergy.trim() || undefined,
+    };
+
+    const updatedReflections = {
+      ...reflections,
+      [todayKey]: newReflection,
+    };
+
+    setReflections(updatedReflections);
+    localStorage.setItem('moodTrackerReflections', JSON.stringify(updatedReflections));
+
+    setIsSaving(false);
+    setSavedMessage(t.reflectionSaved);
+
+    // Clear saved message after 3 seconds
+    setTimeout(() => setSavedMessage(''), 3000);
+  };
+
+  const getSortedReflections = () => {
+    return Object.values(reflections).sort((a, b) =>
+      new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    });
+  };
+
+  return (
+    <div className="max-w-4xl mx-auto">
+      {/* Today's Reflection */}
+      <div className="mb-8">
+        <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-md p-6">
+          <p className="text-slate-700 leading-relaxed mb-6">
+            <span className="font-bold text-purple-600 text-base">{t.reflectionExplanationTitle}</span>
+            <span className="text-slate-600 text-sm">{t.reflectionExplanationText}</span>
+          </p>
+          <button
+            onClick={() => window.open('https://share.google/HtUk1pvQIj9LKkR0G', '_blank')}
+            className="text-purple-600 hover:text-purple-700 underline text-sm font-medium mb-6 block"
+          >
+            {t.reflectionLearnMore}
+          </button>
+
+          <h2 className="text-xl font-bold text-slate-700 mb-4">{t.todaysReflection}</h2>
+
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-600 mb-2">
+                {t.reflectionPrompt1}
+              </label>
+              <textarea
+                value={goodFeeling}
+                onChange={(e) => setGoodFeeling(e.target.value)}
+                placeholder="Optional - share what brought you joy today..."
+                className="w-full p-3 bg-slate-50 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:bg-white transition-all duration-200 resize-none"
+                rows={2}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-600 mb-2">
+                {t.reflectionPrompt2}
+              </label>
+              <textarea
+                value={drainedEnergy}
+                onChange={(e) => setDrainedEnergy(e.target.value)}
+                placeholder="Optional - share what challenged you today..."
+                className="w-full p-3 bg-slate-50 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:bg-white transition-all duration-200 resize-none"
+                rows={2}
+              />
+            </div>
+
+            <div className="flex justify-between items-center">
+              <button
+                onClick={saveReflection}
+                disabled={isSaving || (!goodFeeling.trim() && !drainedEnergy.trim())}
+                className="bg-purple-600 text-white font-medium py-2 px-6 rounded-lg hover:bg-purple-700 disabled:bg-purple-400 disabled:cursor-not-allowed transition-colors"
+              >
+                {isSaving ? 'Saving...' : 'Save Reflection'}
+              </button>
+
+              {savedMessage && (
+                <span className="text-sm text-green-600 font-medium">{savedMessage}</span>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Reflection History */}
+      <div className="mb-8">
+        <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-md p-6">
+          <h2 className="text-xl font-bold text-slate-700 mb-6">{t.reflectionHistory}</h2>
+
+          {Object.keys(reflections).length === 0 ? (
+            <p className="text-slate-500 text-center py-8">{t.noReflections}</p>
+          ) : (
+            <div className="space-y-4">
+              {getSortedReflections().map((reflection) => (
+                <div key={reflection.date} className="border border-slate-200 rounded-lg p-4 hover:bg-slate-50 transition-colors">
+                  <div className="flex justify-between items-start mb-3">
+                    <h3 className="font-medium text-slate-700">{formatDate(reflection.date)}</h3>
+                  </div>
+
+                  {reflection.goodFeeling && (
+                    <div className="mb-3">
+                      <p className="text-sm font-medium text-green-700 mb-1">{t.reflectionPrompt1}</p>
+                      <p className="text-slate-600 leading-relaxed">{reflection.goodFeeling}</p>
+                    </div>
+                  )}
+
+                  {reflection.drainedEnergy && (
+                    <div>
+                      <p className="text-sm font-medium text-orange-700 mb-1">{t.reflectionPrompt2}</p>
+                      <p className="text-slate-600 leading-relaxed">{reflection.drainedEnergy}</p>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="text-center">
+        <button
+          onClick={onBack}
+          className="bg-purple-600 text-white font-medium py-3 px-8 rounded-lg hover:bg-purple-700 transition-colors"
         >
           {t.backToPractices}
         </button>

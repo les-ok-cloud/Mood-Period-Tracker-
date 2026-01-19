@@ -448,6 +448,15 @@ const MicroDiaryContent: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     }
   }, [reflections, todayKey]);
 
+  // Helper function to ensure proper prefixing
+  const ensurePrefix = (text: string, prefix: string) => {
+    const trimmed = text.trim();
+    if (trimmed.startsWith(prefix)) {
+      return trimmed;
+    }
+    return `${prefix} ${trimmed}`;
+  };
+
   const saveReflection = async () => {
     if (!goodFeeling.trim() && !drainedEnergy.trim()) return;
 
@@ -455,8 +464,8 @@ const MicroDiaryContent: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
     const newReflection: ReflectionEntry = {
       date: todayKey,
-      goodFeeling: goodFeeling.trim() ? `+ ${goodFeeling.trim()}` : undefined,
-      drainedEnergy: drainedEnergy.trim() ? `- ${drainedEnergy.trim()}` : undefined,
+      goodFeeling: goodFeeling.trim() ? ensurePrefix(goodFeeling, '+') : undefined,
+      drainedEnergy: drainedEnergy.trim() ? ensurePrefix(drainedEnergy, '-') : undefined,
     };
 
     const updatedReflections = {

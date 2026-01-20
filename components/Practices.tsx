@@ -328,6 +328,7 @@ const GratitudePractice: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     const gratitudeEntries = getEntriesByType(PracticeType.Gratitude);
     return gratitudeEntries
       .map(entry => ({
+        entryId: entry.entryId,
         date: entry.content.date,
         items: entry.content.items || []
       }))
@@ -436,7 +437,7 @@ const GratitudePractice: React.FC<{ onBack: () => void }> = ({ onBack }) => {
             <div className="space-y-4">
               {getSortedGratitudeEntries().map((entry) => (
                 <button
-                  key={entry.date}
+                  key={entry.entryId}
                   onClick={() => setSelectedHistoryDate(entry.date)}
                   className="w-full text-left border border-slate-200 rounded-lg p-4 hover:bg-slate-50 transition-colors"
                 >
@@ -592,6 +593,7 @@ const MoodInfluencersPractice: React.FC<{ onBack: () => void }> = ({ onBack }) =
     const influencerEntries = getEntriesByType(PracticeType.MoodInfluencers);
     return influencerEntries
       .map(entry => ({
+        entryId: entry.entryId,
         date: entry.content.date,
         selectedInfluencers: entry.content.selectedInfluencers || []
       }))
@@ -705,7 +707,7 @@ const MoodInfluencersPractice: React.FC<{ onBack: () => void }> = ({ onBack }) =
             <div className="space-y-4">
               {getSortedInfluencerEntries().map((entry) => (
                 <button
-                  key={entry.date}
+                  key={entry.entryId}
                   onClick={() => setSelectedHistoryDate(entry.date)}
                   className="w-full text-left border border-slate-200 rounded-lg p-4 hover:bg-slate-50 transition-colors"
                 >
@@ -996,7 +998,10 @@ const MicroDiaryContent: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
     const reflectionEntries = getEntriesByType(PracticeType.Reflection);
     return reflectionEntries
-      .map(entry => entry.content)
+      .map(entry => ({
+        entryId: entry.entryId,
+        ...entry.content
+      }))
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   };
 
@@ -1128,7 +1133,7 @@ const MicroDiaryContent: React.FC<{ onBack: () => void }> = ({ onBack }) => {
           ) : (
             <div className="space-y-4">
               {getSortedReflections().map((reflection) => (
-                <div key={reflection.date} className="border border-slate-200 rounded-lg p-4 hover:bg-slate-50 transition-colors">
+                <div key={reflection.entryId} className="border border-slate-200 rounded-lg p-4 hover:bg-slate-50 transition-colors">
                   <div className="flex justify-between items-start mb-3">
                     <h3 className="font-medium text-slate-700">{formatDate(reflection.date)}</h3>
                   </div>

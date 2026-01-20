@@ -882,7 +882,6 @@ export const translations = {
     shortNotesEnough: 'Les notes courtes suffisent 💜',
     exportHistoryAsPDF: 'Exporter l\'historique en PDF',
     exportReflections: 'Exporter les réflexions',
-    exportReflections: 'Exporter les réflexions',
     exportAll: 'Tout exporter',
     exportRange: 'Exporter la plage de dates',
     fromDate: 'De',

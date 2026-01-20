@@ -72,11 +72,6 @@ export const Practices: React.FC = () => {
   return (
     <div className="bg-gradient-to-b from-sky-50 to-cyan-100 min-h-screen font-sans">
       <div className="container mx-auto p-4 sm:p-5 lg:p-6 max-w-5xl safe-bottom">
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-slate-700 mb-2">{t.practices}</h1>
-          <p className="text-slate-600">{t.practicesSubtitle}</p>
-        </div>
-
         <div className="space-y-4">
           {practices.map((practice) => (
             <PracticeCard

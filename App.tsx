@@ -447,7 +447,7 @@ const App: React.FC = () => {
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                     minWidth: 'max-content',
-                    animation: 'headerFadeIn 280ms ease-out forwards',
+                    animation: 'headerFadeIn 250ms ease-out forwards',
                     opacity: 0,
                     transform: 'translateY(4px)'
                   }}
@@ -470,7 +470,7 @@ const App: React.FC = () => {
                 <p
                   className="text-slate-500 text-base sm:text-lg leading-relaxed break-words max-w-2xl mx-auto px-4 mt-2"
                   style={{
-                    animation: 'headerFadeIn 280ms ease-out 100ms forwards',
+                    animation: 'headerFadeIn 250ms ease-out 100ms forwards',
                     opacity: 0,
                     transform: 'translateY(4px)'
                   }}

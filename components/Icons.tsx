@@ -232,3 +232,16 @@ export const HomeIcon: React.FC<{ className?: string }> = ({ className }) => (
     <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
   </svg>
 );
+
+export const WifiIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M8.288 15.038a5.25 5.25 0 017.424 0M5.106 11.856c3.807-3.808 9.98-3.808 13.788 0M1.924 8.674c5.565-5.565 14.587-5.565 20.152 0M12 4.5a.75.75 0 01.75.75v.316a.75.75 0 01-1.5 0V5.25A.75.75 0 0112 4.5z" />
+  </svg>
+);
+
+export const WifiOffIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5a.75.75 0 01.75.75v.316a.75.75 0 01-1.5 0V5.25A.75.75 0 0112 4.5zm0 5.25a.75.75 0 01.75.75v.316a.75.75 0 01-1.5 0V10.5A.75.75 0 0112 9.75z" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 5.636l-12.728 12.728M8.288 15.038a5.25 5.25 0 007.424 0M5.106 11.856c3.807-3.808 9.98-3.808 13.788 0M1.924 8.674c5.565-5.565 14.587-5.565 20.152 0" />
+  </svg>
+);

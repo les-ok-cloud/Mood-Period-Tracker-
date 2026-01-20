@@ -18,6 +18,7 @@ import { BottomTabBar, type TabType } from './components/BottomTabBar';
 import { useAuth } from './contexts/AuthContext';
 import { Login } from './components/Login';
 import { db } from './lib/firebase';
+import { getPracticeSyncService, destroyPracticeSyncService } from './lib/practiceSync';
 
 declare const firebase: any;
 const GUEST_DATA_KEY = 'moodTrackerGuestData';
@@ -165,6 +166,10 @@ const App: React.FC = () => {
               entriesData[doc.id] = doc.data() as DailyEntry;
             });
             setDailyData(entriesData);
+
+            // Initialize practice sync for authenticated users
+            const syncService = getPracticeSyncService(user.uid);
+            await syncService.initialSync();
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -174,6 +179,14 @@ const App: React.FC = () => {
     };
 
     fetchData();
+
+    // Cleanup function
+    return () => {
+      if (user?.uid) {
+        // Clean up sync service when user changes or component unmounts
+        destroyPracticeSyncService(user.uid);
+      }
+    };
   }, [user]);
   
   const predictions = useMemo((): CyclePredictions => {

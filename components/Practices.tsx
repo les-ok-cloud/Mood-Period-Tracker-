@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
-import { ReflectionEntry } from '../types';
+import { usePracticeSync } from '../hooks/usePracticeSync';
+import { ReflectionEntry, PracticeType } from '../types';
 import { getFormattedDate } from '../utils/dateUtils';
-import { BookIcon, HeartIcon, SparklesIcon, ClockIcon, NewspaperIcon } from './Icons';
+import { BookIcon, HeartIcon, SparklesIcon, ClockIcon, NewspaperIcon, WifiIcon, WifiOffIcon } from './Icons';
 import { TextareaWithLimit } from './TextareaWithLimit';
 import { InputWithLimit } from './InputWithLimit';
 import { PDFExportModal } from './PDFExportModal';
@@ -20,6 +21,8 @@ interface Practice {
 
 export const Practices: React.FC = () => {
   const { t } = useLanguage();
+  const { user } = useAuth();
+  const { syncStatus } = usePracticeSync(user?.uid || '');
   const [selectedPractice, setSelectedPractice] = useState<string | null>(null);
 
   const practices: Practice[] = [
@@ -72,6 +75,39 @@ export const Practices: React.FC = () => {
   return (
     <div className="bg-gradient-to-b from-sky-50 to-cyan-100 min-h-screen font-sans">
       <div className="container mx-auto p-4 sm:p-5 lg:p-6 max-w-5xl safe-bottom">
+        {/* Sync Status Indicator */}
+        <div className="mb-4 flex justify-center">
+          <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm ${
+            syncStatus.isOnline
+              ? syncStatus.isSyncing
+                ? 'bg-blue-100 text-blue-700'
+                : 'bg-green-100 text-green-700'
+              : 'bg-orange-100 text-orange-700'
+          }`}>
+            {syncStatus.isOnline ? (
+              syncStatus.isSyncing ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-500 border-t-transparent"></div>
+                  <span>Syncing...</span>
+                </>
+              ) : (
+                <>
+                  <WifiIcon className="w-4 h-4" />
+                  <span>Online</span>
+                </>
+              )
+            ) : (
+              <>
+                <WifiOffIcon className="w-4 h-4" />
+                <span>Offline</span>
+                {syncStatus.pendingCount > 0 && (
+                  <span className="ml-1">({syncStatus.pendingCount} pending)</span>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+
         <div className="space-y-4">
           {practices.map((practice) => (
             <PracticeCard
@@ -181,9 +217,65 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ practiceId, onBack }) =
 // Individual practice components
 const GratitudePractice: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   const { t } = useLanguage();
+  const { user } = useAuth();
+  const { getEntriesByType, createEntry, updateEntry } = usePracticeSync(user?.uid || '');
   const [gratitude1, setGratitude1] = useState('');
   const [gratitude2, setGratitude2] = useState('');
   const [gratitude3, setGratitude3] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+  const [savedMessage, setSavedMessage] = useState('');
+
+  // Load existing gratitude entries for today
+  useEffect(() => {
+    if (!user?.uid) return;
+
+    const gratitudeEntries = getEntriesByType(PracticeType.Gratitude);
+    const today = getFormattedDate(new Date());
+    const todayEntry = gratitudeEntries.find(entry =>
+      getFormattedDate(new Date(entry.createdAt)) === today
+    );
+
+    if (todayEntry && todayEntry.content.items) {
+      const items = todayEntry.content.items;
+      setGratitude1(items[0] || '');
+      setGratitude2(items[1] || '');
+      setGratitude3(items[2] || '');
+    }
+  }, [user?.uid, getEntriesByType]);
+
+  const saveGratitude = async () => {
+    if (!user?.uid) return;
+
+    const items = [gratitude1.trim(), gratitude2.trim(), gratitude3.trim()].filter(item => item);
+    if (items.length === 0) return;
+
+    setIsSaving(true);
+
+    try {
+      const gratitudeEntries = getEntriesByType(PracticeType.Gratitude);
+      const today = getFormattedDate(new Date());
+      const existingEntry = gratitudeEntries.find(entry =>
+        getFormattedDate(new Date(entry.createdAt)) === today
+      );
+
+      const content = { items };
+
+      if (existingEntry) {
+        await updateEntry(existingEntry.entryId, { content });
+      } else {
+        await createEntry(PracticeType.Gratitude, content);
+      }
+
+      setSavedMessage('Gratitude saved!');
+      setTimeout(() => setSavedMessage(''), 3000);
+    } catch (error) {
+      console.error('Error saving gratitude:', error);
+      setSavedMessage('Failed to save. Please try again.');
+      setTimeout(() => setSavedMessage(''), 3000);
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -223,10 +315,22 @@ const GratitudePractice: React.FC<{ onBack: () => void }> = ({ onBack }) => {
         </div>
       </div>
 
-      <div className="text-center">
+      <div className="text-center space-y-3">
+        <button
+          onClick={saveGratitude}
+          disabled={isSaving || ![gratitude1, gratitude2, gratitude3].some(item => item.trim())}
+          className="bg-pink-600 text-white font-medium py-3 px-8 rounded-lg hover:bg-pink-700 disabled:bg-pink-400 disabled:cursor-not-allowed transition-colors"
+        >
+          {isSaving ? 'Saving...' : 'Save Gratitude'}
+        </button>
+
+        {savedMessage && (
+          <p className="text-sm text-green-600 font-medium">{savedMessage}</p>
+        )}
+
         <button
           onClick={onBack}
-          className="bg-pink-600 text-white font-medium py-3 px-8 rounded-lg hover:bg-pink-700 transition-colors"
+          className="bg-slate-600 text-white font-medium py-2 px-6 rounded-lg hover:bg-slate-700 transition-colors text-sm"
         >
           {t.backToPractices}
         </button>
@@ -237,7 +341,11 @@ const GratitudePractice: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
 const MoodInfluencersPractice: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   const { t } = useLanguage();
+  const { user } = useAuth();
+  const { getEntriesByType, createEntry, updateEntry } = usePracticeSync(user?.uid || '');
   const [selectedInfluencers, setSelectedInfluencers] = useState<string[]>([]);
+  const [isSaving, setIsSaving] = useState(false);
+  const [savedMessage, setSavedMessage] = useState('');
 
   const influencers = [
     'Sleep quality',
@@ -251,12 +359,58 @@ const MoodInfluencersPractice: React.FC<{ onBack: () => void }> = ({ onBack }) =
     'Other'
   ];
 
+  // Load existing mood influencers for today
+  useEffect(() => {
+    if (!user?.uid) return;
+
+    const influencerEntries = getEntriesByType(PracticeType.MoodInfluencers);
+    const today = getFormattedDate(new Date());
+    const todayEntry = influencerEntries.find(entry =>
+      getFormattedDate(new Date(entry.createdAt)) === today
+    );
+
+    if (todayEntry && todayEntry.content.selectedInfluencers) {
+      setSelectedInfluencers(todayEntry.content.selectedInfluencers);
+    }
+  }, [user?.uid, getEntriesByType]);
+
   const toggleInfluencer = (influencer: string) => {
     setSelectedInfluencers(prev =>
       prev.includes(influencer)
         ? prev.filter(i => i !== influencer)
         : [...prev, influencer]
     );
+  };
+
+  const saveMoodInfluencers = async () => {
+    if (!user?.uid || selectedInfluencers.length === 0) return;
+
+    setIsSaving(true);
+
+    try {
+      const influencerEntries = getEntriesByType(PracticeType.MoodInfluencers);
+      const today = getFormattedDate(new Date());
+      const existingEntry = influencerEntries.find(entry =>
+        getFormattedDate(new Date(entry.createdAt)) === today
+      );
+
+      const content = { selectedInfluencers };
+
+      if (existingEntry) {
+        await updateEntry(existingEntry.entryId, { content });
+      } else {
+        await createEntry(PracticeType.MoodInfluencers, content);
+      }
+
+      setSavedMessage('Mood influencers saved!');
+      setTimeout(() => setSavedMessage(''), 3000);
+    } catch (error) {
+      console.error('Error saving mood influencers:', error);
+      setSavedMessage('Failed to save. Please try again.');
+      setTimeout(() => setSavedMessage(''), 3000);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -283,10 +437,22 @@ const MoodInfluencersPractice: React.FC<{ onBack: () => void }> = ({ onBack }) =
         ))}
       </div>
 
-      <div className="text-center">
+      <div className="text-center space-y-3">
+        <button
+          onClick={saveMoodInfluencers}
+          disabled={isSaving || selectedInfluencers.length === 0}
+          className="bg-blue-600 text-white font-medium py-3 px-8 rounded-lg hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed transition-colors"
+        >
+          {isSaving ? 'Saving...' : 'Save Mood Influencers'}
+        </button>
+
+        {savedMessage && (
+          <p className="text-sm text-green-600 font-medium">{savedMessage}</p>
+        )}
+
         <button
           onClick={onBack}
-          className="bg-blue-600 text-white font-medium py-3 px-8 rounded-lg hover:bg-blue-700 transition-colors"
+          className="bg-slate-600 text-white font-medium py-2 px-6 rounded-lg hover:bg-slate-700 transition-colors text-sm"
         >
           {t.backToPractices}
         </button>
@@ -297,7 +463,10 @@ const MoodInfluencersPractice: React.FC<{ onBack: () => void }> = ({ onBack }) =
 
 const OneMinuteResetPractice: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   const { t } = useLanguage();
+  const { user } = useAuth();
+  const { createEntry } = usePracticeSync(user?.uid || '');
   const [step, setStep] = useState(0);
+  const [isCompleted, setIsCompleted] = useState(false);
 
   const steps = [
     "Find a comfortable position and close your eyes.",
@@ -313,8 +482,17 @@ const OneMinuteResetPractice: React.FC<{ onBack: () => void }> = ({ onBack }) =>
         setStep(prev => prev + 1);
       }, 4000); // 4 seconds per step
       return () => clearTimeout(timer);
+    } else if (step === steps.length && !isCompleted) {
+      // Mark as completed when exercise finishes
+      setIsCompleted(true);
+      if (user?.uid) {
+        createEntry(PracticeType.OneMinuteReset, {
+          completed: true,
+          completedAt: new Date().toISOString()
+        }).catch(error => console.error('Error saving reset completion:', error));
+      }
     }
-  }, [step]);
+  }, [step, isCompleted, user?.uid, createEntry]);
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -357,6 +535,8 @@ const OneMinuteResetPractice: React.FC<{ onBack: () => void }> = ({ onBack }) =>
 
 const HelpfulReadingPractice: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   const { t } = useLanguage();
+  const { user } = useAuth();
+  const { createEntry } = usePracticeSync(user?.uid || '');
 
   const articles = [
     {
@@ -376,6 +556,28 @@ const HelpfulReadingPractice: React.FC<{ onBack: () => void }> = ({ onBack }) =>
     }
   ];
 
+  const handleReadArticle = async (article: typeof articles[0]) => {
+    if (!user?.uid) {
+      // Just open the article for guest users
+      window.open(article.url, '_blank');
+      return;
+    }
+
+    try {
+      await createEntry(PracticeType.HelpfulReading, {
+        articleTitle: article.title,
+        articleUrl: article.url,
+        readAt: new Date().toISOString()
+      });
+      // Open article after saving
+      window.open(article.url, '_blank');
+    } catch (error) {
+      console.error('Error saving reading activity:', error);
+      // Still open the article even if saving fails
+      window.open(article.url, '_blank');
+    }
+  };
+
   return (
     <div className="max-w-2xl mx-auto">
       <div className="text-center mb-8">
@@ -390,7 +592,7 @@ const HelpfulReadingPractice: React.FC<{ onBack: () => void }> = ({ onBack }) =>
             <h3 className="font-semibold text-slate-700 mb-2">{article.title}</h3>
             <p className="text-slate-600 text-sm mb-3">{article.description}</p>
             <button
-              onClick={() => window.open(article.url, '_blank')}
+              onClick={() => handleReadArticle(article)}
               className="text-orange-600 hover:text-orange-700 underline text-sm font-medium"
             >
               Read Article →
@@ -415,7 +617,7 @@ const HelpfulReadingPractice: React.FC<{ onBack: () => void }> = ({ onBack }) =>
 const MicroDiaryContent: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   const { t } = useLanguage();
   const { user } = useAuth();
-  const [reflections, setReflections] = useState<Record<string, ReflectionEntry>>({});
+  const { getEntriesByType, createEntry, updateEntry, isLoading } = usePracticeSync(user?.uid || '');
   const [goodFeeling, setGoodFeeling] = useState('');
   const [drainedEnergy, setDrainedEnergy] = useState('');
   const [isSaving, setIsSaving] = useState(false);
@@ -426,26 +628,20 @@ const MicroDiaryContent: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   const today = new Date();
   const todayKey = getFormattedDate(today);
 
-  // Load reflections from localStorage
+  // Load today's reflection from synced data
   useEffect(() => {
-    const savedReflections = localStorage.getItem('moodTrackerReflections');
-    if (savedReflections) {
-      try {
-        setReflections(JSON.parse(savedReflections));
-      } catch (error) {
-        console.error('Error loading reflections:', error);
-      }
-    }
-  }, []);
+    if (!user?.uid || isLoading) return;
 
-  // Load today's reflection if it exists
-  useEffect(() => {
-    const todayReflection = reflections[todayKey];
-    if (todayReflection) {
-      setGoodFeeling(todayReflection.goodFeeling || '');
-      setDrainedEnergy(todayReflection.drainedEnergy || '');
+    const reflectionEntries = getEntriesByType(PracticeType.Reflection);
+    const todayEntry = reflectionEntries.find(entry =>
+      entry.content.date === todayKey
+    );
+
+    if (todayEntry) {
+      setGoodFeeling(todayEntry.content.goodFeeling || '');
+      setDrainedEnergy(todayEntry.content.drainedEnergy || '');
     }
-  }, [reflections, todayKey]);
+  }, [user?.uid, isLoading, getEntriesByType, todayKey]);
 
   // Helper function to ensure proper prefixing
   const ensurePrefix = (text: string, prefix: string) => {
@@ -457,36 +653,49 @@ const MicroDiaryContent: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   };
 
   const saveReflection = async () => {
-    if (!goodFeeling.trim() && !drainedEnergy.trim()) return;
+    if (!user?.uid || (!goodFeeling.trim() && !drainedEnergy.trim())) return;
 
     setIsSaving(true);
 
-    const newReflection: ReflectionEntry = {
-      date: todayKey,
-      goodFeeling: goodFeeling.trim() ? ensurePrefix(goodFeeling, '+') : undefined,
-      drainedEnergy: drainedEnergy.trim() ? ensurePrefix(drainedEnergy, '-') : undefined,
-    };
+    try {
+      const reflectionEntries = getEntriesByType(PracticeType.Reflection);
+      const existingEntry = reflectionEntries.find(entry =>
+        entry.content.date === todayKey
+      );
 
-    const updatedReflections = {
-      ...reflections,
-      [todayKey]: newReflection,
-    };
+      const content = {
+        date: todayKey,
+        goodFeeling: goodFeeling.trim() ? ensurePrefix(goodFeeling, '+') : undefined,
+        drainedEnergy: drainedEnergy.trim() ? ensurePrefix(drainedEnergy, '-') : undefined,
+      };
 
-    setReflections(updatedReflections);
-    localStorage.setItem('moodTrackerReflections', JSON.stringify(updatedReflections));
+      if (existingEntry) {
+        // Update existing entry
+        await updateEntry(existingEntry.entryId, { content });
+      } else {
+        // Create new entry
+        await createEntry(PracticeType.Reflection, content);
+      }
 
-    setIsSaving(false);
-    setSavedMessage(t.reflectionSaved);
+      setSavedMessage(t.reflectionSaved);
 
-    // Clear saved message after 3 seconds
-    setTimeout(() => setSavedMessage(''), 3000);
+      // Clear saved message after 3 seconds
+      setTimeout(() => setSavedMessage(''), 3000);
+    } catch (error) {
+      console.error('Error saving reflection:', error);
+      setSavedMessage('Failed to save. Please try again.');
+      setTimeout(() => setSavedMessage(''), 3000);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleExportPDF = async (filters: PDFExportFilters) => {
     setIsExporting(true);
     try {
       const filename = `reflection-history-${new Date().toISOString().split('T')[0]}.pdf`;
-      await reflectionPDFExporter.downloadPDF(reflections, filters, filename, 'Mood Period Tracker');
+      const reflectionData = getSortedReflections();
+      await reflectionPDFExporter.downloadPDF(reflectionData, filters, filename, 'Mood Period Tracker');
       setIsExportModalOpen(false);
       // Show success message
       alert('PDF exported successfully! Check your downloads folder.');
@@ -499,9 +708,12 @@ const MicroDiaryContent: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   };
 
   const getSortedReflections = () => {
-    return Object.values(reflections).sort((a, b) =>
-      new Date(b.date).getTime() - new Date(a.date).getTime()
-    );
+    if (!user?.uid) return [];
+
+    const reflectionEntries = getEntriesByType(PracticeType.Reflection);
+    return reflectionEntries
+      .map(entry => entry.content)
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   };
 
   const formatDate = (dateString: string) => {
@@ -601,7 +813,7 @@ const MicroDiaryContent: React.FC<{ onBack: () => void }> = ({ onBack }) => {
             </button>
           </div>
 
-          {Object.keys(reflections).length === 0 ? (
+          {getSortedReflections().length === 0 ? (
             <p className="text-slate-500 text-center py-8">{t.noReflections}</p>
           ) : (
             <div className="space-y-4">

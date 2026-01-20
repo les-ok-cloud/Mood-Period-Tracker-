@@ -43,14 +43,17 @@ export interface PracticeEntry {
 }
 
 export interface GratitudeContent {
+  date: string; // Date key in YYYY-MM-DD format
   items: string[]; // Array of 3 gratitude items
 }
 
 export interface MoodInfluencersContent {
+  date: string; // Date key in YYYY-MM-DD format
   selectedInfluencers: string[]; // Array of selected mood influencers
 }
 
 export interface ReflectionContent {
+  date: string; // Date key in YYYY-MM-DD format
   goodFeeling?: string;
   drainedEnergy?: string;
 }

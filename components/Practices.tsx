@@ -216,32 +216,77 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ practiceId, onBack }) =
 
 // Individual practice components
 const GratitudePractice: React.FC<{ onBack: () => void }> = ({ onBack }) => {
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
   const { user } = useAuth();
-  const { getEntriesByType, createEntry, updateEntry } = usePracticeSync(user?.uid || '');
+  const { getEntriesByType, createEntry, updateEntry, isLoading } = usePracticeSync(user?.uid || '');
   const [gratitude1, setGratitude1] = useState('');
   const [gratitude2, setGratitude2] = useState('');
   const [gratitude3, setGratitude3] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [savedMessage, setSavedMessage] = useState('');
+  const [gratitudeDate, setGratitudeDate] = useState<'today' | 'yesterday'>('today');
+  const [selectedHistoryDate, setSelectedHistoryDate] = useState<string | null>(null);
+  const [editingDate, setEditingDate] = useState<string | null>(null); // Track if editing a specific date from history
 
-  // Load existing gratitude entries for today
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+  
+  const selectedDate = gratitudeDate === 'today' ? today : yesterday;
+  const selectedDateKey = getFormattedDate(selectedDate);
+
+  // Load existing gratitude entry for selected date
   useEffect(() => {
-    if (!user?.uid) return;
+    if (!user?.uid || isLoading) return;
 
     const gratitudeEntries = getEntriesByType(PracticeType.Gratitude);
-    const today = getFormattedDate(new Date());
-    const todayEntry = gratitudeEntries.find(entry =>
-      getFormattedDate(new Date(entry.createdAt)) === today
+    const dateEntry = gratitudeEntries.find(entry =>
+      entry.content.date === selectedDateKey
     );
 
-    if (todayEntry && todayEntry.content.items) {
-      const items = todayEntry.content.items;
+    if (dateEntry && dateEntry.content.items) {
+      const items = dateEntry.content.items;
       setGratitude1(items[0] || '');
       setGratitude2(items[1] || '');
       setGratitude3(items[2] || '');
+    } else {
+      // Clear fields if no entry exists for selected date
+      setGratitude1('');
+      setGratitude2('');
+      setGratitude3('');
     }
-  }, [user?.uid, getEntriesByType]);
+  }, [user?.uid, isLoading, getEntriesByType, selectedDateKey]);
+
+  // Load entry when selecting from history
+  useEffect(() => {
+    if (!user?.uid || !selectedHistoryDate || isLoading) return;
+
+    const gratitudeEntries = getEntriesByType(PracticeType.Gratitude);
+    const dateEntry = gratitudeEntries.find(entry =>
+      entry.content.date === selectedHistoryDate
+    );
+
+    if (dateEntry && dateEntry.content.items) {
+      const items = dateEntry.content.items;
+      setGratitude1(items[0] || '');
+      setGratitude2(items[1] || '');
+      setGratitude3(items[2] || '');
+      // Set the date toggle to match the selected history date
+      const todayKey = getFormattedDate(new Date());
+      const yesterdayKey = getFormattedDate(yesterday);
+      if (selectedHistoryDate === todayKey) {
+        setGratitudeDate('today');
+        setEditingDate(null); // Clear editing date for today
+      } else if (selectedHistoryDate === yesterdayKey) {
+        setGratitudeDate('yesterday');
+        setEditingDate(null); // Clear editing date for yesterday
+      } else {
+        // For older dates, set editing date so we save to the original date
+        setEditingDate(selectedHistoryDate);
+      }
+      setSelectedHistoryDate(null); // Reset after loading
+    }
+  }, [selectedHistoryDate, user?.uid, isLoading, getEntriesByType, yesterday]);
 
   const saveGratitude = async () => {
     if (!user?.uid) return;
@@ -252,13 +297,17 @@ const GratitudePractice: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     setIsSaving(true);
 
     try {
+      // Use editingDate if set (for older entries from history), otherwise use selectedDateKey
+      const saveDateKey = editingDate || selectedDateKey;
       const gratitudeEntries = getEntriesByType(PracticeType.Gratitude);
-      const today = getFormattedDate(new Date());
       const existingEntry = gratitudeEntries.find(entry =>
-        getFormattedDate(new Date(entry.createdAt)) === today
+        entry.content.date === saveDateKey
       );
 
-      const content = { items };
+      const content = {
+        date: saveDateKey,
+        items
+      };
 
       if (existingEntry) {
         await updateEntry(existingEntry.entryId, { content });
@@ -266,8 +315,9 @@ const GratitudePractice: React.FC<{ onBack: () => void }> = ({ onBack }) => {
         await createEntry(PracticeType.Gratitude, content);
       }
 
-      setSavedMessage('Gratitude saved!');
+      setSavedMessage(t.gratitudeSaved || 'Gratitude saved!');
       setTimeout(() => setSavedMessage(''), 3000);
+      setEditingDate(null); // Clear editing date after save
     } catch (error) {
       console.error('Error saving gratitude:', error);
       setSavedMessage('Failed to save. Please try again.');
@@ -277,60 +327,162 @@ const GratitudePractice: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     }
   };
 
+  const getSortedGratitudeEntries = () => {
+    if (!user?.uid) return [];
+
+    const gratitudeEntries = getEntriesByType(PracticeType.Gratitude);
+    return gratitudeEntries
+      .map(entry => ({
+        date: entry.content.date,
+        items: entry.content.items || []
+      }))
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString(locale || 'en-US', {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    });
+  };
+
   return (
-    <div className="max-w-2xl mx-auto">
-      <div className="text-center mb-8">
-        <HeartIcon className="w-16 h-16 text-pink-600 mx-auto mb-4" />
-        <h2 className="text-2xl font-bold text-slate-700 mb-2">{t.gratitudePractice}</h2>
-        <p className="text-slate-600">Take a moment to notice three things you're grateful for today.</p>
+    <div className="max-w-4xl mx-auto">
+      {/* Gratitude Entry Form */}
+      <div className="mb-8">
+        <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-md p-6">
+          <div className="text-center mb-6">
+            <HeartIcon className="w-16 h-16 text-pink-600 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-slate-700 mb-2">{t.gratitudePractice}</h2>
+            <p className="text-slate-600">Take a moment to notice three things you're grateful for.</p>
+          </div>
+
+          <div className="mb-4 flex items-center justify-between">
+            <div>
+              <h3 className="text-xl font-bold text-slate-700">
+                {editingDate && editingDate !== selectedDateKey 
+                  ? `Editing: ${new Date(editingDate).toLocaleDateString(locale || 'en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`
+                  : gratitudeDate === 'today' 
+                    ? 'Today\'s Gratitude' 
+                    : `Gratitude for ${selectedDate.toLocaleDateString(locale || 'en-US', { month: 'long', day: 'numeric' })}`}
+              </h3>
+              {editingDate && editingDate !== selectedDateKey && (
+                <p className="text-sm text-slate-500 mt-1">This entry will be saved to the original date</p>
+              )}
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => {
+                  setGratitudeDate('today');
+                  setEditingDate(null); // Clear editing date when switching to today
+                }}
+                className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
+                  gratitudeDate === 'today'
+                    ? 'bg-pink-600 text-white'
+                    : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                }`}
+              >
+                {t.today || 'Today'}
+              </button>
+              <button
+                onClick={() => {
+                  setGratitudeDate('yesterday');
+                  setEditingDate(null); // Clear editing date when switching to yesterday
+                }}
+                className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
+                  gratitudeDate === 'yesterday'
+                    ? 'bg-pink-600 text-white'
+                    : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                }`}
+              >
+                {t.yesterday || 'Yesterday'}
+              </button>
+            </div>
+          </div>
+
+          <div className="space-y-4 mb-6">
+            <div>
+              <label className="block text-sm font-medium text-slate-600 mb-2">1.</label>
+              <InputWithLimit
+                value={gratitude1}
+                onChange={setGratitude1}
+                placeholder="Something you're grateful for..."
+                className="w-full p-3 bg-slate-50 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:bg-white transition-all duration-200 text-slate-700"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-600 mb-2">2.</label>
+              <InputWithLimit
+                value={gratitude2}
+                onChange={setGratitude2}
+                placeholder="Another thing you're grateful for..."
+                className="w-full p-3 bg-slate-50 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:bg-white transition-all duration-200 text-slate-700"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-600 mb-2">3.</label>
+              <InputWithLimit
+                value={gratitude3}
+                onChange={setGratitude3}
+                placeholder="One more thing you're grateful for..."
+                className="w-full p-3 bg-slate-50 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:bg-white transition-all duration-200 text-slate-700"
+              />
+            </div>
+          </div>
+
+          <div className="flex justify-between items-center">
+            <button
+              onClick={saveGratitude}
+              disabled={isSaving || ![gratitude1, gratitude2, gratitude3].some(item => item.trim())}
+              className="bg-pink-600 text-white font-medium py-2 px-6 rounded-lg hover:bg-pink-700 disabled:bg-pink-400 disabled:cursor-not-allowed transition-colors"
+            >
+              {isSaving ? 'Saving...' : 'Save Gratitude'}
+            </button>
+
+            {savedMessage && (
+              <span className="text-sm text-green-600 font-medium">{savedMessage}</span>
+            )}
+          </div>
+        </div>
       </div>
 
-      <div className="space-y-4 mb-8">
-        <div>
-          <label className="block text-sm font-medium text-slate-600 mb-2">1.</label>
-          <InputWithLimit
-            value={gratitude1}
-            onChange={setGratitude1}
-            placeholder="Something you're grateful for..."
-            className="w-full p-3 bg-slate-50 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:bg-white transition-all duration-200 text-slate-700"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-slate-600 mb-2">2.</label>
-          <InputWithLimit
-            value={gratitude2}
-            onChange={setGratitude2}
-            placeholder="Another thing you're grateful for..."
-            className="w-full p-3 bg-slate-50 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:bg-white transition-all duration-200 text-slate-700"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-slate-600 mb-2">3.</label>
-          <InputWithLimit
-            value={gratitude3}
-            onChange={setGratitude3}
-            placeholder="One more thing you're grateful for..."
-            className="w-full p-3 bg-slate-50 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:bg-white transition-all duration-200 text-slate-700"
-          />
+      {/* Gratitude History */}
+      <div className="mb-8">
+        <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-md p-6">
+          <h2 className="text-xl font-bold text-slate-700 mb-6">{t.gratitudeHistory || 'Gratitude History'}</h2>
+
+          {getSortedGratitudeEntries().length === 0 ? (
+            <p className="text-slate-500 text-center py-8">{t.noGratitudeEntries || 'No gratitude entries yet. Start by adding today\'s gratitude above.'}</p>
+          ) : (
+            <div className="space-y-4">
+              {getSortedGratitudeEntries().map((entry) => (
+                <button
+                  key={entry.date}
+                  onClick={() => setSelectedHistoryDate(entry.date)}
+                  className="w-full text-left border border-slate-200 rounded-lg p-4 hover:bg-slate-50 transition-colors"
+                >
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="font-medium text-slate-700">{formatDate(entry.date)}</h3>
+                  </div>
+                  {entry.items.length > 0 && (
+                    <p className="text-slate-600 text-sm line-clamp-2">
+                      {entry.items[0]}
+                    </p>
+                  )}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
-      <div className="text-center space-y-3">
-        <button
-          onClick={saveGratitude}
-          disabled={isSaving || ![gratitude1, gratitude2, gratitude3].some(item => item.trim())}
-          className="bg-pink-600 text-white font-medium py-3 px-8 rounded-lg hover:bg-pink-700 disabled:bg-pink-400 disabled:cursor-not-allowed transition-colors"
-        >
-          {isSaving ? 'Saving...' : 'Save Gratitude'}
-        </button>
-
-        {savedMessage && (
-          <p className="text-sm text-green-600 font-medium">{savedMessage}</p>
-        )}
-
+      <div className="text-center mb-6">
         <button
           onClick={onBack}
-          className="bg-slate-600 text-white font-medium py-2 px-6 rounded-lg hover:bg-slate-700 transition-colors text-sm"
+          className="bg-slate-600 text-white font-medium py-3 px-8 rounded-lg hover:bg-slate-700 transition-colors"
         >
           {t.backToPractices}
         </button>
@@ -340,12 +492,15 @@ const GratitudePractice: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 };
 
 const MoodInfluencersPractice: React.FC<{ onBack: () => void }> = ({ onBack }) => {
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
   const { user } = useAuth();
-  const { getEntriesByType, createEntry, updateEntry } = usePracticeSync(user?.uid || '');
+  const { getEntriesByType, createEntry, updateEntry, isLoading } = usePracticeSync(user?.uid || '');
   const [selectedInfluencers, setSelectedInfluencers] = useState<string[]>([]);
   const [isSaving, setIsSaving] = useState(false);
   const [savedMessage, setSavedMessage] = useState('');
+  const [influencerDate, setInfluencerDate] = useState<'today' | 'yesterday'>('today');
+  const [selectedHistoryDate, setSelectedHistoryDate] = useState<string | null>(null);
+  const [editingDate, setEditingDate] = useState<string | null>(null); // Track if editing a specific date from history
 
   const influencers = [
     'Sleep quality',
@@ -359,20 +514,57 @@ const MoodInfluencersPractice: React.FC<{ onBack: () => void }> = ({ onBack }) =
     'Other'
   ];
 
-  // Load existing mood influencers for today
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+  
+  const selectedDate = influencerDate === 'today' ? today : yesterday;
+  const selectedDateKey = getFormattedDate(selectedDate);
+
+  // Load existing mood influencers for selected date
   useEffect(() => {
-    if (!user?.uid) return;
+    if (!user?.uid || isLoading) return;
 
     const influencerEntries = getEntriesByType(PracticeType.MoodInfluencers);
-    const today = getFormattedDate(new Date());
-    const todayEntry = influencerEntries.find(entry =>
-      getFormattedDate(new Date(entry.createdAt)) === today
+    const dateEntry = influencerEntries.find(entry =>
+      entry.content.date === selectedDateKey
     );
 
-    if (todayEntry && todayEntry.content.selectedInfluencers) {
-      setSelectedInfluencers(todayEntry.content.selectedInfluencers);
+    if (dateEntry && dateEntry.content.selectedInfluencers) {
+      setSelectedInfluencers(dateEntry.content.selectedInfluencers);
+    } else {
+      // Clear selection if no entry exists for selected date
+      setSelectedInfluencers([]);
     }
-  }, [user?.uid, getEntriesByType]);
+  }, [user?.uid, isLoading, getEntriesByType, selectedDateKey]);
+
+  // Load entry when selecting from history
+  useEffect(() => {
+    if (!user?.uid || !selectedHistoryDate || isLoading) return;
+
+    const influencerEntries = getEntriesByType(PracticeType.MoodInfluencers);
+    const dateEntry = influencerEntries.find(entry =>
+      entry.content.date === selectedHistoryDate
+    );
+
+    if (dateEntry && dateEntry.content.selectedInfluencers) {
+      setSelectedInfluencers(dateEntry.content.selectedInfluencers);
+      // Set the date toggle to match the selected history date
+      const todayKey = getFormattedDate(new Date());
+      const yesterdayKey = getFormattedDate(yesterday);
+      if (selectedHistoryDate === todayKey) {
+        setInfluencerDate('today');
+        setEditingDate(null); // Clear editing date for today
+      } else if (selectedHistoryDate === yesterdayKey) {
+        setInfluencerDate('yesterday');
+        setEditingDate(null); // Clear editing date for yesterday
+      } else {
+        // For older dates, set editing date so we save to the original date
+        setEditingDate(selectedHistoryDate);
+      }
+      setSelectedHistoryDate(null); // Reset after loading
+    }
+  }, [selectedHistoryDate, user?.uid, isLoading, getEntriesByType, yesterday]);
 
   const toggleInfluencer = (influencer: string) => {
     setSelectedInfluencers(prev =>
@@ -388,13 +580,17 @@ const MoodInfluencersPractice: React.FC<{ onBack: () => void }> = ({ onBack }) =
     setIsSaving(true);
 
     try {
+      // Use editingDate if set (for older entries from history), otherwise use selectedDateKey
+      const saveDateKey = editingDate || selectedDateKey;
       const influencerEntries = getEntriesByType(PracticeType.MoodInfluencers);
-      const today = getFormattedDate(new Date());
       const existingEntry = influencerEntries.find(entry =>
-        getFormattedDate(new Date(entry.createdAt)) === today
+        entry.content.date === saveDateKey
       );
 
-      const content = { selectedInfluencers };
+      const content = {
+        date: saveDateKey,
+        selectedInfluencers
+      };
 
       if (existingEntry) {
         await updateEntry(existingEntry.entryId, { content });
@@ -402,8 +598,9 @@ const MoodInfluencersPractice: React.FC<{ onBack: () => void }> = ({ onBack }) =
         await createEntry(PracticeType.MoodInfluencers, content);
       }
 
-      setSavedMessage('Mood influencers saved!');
+      setSavedMessage(t.moodInfluencersSaved || 'Mood influencers saved!');
       setTimeout(() => setSavedMessage(''), 3000);
+      setEditingDate(null); // Clear editing date after save
     } catch (error) {
       console.error('Error saving mood influencers:', error);
       setSavedMessage('Failed to save. Please try again.');
@@ -413,46 +610,148 @@ const MoodInfluencersPractice: React.FC<{ onBack: () => void }> = ({ onBack }) =
     }
   };
 
+  const getSortedInfluencerEntries = () => {
+    if (!user?.uid) return [];
+
+    const influencerEntries = getEntriesByType(PracticeType.MoodInfluencers);
+    return influencerEntries
+      .map(entry => ({
+        date: entry.content.date,
+        selectedInfluencers: entry.content.selectedInfluencers || []
+      }))
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString(locale || 'en-US', {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    });
+  };
+
   return (
-    <div className="max-w-2xl mx-auto">
-      <div className="text-center mb-8">
-        <SparklesIcon className="w-16 h-16 text-blue-600 mx-auto mb-4" />
-        <h2 className="text-2xl font-bold text-slate-700 mb-2">{t.moodInfluencers}</h2>
-        <p className="text-slate-600">Check what might have influenced your mood today.</p>
+    <div className="max-w-4xl mx-auto">
+      {/* Mood Influencers Entry Form */}
+      <div className="mb-8">
+        <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-md p-6">
+          <div className="text-center mb-6">
+            <SparklesIcon className="w-16 h-16 text-blue-600 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-slate-700 mb-2">{t.moodInfluencers}</h2>
+            <p className="text-slate-600">Check what might have influenced your mood.</p>
+          </div>
+
+          <div className="mb-4 flex items-center justify-between">
+            <div>
+              <h3 className="text-xl font-bold text-slate-700">
+                {editingDate && editingDate !== selectedDateKey
+                  ? `Editing: ${new Date(editingDate).toLocaleDateString(locale || 'en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`
+                  : influencerDate === 'today'
+                    ? 'Today\'s Mood Influencers'
+                    : `Mood Influencers for ${selectedDate.toLocaleDateString(locale || 'en-US', { month: 'long', day: 'numeric' })}`}
+              </h3>
+              {editingDate && editingDate !== selectedDateKey && (
+                <p className="text-sm text-slate-500 mt-1">This entry will be saved to the original date</p>
+              )}
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => {
+                  setInfluencerDate('today');
+                  setEditingDate(null); // Clear editing date when switching to today
+                }}
+                className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
+                  influencerDate === 'today'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                }`}
+              >
+                {t.today || 'Today'}
+              </button>
+              <button
+                onClick={() => {
+                  setInfluencerDate('yesterday');
+                  setEditingDate(null); // Clear editing date when switching to yesterday
+                }}
+                className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
+                  influencerDate === 'yesterday'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                }`}
+              >
+                {t.yesterday || 'Yesterday'}
+              </button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3 mb-6">
+            {influencers.map((influencer) => (
+              <button
+                key={influencer}
+                onClick={() => toggleInfluencer(influencer)}
+                className={`p-4 rounded-lg border-2 text-left transition-all duration-200 ${
+                  selectedInfluencers.includes(influencer)
+                    ? 'border-blue-500 bg-blue-50 text-blue-700'
+                    : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
+                }`}
+              >
+                {influencer}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex justify-between items-center">
+            <button
+              onClick={saveMoodInfluencers}
+              disabled={isSaving || selectedInfluencers.length === 0}
+              className="bg-blue-600 text-white font-medium py-2 px-6 rounded-lg hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed transition-colors"
+            >
+              {isSaving ? 'Saving...' : 'Save Mood Influencers'}
+            </button>
+
+            {savedMessage && (
+              <span className="text-sm text-green-600 font-medium">{savedMessage}</span>
+            )}
+          </div>
+        </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 mb-8">
-        {influencers.map((influencer) => (
-          <button
-            key={influencer}
-            onClick={() => toggleInfluencer(influencer)}
-            className={`p-4 rounded-lg border-2 text-left transition-all duration-200 ${
-              selectedInfluencers.includes(influencer)
-                ? 'border-blue-500 bg-blue-50 text-blue-700'
-                : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
-            }`}
-          >
-            {influencer}
-          </button>
-        ))}
+      {/* Mood Influencers History */}
+      <div className="mb-8">
+        <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-md p-6">
+          <h2 className="text-xl font-bold text-slate-700 mb-6">{t.moodInfluencersHistory || 'Mood Influencers History'}</h2>
+
+          {getSortedInfluencerEntries().length === 0 ? (
+            <p className="text-slate-500 text-center py-8">{t.noMoodInfluencersEntries || 'No mood influencer entries yet. Start by adding today\'s mood influencers above.'}</p>
+          ) : (
+            <div className="space-y-4">
+              {getSortedInfluencerEntries().map((entry) => (
+                <button
+                  key={entry.date}
+                  onClick={() => setSelectedHistoryDate(entry.date)}
+                  className="w-full text-left border border-slate-200 rounded-lg p-4 hover:bg-slate-50 transition-colors"
+                >
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="font-medium text-slate-700">{formatDate(entry.date)}</h3>
+                  </div>
+                  {entry.selectedInfluencers.length > 0 && (
+                    <p className="text-slate-600 text-sm">
+                      {entry.selectedInfluencers.join(', ')}
+                    </p>
+                  )}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
-      <div className="text-center space-y-3">
-        <button
-          onClick={saveMoodInfluencers}
-          disabled={isSaving || selectedInfluencers.length === 0}
-          className="bg-blue-600 text-white font-medium py-3 px-8 rounded-lg hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed transition-colors"
-        >
-          {isSaving ? 'Saving...' : 'Save Mood Influencers'}
-        </button>
-
-        {savedMessage && (
-          <p className="text-sm text-green-600 font-medium">{savedMessage}</p>
-        )}
-
+      <div className="text-center mb-6">
         <button
           onClick={onBack}
-          className="bg-slate-600 text-white font-medium py-2 px-6 rounded-lg hover:bg-slate-700 transition-colors text-sm"
+          className="bg-slate-600 text-white font-medium py-3 px-8 rounded-lg hover:bg-slate-700 transition-colors"
         >
           {t.backToPractices}
         </button>

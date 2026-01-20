@@ -1,6 +1,30 @@
 import jsPDF from 'jspdf';
 import { ReflectionEntry } from '../types';
 
+// Utility to detect mobile devices
+export const isMobileDevice = (): boolean => {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+         (window.innerWidth <= 768 && window.innerHeight <= 1024);
+};
+
+// Utility to detect if we're in a WebView
+export const isWebView = (): boolean => {
+  const userAgent = navigator.userAgent;
+  return /wv|WebView/i.test(userAgent) ||
+         (window.webkit && window.webkit.messageHandlers) ||
+         !window.navigator.standalone;
+};
+
+// Utility to check if the Web Share API is supported and has file sharing
+export const supportsFileSharing = (): boolean => {
+  return !!(navigator.share && navigator.canShare);
+};
+
+// Utility to check if clipboard API is available
+export const supportsClipboard = (): boolean => {
+  return !!(navigator.clipboard && navigator.clipboard.writeText);
+};
+
 export interface PDFExportFilters {
   startDate?: Date;
   endDate?: Date;
@@ -178,17 +202,28 @@ export class ReflectionPDFExporter {
     filters: PDFExportFilters = {},
     filename: string = 'reflection-history.pdf',
     appTitle?: string
-  ): Promise<void> {
+  ): Promise<{ blob: Blob; url: string; filename: string }> {
     return this.generatePDF(reflections, filters, appTitle).then(blob => {
       const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
+      return { blob, url, filename };
     });
+  }
+
+  public async exportPDF(
+    reflections: Record<string, ReflectionEntry>,
+    filters: PDFExportFilters = {},
+    filename: string = 'reflection-history.pdf',
+    appTitle?: string
+  ): Promise<{ blob: Blob; url: string; filename: string; isMobile: boolean; isWebView: boolean }> {
+    const { blob, url, filename: finalFilename } = await this.downloadPDF(reflections, filters, filename, appTitle);
+
+    return {
+      blob,
+      url,
+      filename: finalFilename,
+      isMobile: isMobileDevice(),
+      isWebView: isWebView()
+    };
   }
 }
 

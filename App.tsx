@@ -496,13 +496,7 @@ const App: React.FC = () => {
         )}
 
         {activeTab === 'practices' && (
-          <>
-            <SimpleHeader
-              title={t.practicesTitle || 'Practices'}
-              subtitle={t.practicesSubtitle || 'Gentle tools for mood awareness'}
-            />
-            <Practices />
-          </>
+          <Practices />
         )}
 
         {activeTab === 'log' && (

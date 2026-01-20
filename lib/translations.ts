@@ -177,6 +177,11 @@ export const translations = {
 
     reflectionPrompt1: 'What made you feel good today?',
     reflectionPrompt2: 'What drained your energy today?',
+    reflectionPrompt1Yesterday: 'What made you feel good yesterday?',
+    reflectionPrompt2Yesterday: 'What drained your energy yesterday?',
+    reflectionForDate: 'Reflection for {date}',
+    today: 'Today',
+    yesterday: 'Yesterday',
     reflectionHistory: 'Reflection History',
     noReflections: 'No reflections yet. Start by adding today\'s reflection above.',
     reflectionSaved: 'Thank you for taking a moment for yourself.',

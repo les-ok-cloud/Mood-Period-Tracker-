@@ -615,7 +615,7 @@ const HelpfulReadingPractice: React.FC<{ onBack: () => void }> = ({ onBack }) =>
 
 // MicroDiary Content Component - adapted for Practices context
 const MicroDiaryContent: React.FC<{ onBack: () => void }> = ({ onBack }) => {
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
   const { user } = useAuth();
   const { getEntriesByType, createEntry, updateEntry, isLoading } = usePracticeSync(user?.uid || '');
   const [goodFeeling, setGoodFeeling] = useState('');
@@ -624,24 +624,33 @@ const MicroDiaryContent: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   const [savedMessage, setSavedMessage] = useState('');
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
+  const [reflectionDate, setReflectionDate] = useState<'today' | 'yesterday'>('today');
 
   const today = new Date();
-  const todayKey = getFormattedDate(today);
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+  
+  const selectedDate = reflectionDate === 'today' ? today : yesterday;
+  const selectedDateKey = getFormattedDate(selectedDate);
 
-  // Load today's reflection from synced data
+  // Load reflection for selected date from synced data
   useEffect(() => {
     if (!user?.uid || isLoading) return;
 
     const reflectionEntries = getEntriesByType(PracticeType.Reflection);
-    const todayEntry = reflectionEntries.find(entry =>
-      entry.content.date === todayKey
+    const dateEntry = reflectionEntries.find(entry =>
+      entry.content.date === selectedDateKey
     );
 
-    if (todayEntry) {
-      setGoodFeeling(todayEntry.content.goodFeeling || '');
-      setDrainedEnergy(todayEntry.content.drainedEnergy || '');
+    if (dateEntry) {
+      setGoodFeeling(dateEntry.content.goodFeeling || '');
+      setDrainedEnergy(dateEntry.content.drainedEnergy || '');
+    } else {
+      // Clear fields if no entry exists for selected date
+      setGoodFeeling('');
+      setDrainedEnergy('');
     }
-  }, [user?.uid, isLoading, getEntriesByType, todayKey]);
+  }, [user?.uid, isLoading, getEntriesByType, selectedDateKey]);
 
   // Helper function to ensure proper prefixing
   const ensurePrefix = (text: string, prefix: string) => {
@@ -660,11 +669,11 @@ const MicroDiaryContent: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     try {
       const reflectionEntries = getEntriesByType(PracticeType.Reflection);
       const existingEntry = reflectionEntries.find(entry =>
-        entry.content.date === todayKey
+        entry.content.date === selectedDateKey
       );
 
       const content = {
-        date: todayKey,
+        date: selectedDateKey,
         goodFeeling: goodFeeling.trim() ? ensurePrefix(goodFeeling, '+') : undefined,
         drainedEnergy: drainedEnergy.trim() ? ensurePrefix(drainedEnergy, '-') : undefined,
       };
@@ -752,17 +761,43 @@ const MicroDiaryContent: React.FC<{ onBack: () => void }> = ({ onBack }) => {
             {t.reflectionLearnMore}
           </button>
 
-          <h2 className="text-xl font-bold text-slate-700 mb-4">{t.todaysReflection}</h2>
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-xl font-bold text-slate-700">
+              {reflectionDate === 'today' ? t.todaysReflection : t.reflectionForDate?.replace('{date}', selectedDate.toLocaleDateString(locale, { month: 'long', day: 'numeric' })) || `${selectedDate.toLocaleDateString(locale, { month: 'long', day: 'numeric' })} Reflection`}
+            </h2>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setReflectionDate('today')}
+                className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
+                  reflectionDate === 'today'
+                    ? 'bg-purple-600 text-white'
+                    : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                }`}
+              >
+                {t.today || 'Today'}
+              </button>
+              <button
+                onClick={() => setReflectionDate('yesterday')}
+                className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
+                  reflectionDate === 'yesterday'
+                    ? 'bg-purple-600 text-white'
+                    : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                }`}
+              >
+                {t.yesterday || 'Yesterday'}
+              </button>
+            </div>
+          </div>
 
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-slate-600 mb-2">
-                {t.reflectionPrompt1}
+                {reflectionDate === 'today' ? t.reflectionPrompt1 : (t.reflectionPrompt1Yesterday || t.reflectionPrompt1.replace('today', 'yesterday'))}
               </label>
               <TextareaWithLimit
                 value={goodFeeling}
                 onChange={setGoodFeeling}
-                placeholder="Optional - share what brought you joy today..."
+                placeholder={reflectionDate === 'today' ? "Optional - share what brought you joy today..." : "Optional - share what brought you joy yesterday..."}
                 className="w-full p-3 bg-slate-50 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:bg-white transition-all duration-200 text-slate-700"
                 rows={2}
                 unlimited={true}
@@ -771,12 +806,12 @@ const MicroDiaryContent: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
             <div>
               <label className="block text-sm font-medium text-slate-600 mb-2">
-                {t.reflectionPrompt2}
+                {reflectionDate === 'today' ? t.reflectionPrompt2 : (t.reflectionPrompt2Yesterday || t.reflectionPrompt2.replace('today', 'yesterday'))}
               </label>
               <TextareaWithLimit
                 value={drainedEnergy}
                 onChange={setDrainedEnergy}
-                placeholder="Optional - share what challenged you today..."
+                placeholder={reflectionDate === 'today' ? "Optional - share what challenged you today..." : "Optional - share what challenged you yesterday..."}
                 className="w-full p-3 bg-slate-50 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:bg-white transition-all duration-200 resize-none text-slate-700"
                 rows={2}
                 unlimited={true}

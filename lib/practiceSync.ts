@@ -167,6 +167,31 @@ export class PracticeSyncService {
     }
   }
 
+  public async deleteEntry(entryId: string): Promise<void> {
+    const practices = getStoredPractices();
+
+    if (!practices[entryId]) {
+      throw new Error(`Entry ${entryId} not found`);
+    }
+
+    // Remove from local storage
+    delete practices[entryId];
+    savePracticesToStorage(practices);
+
+    // Remove from sync queue if present
+    removeFromSyncQueue(entryId);
+
+    // Try to delete from backend if online
+    if (this.syncStatus.isOnline) {
+      try {
+        await db.collection('users').doc(this.userId)
+          .collection('practices').doc(entryId).delete();
+      } catch (error) {
+        console.warn('Failed to delete entry from backend:', error);
+      }
+    }
+  }
+
   public getEntries(practiceType?: PracticeType): PracticeEntry[] {
     const practices = getStoredPractices();
     const entries = Object.values(practices);

@@ -223,13 +223,15 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ practiceId, onBack }) =
 const GratitudePractice: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   const { t, locale } = useLanguage();
   const { user } = useAuth();
-  const { getEntriesByType, createEntry, updateEntry, isLoading } = usePracticeSync(user?.uid || '');
+  const { getEntriesByType, createEntry, updateEntry, deleteEntry, isLoading } = usePracticeSync(user?.uid || '');
   const [gratitude, setGratitude] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [savedMessage, setSavedMessage] = useState('');
   const [gratitudeDate, setGratitudeDate] = useState<'today' | 'yesterday'>('today');
   const [selectedHistoryDate, setSelectedHistoryDate] = useState<string | null>(null);
   const [editingDate, setEditingDate] = useState<string | null>(null); // Track if editing a specific date from history
+  const [editingEntryId, setEditingEntryId] = useState<string | null>(null); // Track which entry is being edited
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null); // Track entry being deleted
 
   const today = new Date();
   const yesterday = new Date(today);
@@ -350,6 +352,33 @@ const GratitudePractice: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     });
   };
 
+  const handleDeleteEntry = async (entryId: string) => {
+    try {
+      await deleteEntry(entryId);
+      setShowDeleteConfirm(null);
+      setSavedMessage('Entry deleted successfully');
+      setTimeout(() => setSavedMessage(''), 3000);
+    } catch (error) {
+      console.error('Error deleting entry:', error);
+      setSavedMessage('Failed to delete entry. Please try again.');
+      setTimeout(() => setSavedMessage(''), 3000);
+    }
+  };
+
+  const handleEditEntry = (entryId: string, date: string) => {
+    setEditingEntryId(entryId);
+    setEditingDate(date);
+    setSelectedHistoryDate(date);
+  };
+
+  const cancelEdit = () => {
+    setEditingEntryId(null);
+    setEditingDate(null);
+    setSelectedHistoryDate(null);
+    // Reset to current date view
+    setGratitudeDate('today');
+  };
+
   return (
     <div className="max-w-4xl mx-auto">
       {/* Gratitude Entry Form */}
@@ -415,19 +444,29 @@ const GratitudePractice: React.FC<{ onBack: () => void }> = ({ onBack }) => {
             />
           </div>
 
-          <div className="flex justify-between items-center">
-            <button
-              onClick={saveGratitude}
-              disabled={isSaving || !gratitude.trim()}
-              className="bg-pink-600 text-white font-medium py-2 px-6 rounded-lg hover:bg-pink-700 disabled:bg-pink-400 disabled:cursor-not-allowed transition-colors"
-            >
-              {isSaving ? 'Saving...' : 'Save Gratitude'}
-            </button>
+            <div className="flex justify-between items-center">
+              <div className="flex gap-2">
+                <button
+                  onClick={saveGratitude}
+                  disabled={isSaving || !gratitude.trim()}
+                  className="bg-pink-600 text-white font-medium py-2 px-6 rounded-lg hover:bg-pink-700 disabled:bg-pink-400 disabled:cursor-not-allowed transition-colors"
+                >
+                  {isSaving ? 'Saving...' : 'Save Gratitude'}
+                </button>
+                {editingEntryId && (
+                  <button
+                    onClick={cancelEdit}
+                    className="bg-slate-600 text-white font-medium py-2 px-6 rounded-lg hover:bg-slate-700 transition-colors"
+                  >
+                    Cancel Edit
+                  </button>
+                )}
+              </div>
 
-            {savedMessage && (
-              <span className="text-sm text-green-600 font-medium">{savedMessage}</span>
-            )}
-          </div>
+              {savedMessage && (
+                <span className="text-sm text-green-600 font-medium">{savedMessage}</span>
+              )}
+            </div>
         </div>
       </div>
 
@@ -441,25 +480,73 @@ const GratitudePractice: React.FC<{ onBack: () => void }> = ({ onBack }) => {
           ) : (
             <div className="space-y-4">
               {getSortedGratitudeEntries().map((entry) => (
-                <button
+                <div
                   key={entry.entryId}
-                  onClick={() => setSelectedHistoryDate(entry.date)}
-                  className="w-full text-left border border-slate-200 rounded-lg p-4 hover:bg-slate-50 transition-colors"
+                  className="border border-slate-200 rounded-lg p-4 hover:bg-slate-50 transition-colors"
                 >
                   <div className="flex justify-between items-start mb-2">
                     <h3 className="font-medium text-slate-700">{formatDate(entry.date)}</h3>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleEditEntry(entry.entryId, entry.date)}
+                        className="text-blue-600 hover:text-blue-800 p-1 rounded"
+                        title="Edit entry"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                      </button>
+                      <button
+                        onClick={() => setShowDeleteConfirm(entry.entryId)}
+                        className="text-red-600 hover:text-red-800 p-1 rounded"
+                        title="Delete entry"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    </div>
                   </div>
-                  {entry.items.length > 0 && (
-                    <p className="text-slate-600 text-sm line-clamp-3">
-                      {entry.items.join('\n\n')}
-                    </p>
-                  )}
-                </button>
+                  <button
+                    onClick={() => setSelectedHistoryDate(entry.date)}
+                    className="w-full text-left"
+                  >
+                    {entry.items.length > 0 && (
+                      <p className="text-slate-600 text-sm line-clamp-3">
+                        {entry.items.join('\n\n')}
+                      </p>
+                    )}
+                  </button>
+                </div>
               ))}
             </div>
           )}
         </div>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl p-6 max-w-sm mx-4">
+            <h3 className="text-lg font-semibold text-slate-700 mb-4">Delete Entry</h3>
+            <p className="text-slate-600 mb-6">Are you sure you want to delete this gratitude entry? This action cannot be undone.</p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowDeleteConfirm(null)}
+                className="flex-1 bg-slate-200 text-slate-700 font-medium py-2 px-4 rounded-lg hover:bg-slate-300 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleDeleteEntry(showDeleteConfirm)}
+                className="flex-1 bg-red-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-red-700 transition-colors"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="text-center mb-6">
         <button
@@ -476,13 +563,15 @@ const GratitudePractice: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 const MoodInfluencersPractice: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   const { t, locale } = useLanguage();
   const { user } = useAuth();
-  const { getEntriesByType, createEntry, updateEntry, isLoading } = usePracticeSync(user?.uid || '');
+  const { getEntriesByType, createEntry, updateEntry, deleteEntry, isLoading } = usePracticeSync(user?.uid || '');
   const [selectedInfluencers, setSelectedInfluencers] = useState<string[]>([]);
   const [isSaving, setIsSaving] = useState(false);
   const [savedMessage, setSavedMessage] = useState('');
   const [influencerDate, setInfluencerDate] = useState<'today' | 'yesterday'>('today');
   const [selectedHistoryDate, setSelectedHistoryDate] = useState<string | null>(null);
   const [editingDate, setEditingDate] = useState<string | null>(null); // Track if editing a specific date from history
+  const [editingEntryId, setEditingEntryId] = useState<string | null>(null); // Track which entry is being edited
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null); // Track entry being deleted
 
   const influencers = [
     '😴 Sleep quality',
@@ -615,6 +704,33 @@ const MoodInfluencersPractice: React.FC<{ onBack: () => void }> = ({ onBack }) =
     });
   };
 
+  const handleDeleteEntry = async (entryId: string) => {
+    try {
+      await deleteEntry(entryId);
+      setShowDeleteConfirm(null);
+      setSavedMessage('Entry deleted successfully');
+      setTimeout(() => setSavedMessage(''), 3000);
+    } catch (error) {
+      console.error('Error deleting entry:', error);
+      setSavedMessage('Failed to delete entry. Please try again.');
+      setTimeout(() => setSavedMessage(''), 3000);
+    }
+  };
+
+  const handleEditEntry = (entryId: string, date: string) => {
+    setEditingEntryId(entryId);
+    setEditingDate(date);
+    setSelectedHistoryDate(date);
+  };
+
+  const cancelEdit = () => {
+    setEditingEntryId(null);
+    setEditingDate(null);
+    setSelectedHistoryDate(null);
+    // Reset to current date view
+    setInfluencerDate('today');
+  };
+
   return (
     <div className="max-w-4xl mx-auto">
       {/* Mood Influencers Entry Form */}
@@ -686,13 +802,23 @@ const MoodInfluencersPractice: React.FC<{ onBack: () => void }> = ({ onBack }) =
           </div>
 
           <div className="flex justify-between items-center">
-            <button
-              onClick={saveMoodInfluencers}
-              disabled={isSaving || selectedInfluencers.length === 0}
-              className="bg-blue-600 text-white font-medium py-2 px-6 rounded-lg hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed transition-colors"
-            >
-              {isSaving ? 'Saving...' : 'Save Mood Influencers'}
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={saveMoodInfluencers}
+                disabled={isSaving || selectedInfluencers.length === 0}
+                className="bg-blue-600 text-white font-medium py-2 px-6 rounded-lg hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed transition-colors"
+              >
+                {isSaving ? 'Saving...' : 'Save Mood Influencers'}
+              </button>
+              {editingEntryId && (
+                <button
+                  onClick={cancelEdit}
+                  className="bg-slate-600 text-white font-medium py-2 px-6 rounded-lg hover:bg-slate-700 transition-colors"
+                >
+                  Cancel Edit
+                </button>
+              )}
+            </div>
 
             {savedMessage && (
               <span className="text-sm text-green-600 font-medium">{savedMessage}</span>
@@ -711,25 +837,73 @@ const MoodInfluencersPractice: React.FC<{ onBack: () => void }> = ({ onBack }) =
           ) : (
             <div className="space-y-4">
               {getSortedInfluencerEntries().map((entry) => (
-                <button
+                <div
                   key={entry.entryId}
-                  onClick={() => setSelectedHistoryDate(entry.date)}
-                  className="w-full text-left border border-slate-200 rounded-lg p-4 hover:bg-slate-50 transition-colors"
+                  className="border border-slate-200 rounded-lg p-4 hover:bg-slate-50 transition-colors"
                 >
                   <div className="flex justify-between items-start mb-2">
                     <h3 className="font-medium text-slate-700">{formatDate(entry.date)}</h3>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleEditEntry(entry.entryId, entry.date)}
+                        className="text-blue-600 hover:text-blue-800 p-1 rounded"
+                        title="Edit entry"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                      </button>
+                      <button
+                        onClick={() => setShowDeleteConfirm(entry.entryId)}
+                        className="text-red-600 hover:text-red-800 p-1 rounded"
+                        title="Delete entry"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    </div>
                   </div>
-                  {entry.selectedInfluencers.length > 0 && (
-                    <p className="text-slate-600 text-sm">
-                      {entry.selectedInfluencers.join(', ')}
-                    </p>
-                  )}
-                </button>
+                  <button
+                    onClick={() => setSelectedHistoryDate(entry.date)}
+                    className="w-full text-left"
+                  >
+                    {entry.selectedInfluencers.length > 0 && (
+                      <p className="text-slate-600 text-sm">
+                        {entry.selectedInfluencers.join(', ')}
+                      </p>
+                    )}
+                  </button>
+                </div>
               ))}
             </div>
           )}
         </div>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl p-6 max-w-sm mx-4">
+            <h3 className="text-lg font-semibold text-slate-700 mb-4">Delete Entry</h3>
+            <p className="text-slate-600 mb-6">Are you sure you want to delete this mood influencers entry? This action cannot be undone.</p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowDeleteConfirm(null)}
+                className="flex-1 bg-slate-200 text-slate-700 font-medium py-2 px-4 rounded-lg hover:bg-slate-300 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleDeleteEntry(showDeleteConfirm)}
+                className="flex-1 bg-red-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-red-700 transition-colors"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="text-center mb-6">
         <button
@@ -744,73 +918,375 @@ const MoodInfluencersPractice: React.FC<{ onBack: () => void }> = ({ onBack }) =
 };
 
 const OneMinuteResetPractice: React.FC<{ onBack: () => void }> = ({ onBack }) => {
-  const { t } = useLanguage();
+  const { t, isRTL } = useLanguage();
   const { user } = useAuth();
   const { createEntry } = usePracticeSync(user?.uid || '');
-  const [step, setStep] = useState(0);
-  const [isCompleted, setIsCompleted] = useState(false);
 
-  const steps = [
-    "Find a comfortable position and close your eyes.",
-    "Take a deep breath in through your nose for 4 seconds.",
-    "Hold your breath for 4 seconds.",
-    "Exhale slowly through your mouth for 6 seconds.",
-    "Repeat 3-4 times, or as long as feels comfortable."
+  // Main states
+  const [currentPhase, setCurrentPhase] = useState<'selection' | 'breathing' | 'grounding' | 'completed'>('selection');
+  const [resetType, setResetType] = useState<'breathing' | 'body' | 'thought'>('breathing');
+
+  // Breathing states
+  const [breathingStep, setBreathingStep] = useState<'inhale' | 'hold' | 'exhale'>('inhale');
+  const [cycleCount, setCycleCount] = useState(1);
+  const [timeLeft, setTimeLeft] = useState(4);
+  const [circleScale, setCircleScale] = useState(1);
+
+  // Grounding states
+  const [groundingStep, setGroundingStep] = useState(0);
+  const [showPrompt, setShowPrompt] = useState(true);
+
+  // Check for reduced motion preference
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const groundingPrompts = [
+    t.resetGroundingSee || "Name 1 thing you can see",
+    t.resetGroundingHear || "Notice 1 sound you can hear",
+    t.resetGroundingFeel || "Feel 1 physical sensation in your body"
   ];
 
+  // Breathing animation effect
   React.useEffect(() => {
-    if (step > 0 && step < steps.length) {
-      const timer = setTimeout(() => {
-        setStep(prev => prev + 1);
-      }, 4000); // 4 seconds per step
-      return () => clearTimeout(timer);
-    } else if (step === steps.length && !isCompleted) {
-      // Mark as completed when exercise finishes
-      setIsCompleted(true);
-      if (user?.uid) {
-        createEntry(PracticeType.OneMinuteReset, {
-          completed: true,
-          completedAt: new Date().toISOString()
-        }).catch(error => console.error('Error saving reset completion:', error));
+    if (currentPhase !== 'breathing') return;
+
+    const updateBreathing = () => {
+      if (timeLeft > 0) {
+        setTimeLeft(prev => prev - 1);
+
+        // Update circle scale based on breathing phase
+        if (breathingStep === 'inhale') {
+          setCircleScale(1 + (4 - timeLeft) * 0.3); // Scale up during inhale
+        } else if (breathingStep === 'hold') {
+          setCircleScale(1.2); // Stay large during hold
+        } else if (breathingStep === 'exhale') {
+          setCircleScale(1.2 - (1 - timeLeft) * 0.2); // Scale down during exhale
+        }
+      } else {
+        // Move to next breathing step
+        if (breathingStep === 'inhale') {
+          setBreathingStep('hold');
+          setTimeLeft(1); // Hold for 1 second
+        } else if (breathingStep === 'hold') {
+          setBreathingStep('exhale');
+          setTimeLeft(4); // Exhale for 4 seconds
+        } else if (breathingStep === 'exhale') {
+          // Complete one breathing cycle
+          if (cycleCount < 4) {
+            setBreathingStep('inhale');
+            setTimeLeft(4);
+            setCycleCount(prev => prev + 1);
+          } else {
+            // Breathing complete, move to grounding
+            setCurrentPhase('grounding');
+            setGroundingStep(0);
+            setShowPrompt(true);
+          }
+        }
       }
+    };
+
+    const interval = setInterval(updateBreathing, 1000);
+    return () => clearInterval(interval);
+  }, [currentPhase, breathingStep, timeLeft, cycleCount]);
+
+  // Grounding auto-advance effect
+  React.useEffect(() => {
+    if (currentPhase !== 'grounding' || !showPrompt) return;
+
+    const timer = setTimeout(() => {
+      setShowPrompt(false);
+      if (groundingStep < groundingPrompts.length - 1) {
+        setTimeout(() => {
+          setGroundingStep(prev => prev + 1);
+          setShowPrompt(true);
+        }, 1000); // 1 second pause between prompts
+      } else {
+        // Grounding complete
+        setTimeout(() => {
+          setCurrentPhase('completed');
+          // Save completion
+          if (user?.uid) {
+            createEntry(PracticeType.OneMinuteReset, {
+              type: resetType,
+              completed: true,
+              completedAt: new Date().toISOString()
+            }).catch(error => console.error('Error saving reset completion:', error));
+          }
+        }, 2000); // Show completion for 2 seconds
+      }
+    }, 4000); // Show each prompt for 4 seconds
+
+    return () => clearTimeout(timer);
+  }, [currentPhase, groundingStep, showPrompt, groundingPrompts.length, resetType, user?.uid, createEntry]);
+
+  const startReset = (type: 'breathing' | 'body' | 'thought') => {
+    setResetType(type);
+    setCurrentPhase(type === 'breathing' ? 'breathing' : 'completed');
+
+    if (type === 'breathing') {
+      setBreathingStep('inhale');
+      setCycleCount(1);
+      setTimeLeft(4);
+      setCircleScale(1);
+    } else if (type === 'body') {
+      // Body reset - just mark as completed immediately
+      setTimeout(() => {
+        setCurrentPhase('completed');
+        if (user?.uid) {
+          createEntry(PracticeType.OneMinuteReset, {
+            type: 'body',
+            completed: true,
+            completedAt: new Date().toISOString()
+          }).catch(error => console.error('Error saving reset completion:', error));
+        }
+      }, 2000);
+    } else if (type === 'thought') {
+      // Thought reset - just mark as completed immediately
+      setTimeout(() => {
+        setCurrentPhase('completed');
+        if (user?.uid) {
+          createEntry(PracticeType.OneMinuteReset, {
+            type: 'thought',
+            completed: true,
+            completedAt: new Date().toISOString()
+          }).catch(error => console.error('Error saving reset completion:', error));
+        }
+      }, 2000);
     }
-  }, [step, isCompleted, user?.uid, createEntry]);
+  };
+
+  const resetToSelection = () => {
+    setCurrentPhase('selection');
+    setBreathingStep('inhale');
+    setCycleCount(1);
+    setTimeLeft(4);
+    setCircleScale(1);
+    setGroundingStep(0);
+    setShowPrompt(true);
+  };
+
+  const getBreathingInstruction = () => {
+    switch (breathingStep) {
+      case 'inhale':
+        return t.resetBreatheIn || 'Breathe in';
+      case 'hold':
+        return t.resetHold || 'Hold';
+      case 'exhale':
+        return t.resetBreatheOut || 'Breathe out';
+      default:
+        return '';
+    }
+  };
+
+  const BreathingAnimation = () => (
+    <div className="flex flex-col items-center justify-center mb-8">
+      <div className="relative mb-8">
+        {/* Outer ring */}
+        <div className="w-48 h-48 rounded-full border-4 border-green-200 flex items-center justify-center">
+          {/* Breathing circle */}
+          <div
+            className={`w-24 h-24 rounded-full bg-green-100 border-4 border-green-400 transition-all duration-1000 ease-out ${
+              prefersReducedMotion ? '' : ''
+            }`}
+            style={{
+              transform: `scale(${circleScale})`,
+              transition: prefersReducedMotion ? 'none' : 'transform 1s ease-out'
+            }}
+          />
+        </div>
+
+        {/* Countdown number */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span className="text-4xl font-bold text-green-700">{timeLeft}</span>
+        </div>
+      </div>
+
+      {/* Instruction text */}
+      <div className="text-center">
+        <p className="text-2xl font-medium text-slate-700 mb-2">{getBreathingInstruction()}</p>
+        <p className="text-slate-500">Cycle {cycleCount} of 4</p>
+      </div>
+    </div>
+  );
+
+  const GroundingExercise = () => (
+    <div className="text-center">
+      <div className="mb-8">
+        <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-blue-100 flex items-center justify-center">
+          <svg className="w-12 h-12 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+          </svg>
+        </div>
+        <h3 className="text-xl font-semibold text-slate-700 mb-4">
+          {t.resetGroundingTitle || 'Ground Yourself'}
+        </h3>
+      </div>
+
+      {showPrompt && (
+        <div className="mb-8">
+          <p className="text-xl text-slate-700 leading-relaxed mb-6">
+            {groundingPrompts[groundingStep]}
+          </p>
+          <button
+            onClick={() => setShowPrompt(false)}
+            className="bg-blue-600 text-white font-medium py-2 px-6 rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            {t.next || 'Next'}
+          </button>
+        </div>
+      )}
+
+      {!showPrompt && groundingStep < groundingPrompts.length - 1 && (
+        <div className="flex items-center justify-center space-x-2">
+          <div className="flex space-x-1">
+            {groundingPrompts.map((_, index) => (
+              <div
+                key={index}
+                className={`w-2 h-2 rounded-full ${
+                  index <= groundingStep ? 'bg-blue-600' : 'bg-slate-300'
+                }`}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
+  const ResetSelection = () => (
+    <div className="space-y-4">
+      <div className="text-center mb-8">
+        <h3 className="text-xl font-semibold text-slate-700 mb-2">
+          {t.resetChooseType || 'Choose Your Reset'}
+        </h3>
+        <p className="text-slate-600">
+          {t.resetDescription || 'Take a moment to find your calm'}
+        </p>
+      </div>
+
+      {/* Breathing Reset */}
+      <button
+        onClick={() => startReset('breathing')}
+        className="w-full bg-white border-2 border-green-200 rounded-2xl p-6 hover:border-green-400 transition-colors text-left"
+      >
+        <div className={`flex items-center gap-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
+          <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
+            <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+          </div>
+          <div className={`flex-1 ${isRTL ? 'text-right' : ''}`}>
+            <h4 className="font-semibold text-slate-800">
+              {t.resetBreathingTitle || 'Breathing Reset'}
+            </h4>
+            <p className="text-sm text-slate-600">
+              {t.resetBreathingDesc || 'Guided breathing with grounding'}
+            </p>
+          </div>
+          <svg className={`w-5 h-5 text-slate-400 ${isRTL ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </div>
+      </button>
+
+      {/* Body Reset */}
+      <button
+        onClick={() => startReset('body')}
+        className="w-full bg-white border-2 border-purple-200 rounded-2xl p-6 hover:border-purple-400 transition-colors text-left"
+      >
+        <div className={`flex items-center gap-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
+          <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center">
+            <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+          </div>
+          <div className={`flex-1 ${isRTL ? 'text-right' : ''}`}>
+            <h4 className="font-semibold text-slate-800">
+              {t.resetBodyTitle || 'Body Reset'}
+            </h4>
+            <p className="text-sm text-slate-600">
+              {t.resetBodyDesc || 'Relax your shoulders, jaw, and breath'}
+            </p>
+          </div>
+          <svg className={`w-5 h-5 text-slate-400 ${isRTL ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </div>
+      </button>
+
+      {/* Thought Reset */}
+      <button
+        onClick={() => startReset('thought')}
+        className="w-full bg-white border-2 border-blue-200 rounded-2xl p-6 hover:border-blue-400 transition-colors text-left"
+      >
+        <div className={`flex items-center gap-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
+          <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
+            <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+            </svg>
+          </div>
+          <div className={`flex-1 ${isRTL ? 'text-right' : ''}`}>
+            <h4 className="font-semibold text-slate-800">
+              {t.resetThoughtTitle || 'Thought Reset'}
+            </h4>
+            <p className="text-sm text-slate-600">
+              {t.resetThoughtDesc || 'Gentle reflective prompts'}
+            </p>
+          </div>
+          <svg className={`w-5 h-5 text-slate-400 ${isRTL ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </div>
+      </button>
+    </div>
+  );
+
+  const CompletedScreen = () => (
+    <div className="text-center">
+      <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-green-100 flex items-center justify-center">
+        <svg className="w-12 h-12 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+        </svg>
+      </div>
+      <h3 className="text-xl font-semibold text-slate-700 mb-2">
+        {t.resetCompleted || 'Reset Complete'}
+      </h3>
+      <p className="text-slate-600 mb-8">
+        {t.resetCompletedDesc || 'Take a moment to notice how you feel'}
+      </p>
+      <div className="space-y-3">
+        <button
+          onClick={resetToSelection}
+          className="block w-full bg-slate-200 text-slate-800 font-medium py-3 px-6 rounded-lg hover:bg-slate-300 transition-colors"
+        >
+          {t.resetAgain || 'Do Another Reset'}
+        </button>
+        <button
+          onClick={onBack}
+          className="block w-full bg-green-600 text-white font-medium py-3 px-6 rounded-lg hover:bg-green-700 transition-colors"
+        >
+          {t.backToPractices}
+        </button>
+      </div>
+    </div>
+  );
 
   return (
     <div className="max-w-2xl mx-auto">
       <div className="text-center mb-8">
         <ClockIcon className="w-16 h-16 text-green-600 mx-auto mb-4" />
         <h2 className="text-2xl font-bold text-slate-700 mb-2">{t.oneMinuteReset}</h2>
-        <p className="text-slate-600">A simple breathing exercise to reset and find calm.</p>
+        <p className="text-slate-600">
+          {t.resetSubtitle || 'A gentle reset to find your calm'}
+        </p>
       </div>
 
-      {step === 0 ? (
-        <div className="text-center">
-          <button
-            onClick={() => setStep(1)}
-            className="bg-green-600 text-white font-medium py-4 px-8 rounded-lg hover:bg-green-700 transition-colors text-lg"
-          >
-            Start 1-Minute Reset
-          </button>
-        </div>
-      ) : step <= steps.length ? (
-        <div className="text-center">
-          <div className="text-4xl font-light text-slate-700 mb-4">
-            {step}/{steps.length}
-          </div>
-          <p className="text-xl text-slate-700 leading-relaxed mb-8">
-            {steps[step - 1]}
-          </p>
-          {step === steps.length && (
-            <button
-              onClick={onBack}
-              className="bg-green-600 text-white font-medium py-3 px-8 rounded-lg hover:bg-green-700 transition-colors"
-            >
-              {t.backToPractices}
-            </button>
-          )}
-        </div>
-      ) : null}
+      <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-md p-8">
+        {currentPhase === 'selection' && <ResetSelection />}
+        {currentPhase === 'breathing' && <BreathingAnimation />}
+        {currentPhase === 'grounding' && <GroundingExercise />}
+        {currentPhase === 'completed' && <CompletedScreen />}
+      </div>
     </div>
   );
 };
@@ -822,19 +1298,14 @@ const HelpfulReadingPractice: React.FC<{ onBack: () => void }> = ({ onBack }) =>
 
   const articles = [
     {
-      title: 'The Science of Gratitude',
-      url: 'https://www.healthline.com/health/gratitude',
-      description: 'Research-backed benefits of practicing gratitude daily.'
+      title: '5 Benefits of Journaling for Mental Health',
+      url: 'https://positivepsychology.com/benefits-of-journaling/',
+      description: 'Discover how journaling enhances mental clarity, reduces anxiety, manages stress, and supports emotional processing through research-backed benefits.'
     },
     {
       title: 'Understanding Your Emotions',
       url: 'https://www.psychologytoday.com/us/basics/emotions',
       description: 'Learn about different emotions and how to work with them.'
-    },
-    {
-      title: 'The Power of Deep Breathing',
-      url: 'https://www.healthline.com/health/benefits-of-deep-breathing',
-      description: 'Simple breathing techniques for stress relief and calm.'
     }
   ];
 
@@ -899,7 +1370,7 @@ const HelpfulReadingPractice: React.FC<{ onBack: () => void }> = ({ onBack }) =>
 const MicroDiaryContent: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   const { t, locale } = useLanguage();
   const { user } = useAuth();
-  const { getEntriesByType, createEntry, updateEntry, isLoading } = usePracticeSync(user?.uid || '');
+  const { getEntriesByType, createEntry, updateEntry, deleteEntry, isLoading } = usePracticeSync(user?.uid || '');
   const [goodFeeling, setGoodFeeling] = useState('');
   const [drainedEnergy, setDrainedEnergy] = useState('');
   const [isSaving, setIsSaving] = useState(false);
@@ -908,6 +1379,8 @@ const MicroDiaryContent: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   const [isExporting, setIsExporting] = useState(false);
   const [exportedPDF, setExportedPDF] = useState<{ url: string; filename: string } | null>(null);
   const [reflectionDate, setReflectionDate] = useState<'today' | 'yesterday'>('today');
+  const [editingEntryId, setEditingEntryId] = useState<string | null>(null); // Track which entry is being edited
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null); // Track entry being deleted
 
   const today = new Date();
   const yesterday = new Date(today);
@@ -951,9 +1424,6 @@ const MicroDiaryContent: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
     try {
       const reflectionEntries = getEntriesByType(PracticeType.Reflection);
-      const existingEntry = reflectionEntries.find(entry =>
-        entry.content.date === selectedDateKey
-      );
 
       const content = {
         date: selectedDateKey,
@@ -961,12 +1431,23 @@ const MicroDiaryContent: React.FC<{ onBack: () => void }> = ({ onBack }) => {
         drainedEnergy: drainedEnergy.trim() ? ensurePrefix(drainedEnergy, '-') : undefined,
       };
 
-      if (existingEntry) {
-        // Update existing entry
-        await updateEntry(existingEntry.entryId, { content });
+      if (editingEntryId) {
+        // Update the specific entry being edited
+        await updateEntry(editingEntryId, { content });
+        setEditingEntryId(null); // Clear editing state after save
       } else {
-        // Create new entry
-        await createEntry(PracticeType.Reflection, content);
+        // Check for existing entry on the selected date
+        const existingEntry = reflectionEntries.find(entry =>
+          entry.content.date === selectedDateKey
+        );
+
+        if (existingEntry) {
+          // Update existing entry
+          await updateEntry(existingEntry.entryId, { content });
+        } else {
+          // Create new entry
+          await createEntry(PracticeType.Reflection, content);
+        }
       }
 
       setSavedMessage(t.reflectionSaved);
@@ -1035,6 +1516,50 @@ const MicroDiaryContent: React.FC<{ onBack: () => void }> = ({ onBack }) => {
       day: 'numeric',
       year: 'numeric'
     });
+  };
+
+  const handleDeleteEntry = async (entryId: string) => {
+    try {
+      await deleteEntry(entryId);
+      setShowDeleteConfirm(null);
+      setSavedMessage('Entry deleted successfully');
+      setTimeout(() => setSavedMessage(''), 3000);
+    } catch (error) {
+      console.error('Error deleting entry:', error);
+      setSavedMessage('Failed to delete entry. Please try again.');
+      setTimeout(() => setSavedMessage(''), 3000);
+    }
+  };
+
+  const handleEditEntry = (entryId: string, date: string) => {
+    setEditingEntryId(entryId);
+    setReflectionDate('today'); // Reset to today view for editing
+    // Load the entry data for editing
+    const reflectionEntries = getEntriesByType(PracticeType.Reflection);
+    const entry = reflectionEntries.find(e => e.entryId === entryId);
+    if (entry) {
+      setGoodFeeling(entry.content.goodFeeling || '');
+      setDrainedEnergy(entry.content.drainedEnergy || '');
+    }
+  };
+
+  const cancelEdit = () => {
+    setEditingEntryId(null);
+    // Reset to current date view and clear fields
+    setReflectionDate('today');
+    const today = new Date();
+    const todayKey = getFormattedDate(today);
+    const reflectionEntries = getEntriesByType(PracticeType.Reflection);
+    const dateEntry = reflectionEntries.find(entry =>
+      entry.content.date === todayKey
+    );
+    if (dateEntry) {
+      setGoodFeeling(dateEntry.content.goodFeeling || '');
+      setDrainedEnergy(dateEntry.content.drainedEnergy || '');
+    } else {
+      setGoodFeeling('');
+      setDrainedEnergy('');
+    }
   };
 
   // Helper function to format reflection answers for display
@@ -1121,13 +1646,23 @@ const MicroDiaryContent: React.FC<{ onBack: () => void }> = ({ onBack }) => {
             </div>
 
             <div className="flex justify-between items-center">
-              <button
-                onClick={saveReflection}
-                disabled={isSaving || (!goodFeeling.trim() && !drainedEnergy.trim())}
-                className="bg-purple-600 text-white font-medium py-2 px-6 rounded-lg hover:bg-purple-700 disabled:bg-purple-400 disabled:cursor-not-allowed transition-colors"
-              >
-                {isSaving ? 'Saving...' : 'Save Reflection'}
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={saveReflection}
+                  disabled={isSaving || (!goodFeeling.trim() && !drainedEnergy.trim())}
+                  className="bg-purple-600 text-white font-medium py-2 px-6 rounded-lg hover:bg-purple-700 disabled:bg-purple-400 disabled:cursor-not-allowed transition-colors"
+                >
+                  {isSaving ? 'Saving...' : 'Save Reflection'}
+                </button>
+                {editingEntryId && (
+                  <button
+                    onClick={cancelEdit}
+                    className="bg-slate-600 text-white font-medium py-2 px-6 rounded-lg hover:bg-slate-700 transition-colors"
+                  >
+                    Cancel Edit
+                  </button>
+                )}
+              </div>
 
               {savedMessage && (
                 <span className="text-sm text-green-600 font-medium">{savedMessage}</span>
@@ -1158,6 +1693,26 @@ const MicroDiaryContent: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                 <div key={reflection.entryId} className="border border-slate-200 rounded-lg p-4 hover:bg-slate-50 transition-colors">
                   <div className="flex justify-between items-start mb-3">
                     <h3 className="font-medium text-slate-700">{formatDate(reflection.date)}</h3>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleEditEntry(reflection.entryId, reflection.date)}
+                        className="text-blue-600 hover:text-blue-800 p-1 rounded"
+                        title="Edit entry"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                      </button>
+                      <button
+                        onClick={() => setShowDeleteConfirm(reflection.entryId)}
+                        className="text-red-600 hover:text-red-800 p-1 rounded"
+                        title="Delete entry"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    </div>
                   </div>
 
                   {reflection.goodFeeling && (
@@ -1195,6 +1750,30 @@ const MicroDiaryContent: React.FC<{ onBack: () => void }> = ({ onBack }) => {
           )}
         </div>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl p-6 max-w-sm mx-4">
+            <h3 className="text-lg font-semibold text-slate-700 mb-4">Delete Entry</h3>
+            <p className="text-slate-600 mb-6">Are you sure you want to delete this reflection entry? This action cannot be undone.</p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowDeleteConfirm(null)}
+                className="flex-1 bg-slate-200 text-slate-700 font-medium py-2 px-4 rounded-lg hover:bg-slate-300 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleDeleteEntry(showDeleteConfirm)}
+                className="flex-1 bg-red-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-red-700 transition-colors"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="text-center mb-6">
         <button

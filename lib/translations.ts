@@ -140,13 +140,39 @@ export const translations = {
     
     // Share App
     shareApp: 'Share app with friends',
-    shareAppMessage: 'Check out this amazing app for tracking your mood and cycle! Download Mood & Period Tracker today.',
-    shareAppUrl: 'https://play.google.com/store/apps/details?id=com.moodtracker.app',
+    shareAppMessage: 'I\'ve been using Mood & Period Tracker to track my mood and cycle 💜\nTry it here: ',
+    shareAppUrl: 'https://play.google.com/store/apps/details?id=com.github.les_ok_cloud.Mood_Period_Tracker_&pcampaignid=web_share',
+    shareAppTitle: 'Mood & Period Tracker',
+    shareViaSystem: 'Share…',
+    copyLink: 'Copy link',
+    linkCopied: 'Link copied',
 
     // Rate App
     rateUs: 'Rate us',
     rateUsMessage: 'We\'re a small team building this app with care 💜 If you\'re enjoying it, your rating really helps us grow.',
-    rateAppUrl: 'https://play.google.com/store/apps/details?id=com.moodtracker.app',
+    rateAppUrl: 'https://play.google.com/store/apps/details?id=com.github.les_ok_cloud.Mood_Period_Tracker_&pcampaignid=web_share',
+    rateAppError: 'Couldn\'t open Google Play. Please try again.',
+
+    // 1-Minute Reset
+    resetChooseType: 'Choose Your Reset',
+    resetDescription: 'Take a moment to find your calm',
+    resetBreathingTitle: 'Breathing Reset',
+    resetBreathingDesc: 'Guided breathing with grounding',
+    resetBodyTitle: 'Body Reset',
+    resetBodyDesc: 'Relax your shoulders, jaw, and breath',
+    resetThoughtTitle: 'Thought Reset',
+    resetThoughtDesc: 'Gentle reflective prompts',
+    resetBreatheIn: 'Breathe in',
+    resetHold: 'Hold',
+    resetBreatheOut: 'Breathe out',
+    resetGroundingTitle: 'Ground Yourself',
+    resetGroundingSee: 'Name 1 thing you can see',
+    resetGroundingHear: 'Notice 1 sound you can hear',
+    resetGroundingFeel: 'Feel 1 physical sensation in your body',
+    resetCompleted: 'Reset Complete',
+    resetCompletedDesc: 'Take a moment to notice how you feel',
+    resetAgain: 'Do Another Reset',
+    resetSubtitle: 'A gentle reset to find your calm',
 
     // Micro-Diary
     microDiary: 'Micro-Diary',
@@ -589,13 +615,39 @@ export const translations = {
 
     // Share App
     shareApp: 'Compartilhar app com amigos',
-    shareAppMessage: 'Confira este aplicativo incrível para rastrear seu humor e ciclo! Baixe o Mood & Period Tracker hoje.',
-    shareAppUrl: 'https://play.google.com/store/apps/details?id=com.moodtracker.app',
+    shareAppMessage: 'Eu tenho usado o Mood & Period Tracker para rastrear meu humor e ciclo 💜\nExperimente aqui: ',
+    shareAppUrl: 'https://play.google.com/store/apps/details?id=com.github.les_ok_cloud.Mood_Period_Tracker_&pcampaignid=web_share',
+    shareAppTitle: 'Mood & Period Tracker',
+    shareViaSystem: 'Compartilhar…',
+    copyLink: 'Copiar link',
+    linkCopied: 'Link copiado',
 
     // Rate App
     rateUs: 'Avalie-nos',
     rateUsMessage: 'Somos uma equipe pequena criando este app com cuidado 💜 Se você está gostando, sua avaliação nos ajuda muito a crescer.',
-    rateAppUrl: 'https://play.google.com/store/apps/details?id=com.moodtracker.app',
+    rateAppUrl: 'https://play.google.com/store/apps/details?id=com.github.les_ok_cloud.Mood_Period_Tracker_&pcampaignid=web_share',
+    rateAppError: 'Não foi possível abrir o Google Play. Tente novamente.',
+
+    // 1-Minute Reset
+    resetChooseType: 'Escolha Seu Reset',
+    resetDescription: 'Tire um momento para encontrar sua calma',
+    resetBreathingTitle: 'Reset Respiratório',
+    resetBreathingDesc: 'Respiração guiada com aterramento',
+    resetBodyTitle: 'Reset Corporal',
+    resetBodyDesc: 'Relaxe seus ombros, mandíbula e respiração',
+    resetThoughtTitle: 'Reset Mental',
+    resetThoughtDesc: 'Prompts reflexivos gentis',
+    resetBreatheIn: 'Inspire',
+    resetHold: 'Segure',
+    resetBreatheOut: 'Expire',
+    resetGroundingTitle: 'Conecte-se à Terra',
+    resetGroundingSee: 'Nomeie 1 coisa que você pode ver',
+    resetGroundingHear: 'Note 1 som que você pode ouvir',
+    resetGroundingFeel: 'Sinta 1 sensação física em seu corpo',
+    resetCompleted: 'Reset Concluído',
+    resetCompletedDesc: 'Tire um momento para notar como você se sente',
+    resetAgain: 'Faça Outro Reset',
+    resetSubtitle: 'Um reset gentil para encontrar sua calma',
 
     // Micro-Diary
     microDiary: 'Micro-diário',
@@ -839,13 +891,39 @@ export const translations = {
 
     // Share App
     shareApp: 'Partager l\'app avec des amis',
-    shareAppMessage: 'Découvrez cette application incroyable pour suivre votre humeur et votre cycle ! Téléchargez Mood & Period Tracker dès aujourd\'hui.',
-    shareAppUrl: 'https://play.google.com/store/apps/details?id=com.moodtracker.app',
+    shareAppMessage: 'J\'utilise Mood & Period Tracker pour suivre mon humeur et mon cycle 💜\nEssayez-le ici : ',
+    shareAppUrl: 'https://play.google.com/store/apps/details?id=com.github.les_ok_cloud.Mood_Period_Tracker_&pcampaignid=web_share',
+    shareAppTitle: 'Mood & Period Tracker',
+    shareViaSystem: 'Partager…',
+    copyLink: 'Copier le lien',
+    linkCopied: 'Lien copié',
 
     // Rate App
     rateUs: 'Évaluez-nous',
     rateUsMessage: 'Nous sommes une petite équipe qui crée cette app avec soin 💜 Si vous l\'appréciez, votre note nous aide vraiment à grandir.',
-    rateAppUrl: 'https://play.google.com/store/apps/details?id=com.moodtracker.app',
+    rateAppUrl: 'https://play.google.com/store/apps/details?id=com.github.les_ok_cloud.Mood_Period_Tracker_&pcampaignid=web_share',
+    rateAppError: 'Impossible d\'ouvrir Google Play. Veuillez réessayer.',
+
+    // 1-Minute Reset
+    resetChooseType: 'Choisissez Votre Reset',
+    resetDescription: 'Prenez un moment pour trouver votre calme',
+    resetBreathingTitle: 'Reset Respiratoire',
+    resetBreathingDesc: 'Respiration guidée avec ancrage',
+    resetBodyTitle: 'Reset Corporel',
+    resetBodyDesc: 'Détendez vos épaules, mâchoire et respiration',
+    resetThoughtTitle: 'Reset Mental',
+    resetThoughtDesc: 'Prompts réflexifs doux',
+    resetBreatheIn: 'Inspirez',
+    resetHold: 'Retenez',
+    resetBreatheOut: 'Expirez',
+    resetGroundingTitle: 'Ancrez-vous',
+    resetGroundingSee: 'Nommez 1 chose que vous pouvez voir',
+    resetGroundingHear: 'Remarquez 1 son que vous pouvez entendre',
+    resetGroundingFeel: 'Sentez 1 sensation physique dans votre corps',
+    resetCompleted: 'Reset Terminé',
+    resetCompletedDesc: 'Prenez un moment pour remarquer comment vous vous sentez',
+    resetAgain: 'Faire un Autre Reset',
+    resetSubtitle: 'Un reset doux pour trouver votre calme',
 
     // Micro-Diary
     microDiary: 'Micro-journal',
@@ -1089,13 +1167,39 @@ export const translations = {
 
     // Share App
     shareApp: 'App mit Freunden teilen',
-    shareAppMessage: 'Schau dir diese tolle App zum Verfolgen deiner Stimmung und deines Zyklus an! Lade Mood & Period Tracker noch heute herunter.',
-    shareAppUrl: 'https://play.google.com/store/apps/details?id=com.moodtracker.app',
+    shareAppMessage: 'Ich verwende Mood & Period Tracker, um meine Stimmung und meinen Zyklus zu verfolgen 💜\nProbier es hier aus: ',
+    shareAppUrl: 'https://play.google.com/store/apps/details?id=com.github.les_ok_cloud.Mood_Period_Tracker_&pcampaignid=web_share',
+    shareAppTitle: 'Mood & Period Tracker',
+    shareViaSystem: 'Teilen…',
+    copyLink: 'Link kopieren',
+    linkCopied: 'Link kopiert',
 
     // Rate App
     rateUs: 'Bewerten Sie uns',
     rateUsMessage: 'Wir sind ein kleines Team, das diese App mit Sorgfalt entwickelt 💜 Wenn sie Ihnen gefällt, hilft uns Ihre Bewertung wirklich beim Wachsen.',
-    rateAppUrl: 'https://play.google.com/store/apps/details?id=com.moodtracker.app',
+    rateAppUrl: 'https://play.google.com/store/apps/details?id=com.github.les_ok_cloud.Mood_Period_Tracker_&pcampaignid=web_share',
+    rateAppError: 'Google Play konnte nicht geöffnet werden. Bitte versuchen Sie es erneut.',
+
+    // 1-Minute Reset
+    resetChooseType: 'Wählen Sie Ihren Reset',
+    resetDescription: 'Nehmen Sie sich einen Moment, um Ihre Ruhe zu finden',
+    resetBreathingTitle: 'Atmungs-Reset',
+    resetBreathingDesc: 'Geführte Atmung mit Erdung',
+    resetBodyTitle: 'Körper-Reset',
+    resetBodyDesc: 'Entspannen Sie Ihre Schultern, Kiefer und Atmung',
+    resetThoughtTitle: 'Gedanken-Reset',
+    resetThoughtDesc: 'Sanfte reflexive Prompts',
+    resetBreatheIn: 'Einatmen',
+    resetHold: 'Halten',
+    resetBreatheOut: 'Ausatmen',
+    resetGroundingTitle: 'Erden Sie sich',
+    resetGroundingSee: 'Nennen Sie 1 Ding, das Sie sehen können',
+    resetGroundingHear: 'Bemerkten Sie 1 Geräusch, das Sie hören können',
+    resetGroundingFeel: 'Fühlen Sie 1 physische Empfindung in Ihrem Körper',
+    resetCompleted: 'Reset Abgeschlossen',
+    resetCompletedDesc: 'Nehmen Sie sich einen Moment, um zu bemerken, wie Sie sich fühlen',
+    resetAgain: 'Einen Weiteren Reset Machen',
+    resetSubtitle: 'Ein sanfter Reset, um Ihre Ruhe zu finden',
 
     // Micro-Diary
     microDiary: 'Mikro-Tagebuch',
@@ -1339,13 +1443,39 @@ export const translations = {
 
     // Share App
     shareApp: 'दोस्तों के साथ ऐप शेयर करें',
-    shareAppMessage: 'अपने मूड और चक्र को ट्रैक करने के लिए इस शानदार ऐप को देखें! आज ही Mood & Period Tracker डाउनलोड करें।',
-    shareAppUrl: 'https://play.google.com/store/apps/details?id=com.moodtracker.app',
+    shareAppMessage: 'मैं अपने मूड और चक्र को ट्रैक करने के लिए Mood & Period Tracker का उपयोग कर रहा/रही हूं 💜\nयहाँ आज़माएं: ',
+    shareAppUrl: 'https://play.google.com/store/apps/details?id=com.github.les_ok_cloud.Mood_Period_Tracker_&pcampaignid=web_share',
+    shareAppTitle: 'Mood & Period Tracker',
+    shareViaSystem: 'शेयर करें…',
+    copyLink: 'लिंक कॉपी करें',
+    linkCopied: 'लिंक कॉपी किया गया',
 
     // Rate App
     rateUs: 'हमें रेट करें',
     rateUsMessage: 'हम एक छोटी टीम हैं जो इस ऐप को ध्यान से बना रही है 💜 अगर आप इसका आनंद ले रहे हैं, तो आपकी रेटिंग हमें बढ़ने में वास्तव में मदद करती है।',
-    rateAppUrl: 'https://play.google.com/store/apps/details?id=com.moodtracker.app',
+    rateAppUrl: 'https://play.google.com/store/apps/details?id=com.github.les_ok_cloud.Mood_Period_Tracker_&pcampaignid=web_share',
+    rateAppError: 'Google Play नहीं खोला जा सका। कृपया पुनः प्रयास करें।',
+
+    // 1-Minute Reset
+    resetChooseType: 'अपना रीसेट चुनें',
+    resetDescription: 'अपनी शांति खोजने के लिए एक पल लें',
+    resetBreathingTitle: 'श्वसन रीसेट',
+    resetBreathingDesc: 'ग्राउंडिंग के साथ निर्देशित श्वसन',
+    resetBodyTitle: 'शरीर रीसेट',
+    resetBodyDesc: 'अपने कंधों, जबड़े और श्वसन को आराम दें',
+    resetThoughtTitle: 'विचार रीसेट',
+    resetThoughtDesc: 'कोमल प्रतिबिंबित प्रॉम्प्ट',
+    resetBreatheIn: 'सांस लें',
+    resetHold: 'रोकें',
+    resetBreatheOut: 'सांस छोड़ें',
+    resetGroundingTitle: 'स्वयं को ग्राउंड करें',
+    resetGroundingSee: '1 ऐसी चीज का नाम बताएं जो आप देख सकते हैं',
+    resetGroundingHear: '1 आवाज़ पर ध्यान दें जो आप सुन सकते हैं',
+    resetGroundingFeel: 'अपने शरीर में 1 शारीरिक संवेदना महसूस करें',
+    resetCompleted: 'रीसेट पूरा हुआ',
+    resetCompletedDesc: 'यह महसूस करने के लिए एक पल लें कि आप कैसा महसूस कर रहे हैं',
+    resetAgain: 'एक और रीसेट करें',
+    resetSubtitle: 'अपनी शांति खोजने के लिए एक कोमल रीसेट',
 
     // Micro-Diary
     microDiary: 'माइक्रो-डायरी',
@@ -1589,12 +1719,39 @@ export const translations = {
 
     // Share App
     shareApp: 'Bagikan app dengan teman',
-    shareAppMessage: 'Lihat aplikasi luar biasa ini untuk melacak suasana hati dan siklus Anda! Unduh Mood & Period Tracker hari ini.',
-    shareAppUrl: 'https://play.google.com/store/apps/details?id=com.moodtracker.app',
+    shareAppMessage: 'Saya menggunakan Mood & Period Tracker untuk melacak suasana hati dan siklus saya 💜\nCoba di sini: ',
+    shareAppUrl: 'https://play.google.com/store/apps/details?id=com.github.les_ok_cloud.Mood_Period_Tracker_&pcampaignid=web_share',
+    shareAppTitle: 'Mood & Period Tracker',
+    shareViaSystem: 'Bagikan…',
+    copyLink: 'Salin tautan',
+    linkCopied: 'Tautan disalin',
 
     // Rate App
     rateUs: 'Beri rating kami',
-    rateAppUrl: 'https://play.google.com/store/apps/details?id=com.moodtracker.app',
+    rateUsMessage: 'Kami adalah tim kecil yang membangun aplikasi ini dengan hati-hati 💜 Jika Anda menikmatinya, rating Anda benar-benar membantu kami berkembang.',
+    rateAppUrl: 'https://play.google.com/store/apps/details?id=com.github.les_ok_cloud.Mood_Period_Tracker_&pcampaignid=web_share',
+    rateAppError: 'Tidak dapat membuka Google Play. Silakan coba lagi.',
+
+    // 1-Minute Reset
+    resetChooseType: 'Pilih Reset Anda',
+    resetDescription: 'Luangkan waktu sejenak untuk menemukan ketenangan Anda',
+    resetBreathingTitle: 'Reset Pernapasan',
+    resetBreathingDesc: 'Pernapasan terpandu dengan grounding',
+    resetBodyTitle: 'Reset Tubuh',
+    resetBodyDesc: 'Rilekskan bahu, rahang, dan napas Anda',
+    resetThoughtTitle: 'Reset Pikiran',
+    resetThoughtDesc: 'Prompt reflektif yang lembut',
+    resetBreatheIn: 'Tarik napas',
+    resetHold: 'Tahan',
+    resetBreatheOut: 'Hembuskan napas',
+    resetGroundingTitle: 'Grounding Diri Anda',
+    resetGroundingSee: 'Sebutkan 1 hal yang dapat Anda lihat',
+    resetGroundingHear: 'Perhatikan 1 suara yang dapat Anda dengar',
+    resetGroundingFeel: 'Rasakan 1 sensasi fisik di tubuh Anda',
+    resetCompleted: 'Reset Selesai',
+    resetCompletedDesc: 'Luangkan waktu sejenak untuk memperhatikan bagaimana perasaan Anda',
+    resetAgain: 'Lakukan Reset Lain',
+    resetSubtitle: 'Reset lembut untuk menemukan ketenangan Anda',
 
     // Micro-Diary
     microDiary: 'Mikro-Diary',
@@ -1838,12 +1995,39 @@ export const translations = {
 
     // Share App
     shareApp: 'Arkadaşlarınla uygulamayı paylaş',
-    shareAppMessage: 'Ruh halinizi ve döngünüzü takip etmek için bu harika uygulamaya göz atın! Mood & Period Tracker\'ı bugün indirin.',
-    shareAppUrl: 'https://play.google.com/store/apps/details?id=com.moodtracker.app',
+    shareAppMessage: 'Ruh halimi ve döngümü takip etmek için Mood & Period Tracker kullanıyorum 💜\nBuradan dene: ',
+    shareAppUrl: 'https://play.google.com/store/apps/details?id=com.github.les_ok_cloud.Mood_Period_Tracker_&pcampaignid=web_share',
+    shareAppTitle: 'Mood & Period Tracker',
+    shareViaSystem: 'Paylaş…',
+    copyLink: 'Bağlantıyı kopyala',
+    linkCopied: 'Bağlantı kopyalandı',
 
     // Rate App
     rateUs: 'Bizi oyla',
-    rateAppUrl: 'https://play.google.com/store/apps/details?id=com.moodtracker.app',
+    rateUsMessage: 'Bu uygulamayı özenle geliştiren küçük bir ekibiz 💜 Eğer beğeniyorsanız, değerlendirmeniz büyümemize gerçekten yardımcı oluyor.',
+    rateAppUrl: 'https://play.google.com/store/apps/details?id=com.github.les_ok_cloud.Mood_Period_Tracker_&pcampaignid=web_share',
+    rateAppError: 'Google Play açılamadı. Lütfen tekrar deneyin.',
+
+    // 1-Minute Reset
+    resetChooseType: 'Reset\'inizi Seçin',
+    resetDescription: 'Sakinliğinizi bulmak için bir an ayırın',
+    resetBreathingTitle: 'Nefes Reset',
+    resetBreathingDesc: 'Yer grounding ile rehberli nefes',
+    resetBodyTitle: 'Vücut Reset',
+    resetBodyDesc: 'Omuzlarınızı, çenenizi ve nefesinizi gevşetin',
+    resetThoughtTitle: 'Düşünce Reset',
+    resetThoughtDesc: 'Nazik yansıtıcı istemler',
+    resetBreatheIn: 'Nefes al',
+    resetHold: 'Tut',
+    resetBreatheOut: 'Nefes ver',
+    resetGroundingTitle: 'Kendini Toprakla',
+    resetGroundingSee: 'Görebildiğin 1 şeyi adlandır',
+    resetGroundingHear: 'Duyabildiğin 1 sesi fark et',
+    resetGroundingFeel: 'Vücudunda 1 fiziksel duyum hisset',
+    resetCompleted: 'Reset Tamamlandı',
+    resetCompletedDesc: 'Nasıl hissettiğini fark etmek için bir an ayır',
+    resetAgain: 'Başka Bir Reset Yap',
+    resetSubtitle: 'Sakinliğinizi bulmak için nazik bir reset',
 
     // Micro-Diary
     microDiary: 'Mikro-Günlük',
@@ -2087,12 +2271,39 @@ export const translations = {
 
     // Share App
     shareApp: 'مشاركة التطبيق مع الأصدقاء',
-    shareAppMessage: 'اطلع على هذا التطبيق الرائع لتتبع مزاجك ودورتك! قم بتنزيل Mood & Period Tracker اليوم.',
-    shareAppUrl: 'https://play.google.com/store/apps/details?id=com.moodtracker.app',
+    shareAppMessage: 'أستخدم Mood & Period Tracker لتتبع مزاجي ودورتي 💜\nجربها هنا: ',
+    shareAppUrl: 'https://play.google.com/store/apps/details?id=com.github.les_ok_cloud.Mood_Period_Tracker_&pcampaignid=web_share',
+    shareAppTitle: 'Mood & Period Tracker',
+    shareViaSystem: 'مشاركة…',
+    copyLink: 'نسخ الرابط',
+    linkCopied: 'تم نسخ الرابط',
 
     // Rate App
     rateUs: 'قيمنا',
-    rateAppUrl: 'https://play.google.com/store/apps/details?id=com.moodtracker.app',
+    rateUsMessage: 'نحن فريق صغير يبني هذا التطبيق بعناية 💜 إذا كنت تستمتع به، فإن تقييمك يساعدنا حقًا في النمو.',
+    rateAppUrl: 'https://play.google.com/store/apps/details?id=com.github.les_ok_cloud.Mood_Period_Tracker_&pcampaignid=web_share',
+    rateAppError: 'تعذر فتح Google Play. يرجى المحاولة مرة أخرى.',
+
+    // 1-Minute Reset
+    resetChooseType: 'اختر إعادة التعيين الخاصة بك',
+    resetDescription: 'خذ لحظة للعثور على هدوئك',
+    resetBreathingTitle: 'إعادة تعيين التنفس',
+    resetBreathingDesc: 'تنفس موجه مع التأريض',
+    resetBodyTitle: 'إعادة تعيين الجسم',
+    resetBodyDesc: 'استرخِ كتفيك وفكك وتنفسك',
+    resetThoughtTitle: 'إعادة تعيين الأفكار',
+    resetThoughtDesc: 'نبضات انعكاسية لطيفة',
+    resetBreatheIn: 'استنشق',
+    resetHold: 'احتفظ',
+    resetBreatheOut: 'زفر',
+    resetGroundingTitle: 'أرض نفسك',
+    resetGroundingSee: 'سمّ شيئًا واحدًا يمكنك رؤيته',
+    resetGroundingHear: 'لاحظ صوتًا واحدًا يمكنك سماعه',
+    resetGroundingFeel: 'اشعر بحس جسدي واحد في جسمك',
+    resetCompleted: 'اكتملت إعادة التعيين',
+    resetCompletedDesc: 'خذ لحظة لتلاحظ كيف تشعر',
+    resetAgain: 'افعل إعادة تعيين أخرى',
+    resetSubtitle: 'إعادة تعيين لطيفة للعثور على هدوئك',
 
     // Micro-Diary
     microDiary: 'المذكرة المصغرة',
@@ -2336,13 +2547,39 @@ export const translations = {
 
     // Share App
     shareApp: 'Поделиться приложением с друзьями',
-    shareAppMessage: 'Посмотрите это замечательное приложение для отслеживания настроения и цикла! Скачайте Mood & Period Tracker сегодня.',
-    shareAppUrl: 'https://play.google.com/store/apps/details?id=com.moodtracker.app',
+    shareAppMessage: 'Я использую Mood & Period Tracker для отслеживания своего настроения и цикла 💜\nПопробуйте здесь: ',
+    shareAppUrl: 'https://play.google.com/store/apps/details?id=com.github.les_ok_cloud.Mood_Period_Tracker_&pcampaignid=web_share',
+    shareAppTitle: 'Mood & Period Tracker',
+    shareViaSystem: 'Поделиться…',
+    copyLink: 'Копировать ссылку',
+    linkCopied: 'Ссылка скопирована',
 
     // Rate App
     rateUs: 'Оцените нас',
     rateUsMessage: 'Мы небольшая команда, которая заботливо создаёт это приложение 💜 Если вам нравится наше приложение, ваша оценка поможет нам развиваться.',
-    rateAppUrl: 'https://play.google.com/store/apps/details?id=com.moodtracker.app',
+    rateAppUrl: 'https://play.google.com/store/apps/details?id=com.github.les_ok_cloud.Mood_Period_Tracker_&pcampaignid=web_share',
+    rateAppError: 'Не удалось открыть Google Play. Попробуйте ещё раз.',
+
+    // 1-Minute Reset
+    resetChooseType: 'Выберите Ваш Сброс',
+    resetDescription: 'Возьмите момент, чтобы найти своё спокойствие',
+    resetBreathingTitle: 'Сброс Дыхания',
+    resetBreathingDesc: 'Направленное дыхание с заземлением',
+    resetBodyTitle: 'Сброс Тела',
+    resetBodyDesc: 'Расслабьте плечи, челюсть и дыхание',
+    resetThoughtTitle: 'Сброс Мыслей',
+    resetThoughtDesc: 'Мягкие рефлексивные подсказки',
+    resetBreatheIn: 'Вдохните',
+    resetHold: 'Задержите',
+    resetBreatheOut: 'Выдохните',
+    resetGroundingTitle: 'Заземлите Себя',
+    resetGroundingSee: 'Назовите 1 вещь, которую вы можете увидеть',
+    resetGroundingHear: 'Заметьте 1 звук, который вы можете услышать',
+    resetGroundingFeel: 'Почувствуйте 1 физическое ощущение в вашем теле',
+    resetCompleted: 'Сброс Завершён',
+    resetCompletedDesc: 'Возьмите момент, чтобы заметить, как вы себя чувствуете',
+    resetAgain: 'Сделать Ещё Один Сброс',
+    resetSubtitle: 'Мягкий сброс, чтобы найти своё спокойствие',
 
     // Micro-Diary
     microDiary: 'Микро-дневник',

@@ -11,6 +11,7 @@ export interface UsePracticeSyncReturn {
   // Actions
   createEntry: (practiceType: PracticeType, content: any, entryId?: string) => Promise<PracticeEntry>;
   updateEntry: (entryId: string, updates: Partial<PracticeEntry>) => Promise<void>;
+  deleteEntry: (entryId: string) => Promise<void>;
 
   // Sync status
   syncStatus: SyncStatus;
@@ -105,6 +106,13 @@ export const usePracticeSync = (userId: string): UsePracticeSyncReturn => {
     setEntries(service.getEntries()); // Update local state
   }, [service]);
 
+  const deleteEntry = useCallback(async (entryId: string): Promise<void> => {
+    if (!service) throw new Error('Sync service not initialized');
+
+    await service.deleteEntry(entryId);
+    setEntries(service.getEntries()); // Update local state
+  }, [service]);
+
   const syncNow = useCallback(async (): Promise<void> => {
     if (!service) return;
 
@@ -141,6 +149,7 @@ export const usePracticeSync = (userId: string): UsePracticeSyncReturn => {
     getEntry,
     createEntry,
     updateEntry,
+    deleteEntry,
     syncStatus,
     syncNow,
     isLoading

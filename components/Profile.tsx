@@ -5,6 +5,91 @@ import { SignOutIcon, UserIcon, DownloadIcon, UploadIcon, ShareIcon, StarIcon, C
 import type { DailyEntry } from '../types';
 import { getFormattedDate } from '../utils/dateUtils';
 
+// Share Modal Component
+const ShareModal: React.FC<{
+  isOpen: boolean;
+  onClose: () => void;
+  onShare: () => void;
+  onCopyLink: () => void;
+  t: any;
+  isRTL: boolean;
+}> = ({ isOpen, onClose, onShare, onCopyLink, t, isRTL }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-2xl shadow-xl max-w-sm w-full mx-4">
+        {/* Header */}
+        <div className="flex items-center justify-between p-4 border-b border-slate-200">
+          <h3 className="text-lg font-semibold text-slate-800">{t.shareApp}</h3>
+          <button
+            onClick={onClose}
+            className="text-slate-400 hover:text-slate-600 p-1"
+            aria-label="Close"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Options */}
+        <div className="p-2">
+          <button
+            onClick={() => {
+              onShare();
+              onClose();
+            }}
+            className={`w-full flex items-center gap-3 p-4 text-left hover:bg-slate-50 rounded-lg transition-colors ${
+              isRTL ? 'flex-row-reverse' : ''
+            }`}
+          >
+            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+              <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
+              </svg>
+            </div>
+            <div className={`flex-1 ${isRTL ? 'text-right' : ''}`}>
+              <div className="font-medium text-slate-800">{t.shareViaSystem}</div>
+              <div className="text-sm text-slate-500">{t.shareAppTitle}</div>
+            </div>
+          </button>
+
+          <button
+            onClick={() => {
+              onCopyLink();
+              onClose();
+            }}
+            className={`w-full flex items-center gap-3 p-4 text-left hover:bg-slate-50 rounded-lg transition-colors ${
+              isRTL ? 'flex-row-reverse' : ''
+            }`}
+          >
+            <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+              <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <div className={`flex-1 ${isRTL ? 'text-right' : ''}`}>
+              <div className="font-medium text-slate-800">{t.copyLink}</div>
+              <div className="text-sm text-slate-500">Play Store</div>
+            </div>
+          </button>
+        </div>
+
+        {/* Cancel */}
+        <div className="p-4 border-t border-slate-200">
+          <button
+            onClick={onClose}
+            className="w-full py-3 text-slate-600 font-medium rounded-lg hover:bg-slate-50 transition-colors"
+          >
+            {t.deleteAccountCancel || 'Cancel'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 interface ProfileProps {
   showCycleTracker: boolean;
   onToggleCycleTracker: (value: boolean) => void;
@@ -25,6 +110,33 @@ const ToggleSwitch: React.FC<{ checked: boolean; onChange: (checked: boolean) =>
     </div>
   </label>
 );
+
+// Toast Component
+const Toast: React.FC<{
+  message: string;
+  isVisible: boolean;
+  onHide: () => void;
+}> = ({ message, isVisible, onHide }) => {
+  React.useEffect(() => {
+    if (isVisible) {
+      const timer = setTimeout(onHide, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [isVisible, onHide]);
+
+  if (!isVisible) return null;
+
+  return (
+    <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50">
+      <div className="bg-slate-800 text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-2 animate-fade-in-up">
+        <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+        </svg>
+        <span className="font-medium">{message}</span>
+      </div>
+    </div>
+  );
+};
 
 // Language setting component
 type Language = 'en' | 'ru' | 'es' | 'pt-BR' | 'fr' | 'de' | 'hi' | 'id' | 'tr' | 'ar';
@@ -125,45 +237,140 @@ export const Profile: React.FC<ProfileProps> = ({
   onImportData
 }) => {
   const { user, signOutUser, deleteUserAccount } = useAuth();
-  const { t } = useLanguage();
+  const { t, isRTL } = useLanguage();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteConfirmation, setDeleteConfirmation] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
 
-  const handleShare = async () => {
+  const handleShareClick = () => {
+    setShowShareModal(true);
+  };
+
+  const handleSystemShare = async () => {
     const shareData = {
-      title: 'Mood & Period Tracker',
-      text: t.shareAppMessage,
+      title: t.shareAppTitle,
+      text: t.shareAppMessage + t.shareAppUrl,
       url: t.shareAppUrl,
     };
 
     try {
       if (navigator.share) {
-        // Use native Web Share API
         await navigator.share(shareData);
       } else {
-        // Fallback: copy to clipboard
-        const shareText = `${shareData.title}\n${shareData.text}\n${shareData.url}`;
+        // Fallback: copy entire message to clipboard
+        const shareText = `${shareData.text}${shareData.url}`;
         await navigator.clipboard.writeText(shareText);
-        alert('Link copied to clipboard! Share it with your friends.');
+        showToastMessage(t.linkCopied);
       }
     } catch (error) {
       console.error('Error sharing:', error);
-      // Fallback: copy to clipboard
+      // Final fallback
       try {
-        const shareText = `${shareData.title}\n${shareData.text}\n${shareData.url}`;
+        const shareText = `${shareData.text}${shareData.url}`;
         await navigator.clipboard.writeText(shareText);
-        alert('Link copied to clipboard! Share it with your friends.');
+        showToastMessage(t.linkCopied);
       } catch (clipboardError) {
         console.error('Error copying to clipboard:', clipboardError);
-        alert('Sorry, sharing is not available on this device.');
+        showToastMessage('Sharing not available');
       }
     }
   };
 
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(t.shareAppUrl);
+      showToastMessage(t.linkCopied);
+    } catch (error) {
+      console.error('Error copying link:', error);
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = t.shareAppUrl;
+      document.body.appendChild(textArea);
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        showToastMessage(t.linkCopied);
+      } catch (fallbackError) {
+        console.error('Fallback copy failed:', fallbackError);
+        showToastMessage('Copy failed');
+      }
+      document.body.removeChild(textArea);
+    }
+  };
+
+  const showToastMessage = (message: string) => {
+    setToastMessage(message);
+    setShowToast(true);
+  };
+
+  const hideToast = () => {
+    setShowToast(false);
+  };
+
   const handleRate = () => {
-    window.open(t.rateAppUrl, '_blank');
+    const playStoreUrl = 'https://play.google.com/store/apps/details?id=com.github.les_ok_cloud.Mood_Period_Tracker_&pcampaignid=web_share';
+    const playStoreDeepLink = 'market://details?id=com.github.les_ok_cloud.Mood_Period_Tracker_';
+
+    // Detect if we're on Android (mobile app or web)
+    const isAndroid = /Android/i.test(navigator.userAgent);
+    const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    const attemptOpenUrl = (url: string, fallback?: () => void): Promise<boolean> => {
+      return new Promise((resolve) => {
+        const newWindow = window.open(url, '_blank');
+
+        // For mobile browsers, window.open might not work reliably
+        // We'll use a timeout to detect if the window opened successfully
+        setTimeout(() => {
+          if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+            // Window didn't open or was blocked
+            if (fallback) {
+              fallback();
+            }
+            resolve(false);
+          } else {
+            resolve(true);
+          }
+        }, 1000);
+      });
+    };
+
+    const openPlayStore = async () => {
+      try {
+        let success = false;
+
+        // On Android mobile, try deep link first (opens Play Store app)
+        if (isAndroid && isMobile) {
+          success = await attemptOpenUrl(playStoreDeepLink, () => {
+            // If deep link fails, try web URL
+            return attemptOpenUrl(playStoreUrl);
+          });
+
+          if (!success) {
+            // Final fallback - try web URL directly
+            success = await attemptOpenUrl(playStoreUrl);
+          }
+        } else {
+          // On iOS, desktop, or non-Android mobile - use web URL
+          success = await attemptOpenUrl(playStoreUrl);
+        }
+
+        if (!success) {
+          // Show error toast
+          showToastMessage(t.rateAppError);
+        }
+        // Don't show success message - only show errors
+      } catch (error) {
+        console.error('Error opening Play Store:', error);
+        showToastMessage(t.rateAppError);
+      }
+    };
+
+    openPlayStore();
   };
 
   const handleDeleteAccount = async () => {
@@ -285,7 +492,7 @@ export const Profile: React.FC<ProfileProps> = ({
             <div className="border-t border-slate-200 pt-6">
               <div className="bg-slate-100/50 p-3 rounded-lg">
                 <button
-                  onClick={handleShare}
+                  onClick={handleShareClick}
                   className="w-full flex items-center justify-start gap-3 text-slate-700 font-medium"
                 >
                   <ShareIcon className="w-5 h-5 text-slate-500" />
@@ -380,6 +587,23 @@ export const Profile: React.FC<ProfileProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Share Modal */}
+      <ShareModal
+        isOpen={showShareModal}
+        onClose={() => setShowShareModal(false)}
+        onShare={handleSystemShare}
+        onCopyLink={handleCopyLink}
+        t={t}
+        isRTL={isRTL}
+      />
+
+      {/* Toast Notification */}
+      <Toast
+        message={toastMessage}
+        isVisible={showToast}
+        onHide={hideToast}
+      />
 
       {/* Delete Account Confirmation Modal */}
       {showDeleteModal && (

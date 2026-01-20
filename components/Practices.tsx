@@ -219,9 +219,7 @@ const GratitudePractice: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   const { t, locale } = useLanguage();
   const { user } = useAuth();
   const { getEntriesByType, createEntry, updateEntry, isLoading } = usePracticeSync(user?.uid || '');
-  const [gratitude1, setGratitude1] = useState('');
-  const [gratitude2, setGratitude2] = useState('');
-  const [gratitude3, setGratitude3] = useState('');
+  const [gratitude, setGratitude] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [savedMessage, setSavedMessage] = useState('');
   const [gratitudeDate, setGratitudeDate] = useState<'today' | 'yesterday'>('today');
@@ -246,14 +244,11 @@ const GratitudePractice: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
     if (dateEntry && dateEntry.content.items) {
       const items = dateEntry.content.items;
-      setGratitude1(items[0] || '');
-      setGratitude2(items[1] || '');
-      setGratitude3(items[2] || '');
+      // Combine all items into one text (for backward compatibility with old entries)
+      setGratitude(items.join('\n\n') || '');
     } else {
-      // Clear fields if no entry exists for selected date
-      setGratitude1('');
-      setGratitude2('');
-      setGratitude3('');
+      // Clear field if no entry exists for selected date
+      setGratitude('');
     }
   }, [user?.uid, isLoading, getEntriesByType, selectedDateKey]);
 
@@ -268,9 +263,8 @@ const GratitudePractice: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
     if (dateEntry && dateEntry.content.items) {
       const items = dateEntry.content.items;
-      setGratitude1(items[0] || '');
-      setGratitude2(items[1] || '');
-      setGratitude3(items[2] || '');
+      // Combine all items into one text (for backward compatibility with old entries)
+      setGratitude(items.join('\n\n') || '');
       // Set the date toggle to match the selected history date
       const todayKey = getFormattedDate(new Date());
       const yesterdayKey = getFormattedDate(yesterday);
@@ -291,8 +285,8 @@ const GratitudePractice: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   const saveGratitude = async () => {
     if (!user?.uid) return;
 
-    const items = [gratitude1.trim(), gratitude2.trim(), gratitude3.trim()].filter(item => item);
-    if (items.length === 0) return;
+    const gratitudeText = gratitude.trim();
+    if (!gratitudeText) return;
 
     setIsSaving(true);
 
@@ -304,9 +298,10 @@ const GratitudePractice: React.FC<{ onBack: () => void }> = ({ onBack }) => {
         entry.content.date === saveDateKey
       );
 
+      // Store as array with single item for backward compatibility
       const content = {
         date: saveDateKey,
-        items
+        items: [gratitudeText]
       };
 
       if (existingEntry) {
@@ -357,7 +352,7 @@ const GratitudePractice: React.FC<{ onBack: () => void }> = ({ onBack }) => {
           <div className="text-center mb-6">
             <HeartIcon className="w-16 h-16 text-pink-600 mx-auto mb-4" />
             <h2 className="text-2xl font-bold text-slate-700 mb-2">{t.gratitudePractice}</h2>
-            <p className="text-slate-600">Take a moment to notice three things you're grateful for.</p>
+            <p className="text-slate-600">Take a moment to notice what you're grateful for.</p>
           </div>
 
           <div className="mb-4 flex items-center justify-between">
@@ -403,40 +398,21 @@ const GratitudePractice: React.FC<{ onBack: () => void }> = ({ onBack }) => {
             </div>
           </div>
 
-          <div className="space-y-4 mb-6">
-            <div>
-              <label className="block text-sm font-medium text-slate-600 mb-2">1.</label>
-              <InputWithLimit
-                value={gratitude1}
-                onChange={setGratitude1}
-                placeholder="Something you're grateful for..."
-                className="w-full p-3 bg-slate-50 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:bg-white transition-all duration-200 text-slate-700"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-600 mb-2">2.</label>
-              <InputWithLimit
-                value={gratitude2}
-                onChange={setGratitude2}
-                placeholder="Another thing you're grateful for..."
-                className="w-full p-3 bg-slate-50 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:bg-white transition-all duration-200 text-slate-700"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-600 mb-2">3.</label>
-              <InputWithLimit
-                value={gratitude3}
-                onChange={setGratitude3}
-                placeholder="One more thing you're grateful for..."
-                className="w-full p-3 bg-slate-50 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:bg-white transition-all duration-200 text-slate-700"
-              />
-            </div>
+          <div className="mb-6">
+            <TextareaWithLimit
+              value={gratitude}
+              onChange={setGratitude}
+              placeholder="Write what you're grateful for..."
+              className="w-full p-3 bg-slate-50 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:bg-white transition-all duration-200 text-slate-700"
+              rows={6}
+              unlimited={true}
+            />
           </div>
 
           <div className="flex justify-between items-center">
             <button
               onClick={saveGratitude}
-              disabled={isSaving || ![gratitude1, gratitude2, gratitude3].some(item => item.trim())}
+              disabled={isSaving || !gratitude.trim()}
               className="bg-pink-600 text-white font-medium py-2 px-6 rounded-lg hover:bg-pink-700 disabled:bg-pink-400 disabled:cursor-not-allowed transition-colors"
             >
               {isSaving ? 'Saving...' : 'Save Gratitude'}
@@ -468,8 +444,8 @@ const GratitudePractice: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                     <h3 className="font-medium text-slate-700">{formatDate(entry.date)}</h3>
                   </div>
                   {entry.items.length > 0 && (
-                    <p className="text-slate-600 text-sm line-clamp-2">
-                      {entry.items[0]}
+                    <p className="text-slate-600 text-sm line-clamp-3">
+                      {entry.items.join('\n\n')}
                     </p>
                   )}
                 </button>

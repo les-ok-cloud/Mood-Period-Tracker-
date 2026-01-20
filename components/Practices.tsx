@@ -479,15 +479,15 @@ const MoodInfluencersPractice: React.FC<{ onBack: () => void }> = ({ onBack }) =
   const [editingDate, setEditingDate] = useState<string | null>(null); // Track if editing a specific date from history
 
   const influencers = [
-    'Sleep quality',
-    'Stress levels',
-    'Food intake',
-    'Exercise',
-    'Hormones',
-    'People around me',
-    'Weather',
-    'Work/school',
-    'Other'
+    '😴 Sleep quality',
+    '😰 Stress levels',
+    '🍎 Food intake',
+    '🏃‍♀️ Exercise',
+    '🔄 Hormones',
+    '👥 People around me',
+    '🌤️ Weather',
+    '💼 Work/school',
+    '✨ Other'
   ];
 
   const today = new Date();

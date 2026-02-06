@@ -8,8 +8,6 @@ import { getFormattedDate } from '../utils/dateUtils';
 import { BookIcon, HeartIcon, SparklesIcon, ClockIcon, NewspaperIcon, WifiIcon, WifiOffIcon } from './Icons';
 import { TextareaWithLimit } from './TextareaWithLimit';
 import { InputWithLimit } from './InputWithLimit';
-import { PDFExportModal } from './PDFExportModal';
-import { reflectionPDFExporter, PDFExportFilters, isMobileDevice, isWebView, supportsFileSharing, supportsClipboard } from '../utils/pdfExport';
 import { SimpleHeader } from './SimpleHeader';
 
 interface Practice {
@@ -1894,9 +1892,6 @@ const MicroDiaryContent: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   const [drainedEnergy, setDrainedEnergy] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [savedMessage, setSavedMessage] = useState('');
-  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
-  const [isExporting, setIsExporting] = useState(false);
-  const [exportedPDF, setExportedPDF] = useState<{ url: string; filename: string } | null>(null);
   const [reflectionDate, setReflectionDate] = useState<'today' | 'yesterday'>('today');
   const [editingEntryId, setEditingEntryId] = useState<string | null>(null); // Track which entry is being edited
   const [editingDateKey, setEditingDateKey] = useState<string | null>(null); // Track the original date key when editing historical entries
@@ -1994,38 +1989,7 @@ const MicroDiaryContent: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     }
   };
 
-  const handleExportPDF = async (filters: PDFExportFilters) => {
-    setIsExporting(true);
-    try {
-      const filename = `reflection-history-${new Date().toISOString().split('T')[0]}.pdf`;
-      const reflectionData = getSortedReflections();
-      const result = await reflectionPDFExporter.exportPDF(reflectionData, filters, filename, 'Mood Period Tracker');
 
-      setIsExportModalOpen(false);
-
-      if (result.isMobile) {
-        // On mobile/WebView: Show PDF with manual open/share options
-        // Mobile browsers often block automatic downloads, so we provide a better UX
-        setExportedPDF({ url: result.url, filename: result.filename });
-      } else {
-        // On desktop: Trigger download automatically (traditional behavior)
-        const link = document.createElement('a');
-        link.href = result.url;
-        link.download = result.filename;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-
-        // Show success message for desktop users
-        alert('PDF exported successfully! Check your downloads folder.');
-      }
-    } catch (error) {
-      console.error('PDF export failed:', error);
-      alert('Failed to export PDF. Please try again.');
-    } finally {
-      setIsExporting(false);
-    }
-  };
 
   const getSortedReflections = () => {
     if (!user?.uid) return [];
@@ -2233,12 +2197,6 @@ const MicroDiaryContent: React.FC<{ onBack: () => void }> = ({ onBack }) => {
         <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-compact card-padding">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-bold text-slate-700">{t.reflectionHistory}</h2>
-            <button
-              onClick={() => setIsExportModalOpen(true)}
-              className="bg-purple-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-purple-700 transition-colors text-sm"
-            >
-              {t.exportHistoryAsPDF}
-            </button>
           </div>
 
           {getSortedReflections().length === 0 ? (
@@ -2340,103 +2298,6 @@ const MicroDiaryContent: React.FC<{ onBack: () => void }> = ({ onBack }) => {
         </button>
       </div>
 
-      {/* Mobile PDF Export Result */}
-      {exportedPDF && (
-        <div className="mb-8">
-          <div className="bg-green-50 border border-green-200 rounded-2xl shadow-md p-6">
-            <div className="text-center">
-              <div className="text-green-600 mb-4">
-                <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-semibold text-green-800 mb-2">PDF Generated Successfully!</h3>
-              <p className="text-green-700 mb-4">
-                Your reflection history PDF is ready. Use the buttons below to open or save/share your PDF.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <a
-                  href={exportedPDF.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-green-600 text-white font-medium py-3 px-6 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                  </svg>
-                  Open PDF
-                </a>
-                <button
-                  onClick={async () => {
-                    try {
-                      if (supportsFileSharing() && exportedPDF) {
-                        const response = await fetch(exportedPDF.url);
-                        const blob = await response.blob();
-                        const file = new File([blob], exportedPDF.filename, { type: 'application/pdf' });
-
-                        const canShare = navigator.canShare({ files: [file] });
-                        if (canShare) {
-                          await navigator.share({
-                            title: 'Mood Period Tracker - Reflection History',
-                            text: 'My reflection history from Mood Period Tracker',
-                            files: [file]
-                          });
-                          return;
-                        }
-                      }
-
-                      // Fallback: try clipboard
-                      if (supportsClipboard()) {
-                        await navigator.clipboard.writeText(exportedPDF.url);
-                        alert('PDF link copied to clipboard! You can paste it in your browser to download, or share it with others.');
-                      } else {
-                        alert('Copy this link to share or download your PDF:\n\n' + exportedPDF.url);
-                      }
-                    } catch (error) {
-                      console.error('Share failed:', error);
-
-                      // Final fallback
-                      if (supportsClipboard()) {
-                        try {
-                          await navigator.clipboard.writeText(exportedPDF.url);
-                          alert('PDF link copied to clipboard. You can paste it in your browser to download.');
-                        } catch (clipboardError) {
-                          alert('Unable to share PDF automatically. Please try opening the PDF first, then use your browser\'s share/save options.');
-                        }
-                      } else {
-                        alert('Unable to share PDF. Please try opening the PDF first, then use your browser\'s share/save options.');
-                      }
-                    }
-                  }}
-                  className="bg-blue-600 text-white font-medium py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
-                  </svg>
-                  {supportsFileSharing() ? 'Share/Save PDF' : 'Copy PDF Link'}
-                </button>
-              </div>
-              <button
-                onClick={() => {
-                  setExportedPDF(null);
-                  // Clean up the blob URL
-                  URL.revokeObjectURL(exportedPDF.url);
-                }}
-                className="mt-4 text-sm text-green-600 hover:text-green-800 underline"
-              >
-                Dismiss
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <PDFExportModal
-        isOpen={isExportModalOpen}
-        onClose={() => setIsExportModalOpen(false)}
-        onExport={handleExportPDF}
-        isExporting={isExporting}
-      />
     </div>
   );
 };

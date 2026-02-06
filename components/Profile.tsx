@@ -1,7 +1,7 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
-import { SignOutIcon, UserIcon, DownloadIcon, UploadIcon, ShareIcon, StarIcon, ChevronRight } from './Icons';
+import { SignOutIcon, UserIcon, ShareIcon, StarIcon, ChevronRight } from './Icons';
 import type { DailyEntry } from '../types';
 import { getFormattedDate } from '../utils/dateUtils';
 
@@ -40,9 +40,8 @@ const ShareModal: React.FC<{
               onShare();
               onClose();
             }}
-            className={`w-full flex items-center gap-3 p-4 text-left hover:bg-slate-50 rounded-lg transition-colors ${
-              isRTL ? 'flex-row-reverse' : ''
-            }`}
+            className={`w-full flex items-center gap-3 p-4 text-left hover:bg-slate-50 rounded-lg transition-colors ${isRTL ? 'flex-row-reverse' : ''
+              }`}
           >
             <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
               <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -60,9 +59,8 @@ const ShareModal: React.FC<{
               onCopyLink();
               onClose();
             }}
-            className={`w-full flex items-center gap-3 p-4 text-left hover:bg-slate-50 rounded-lg transition-colors ${
-              isRTL ? 'flex-row-reverse' : ''
-            }`}
+            className={`w-full flex items-center gap-3 p-4 text-left hover:bg-slate-50 rounded-lg transition-colors ${isRTL ? 'flex-row-reverse' : ''
+              }`}
           >
             <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
               <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -206,9 +204,8 @@ const LanguageSetting: React.FC = () => {
             <button
               key={code}
               onClick={() => handleLanguageSelect(code)}
-              className={`w-full flex flex-col px-4 py-3 text-left hover:bg-slate-50 focus:bg-slate-50 focus:outline-none transition-colors duration-150 ${
-                language === code ? 'bg-purple-50 text-purple-900' : 'text-slate-700'
-              } ${language === code ? 'font-medium' : ''} ${isRTL ? 'text-right' : ''}`}
+              className={`w-full flex flex-col px-4 py-3 text-left hover:bg-slate-50 focus:bg-slate-50 focus:outline-none transition-colors duration-150 ${language === code ? 'bg-purple-50 text-purple-900' : 'text-slate-700'
+                } ${language === code ? 'font-medium' : ''} ${isRTL ? 'text-right' : ''}`}
               role="option"
               aria-selected={language === code}
             >
@@ -238,7 +235,6 @@ export const Profile: React.FC<ProfileProps> = ({
 }) => {
   const { user, signOutUser, deleteUserAccount } = useAuth();
   const { t, isRTL } = useLanguage();
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteConfirmation, setDeleteConfirmation] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
@@ -404,67 +400,7 @@ export const Profile: React.FC<ProfileProps> = ({
     }
   };
 
-  const handleExport = () => {
-    try {
-      const dataToExport = {
-        settings: {
-          showCycleTracker,
-          remindersEnabled,
-        },
-        dailyData,
-      };
-      const jsonString = JSON.stringify(dataToExport, null, 2);
-      const blob = new Blob([jsonString], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      const date = getFormattedDate(new Date());
-      link.download = `mood-tracker-export-${date}.json`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error("Failed to export data", error);
-      alert("Sorry, there was an error exporting your data.");
-    }
-  };
 
-  const handleImportClick = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      try {
-        const text = e.target?.result;
-        if (typeof text !== 'string') throw new Error("File content is not a string");
-        const parsedData = JSON.parse(text);
-
-        // Basic validation
-        if (parsedData && typeof parsedData.settings === 'object' && typeof parsedData.dailyData === 'object') {
-          onImportData(parsedData);
-        } else {
-          throw new Error("Invalid file format");
-        }
-      } catch (error) {
-        console.error("Failed to import data", error);
-        alert(t.importError);
-      }
-    };
-    reader.onerror = () => {
-      console.error("Failed to read file", reader.error);
-      alert(t.importError);
-    };
-    reader.readAsText(file);
-
-    // Reset the input value so the same file can be selected again
-    event.target.value = '';
-  };
 
   if (!user) return null;
 
@@ -543,27 +479,6 @@ export const Profile: React.FC<ProfileProps> = ({
               </div>
             </div>
 
-            {/* Data Management Section */}
-            <div className="border-t border-slate-200 pt-6">
-              <h3 className="text-lg font-semibold text-slate-700 mb-3">{t.dataManagement}</h3>
-              <div className="space-y-3">
-                <div className="bg-slate-100/50 p-3 rounded-lg">
-                  <button onClick={handleExport} className="w-full flex items-center justify-center gap-2 bg-slate-200 text-slate-800 font-semibold py-2 px-4 rounded-lg hover:bg-slate-300 transition-colors">
-                    <DownloadIcon className="w-5 h-5" />
-                    {t.exportData}
-                  </button>
-                  <p className="text-sm text-slate-500 mt-2 px-2 text-center">{t.exportDescription}</p>
-                </div>
-                <div className="bg-slate-100/50 p-3 rounded-lg">
-                  <input type="file" ref={fileInputRef} onChange={handleFileChange} accept=".json" className="hidden" />
-                  <button onClick={handleImportClick} className="w-full flex items-center justify-center gap-2 bg-slate-200 text-slate-800 font-semibold py-2 px-4 rounded-lg hover:bg-slate-300 transition-colors">
-                    <UploadIcon className="w-5 h-5" />
-                    {t.importData}
-                  </button>
-                  <p className="text-sm text-slate-500 mt-2 px-2 text-center">{t.importDescription}</p>
-                </div>
-              </div>
-            </div>
 
             <div className="border-t border-slate-200 pt-6">
               <button

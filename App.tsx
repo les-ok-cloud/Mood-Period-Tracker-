@@ -55,6 +55,17 @@ const rtlStyles = `
     margin-right: 0.5rem;
   }
   
+  /* Top safe area padding for status bar / notch */
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+  
+  /* Safe area for practice headers - ensures back button is below status bar */
+  .practice-header {
+    padding-top: max(1rem, env(safe-area-inset-top));
+    padding-bottom: 0.5rem;
+  }
+  
   /* Bottom safe area padding for fixed navigation bar */
   /* Tab bar height: ~80px (64px special tab + 16px padding) + safe area */
   .safe-bottom {

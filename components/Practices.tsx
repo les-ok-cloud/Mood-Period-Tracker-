@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
 import { usePracticeSync } from '../hooks/usePracticeSync';
@@ -1380,14 +1380,19 @@ const MicroDiaryContent: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   const [exportedPDF, setExportedPDF] = useState<{ url: string; filename: string } | null>(null);
   const [reflectionDate, setReflectionDate] = useState<'today' | 'yesterday'>('today');
   const [editingEntryId, setEditingEntryId] = useState<string | null>(null); // Track which entry is being edited
+  const [editingDateKey, setEditingDateKey] = useState<string | null>(null); // Track the original date key when editing historical entries
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null); // Track entry being deleted
+
+  // Ref for the editing form area
+  const editingFormRef = useRef<HTMLDivElement>(null);
 
   const today = new Date();
   const yesterday = new Date(today);
   yesterday.setDate(yesterday.getDate() - 1);
-  
-  const selectedDate = reflectionDate === 'today' ? today : yesterday;
-  const selectedDateKey = getFormattedDate(selectedDate);
+
+  // Use editing date key if we're editing a historical entry, otherwise use the selected date
+  const selectedDateKey = editingDateKey || getFormattedDate(reflectionDate === 'today' ? today : yesterday);
+  const selectedDate = editingDateKey ? new Date(editingDateKey) : (reflectionDate === 'today' ? today : yesterday);
 
   // Load reflection for selected date from synced data
   useEffect(() => {
@@ -1425,16 +1430,23 @@ const MicroDiaryContent: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     try {
       const reflectionEntries = getEntriesByType(PracticeType.Reflection);
 
+      // When editing, preserve the original entry's date. When creating new, use selected date.
+      const targetDateKey = editingEntryId ?
+        // Find the original entry's date when editing
+        reflectionEntries.find(e => e.entryId === editingEntryId)?.content.date || selectedDateKey
+        : selectedDateKey;
+
       const content = {
-        date: selectedDateKey,
+        date: targetDateKey,
         goodFeeling: goodFeeling.trim() ? ensurePrefix(goodFeeling, '+') : undefined,
         drainedEnergy: drainedEnergy.trim() ? ensurePrefix(drainedEnergy, '-') : undefined,
       };
 
       if (editingEntryId) {
-        // Update the specific entry being edited
+        // Update the specific entry being edited - preserve original date
         await updateEntry(editingEntryId, { content });
         setEditingEntryId(null); // Clear editing state after save
+        setEditingDateKey(null); // Clear editing date key
       } else {
         // Check for existing entry on the selected date
         const existingEntry = reflectionEntries.find(entry =>
@@ -1533,7 +1545,7 @@ const MicroDiaryContent: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
   const handleEditEntry = (entryId: string, date: string) => {
     setEditingEntryId(entryId);
-    setReflectionDate('today'); // Reset to today view for editing
+    setEditingDateKey(date); // Preserve the original entry date
     // Load the entry data for editing
     const reflectionEntries = getEntriesByType(PracticeType.Reflection);
     const entry = reflectionEntries.find(e => e.entryId === entryId);
@@ -1543,8 +1555,22 @@ const MicroDiaryContent: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     }
   };
 
+  // Auto-scroll to editing form when entering edit mode
+  useEffect(() => {
+    if (editingEntryId && editingFormRef.current) {
+      // Small delay to ensure the form is rendered before scrolling
+      setTimeout(() => {
+        editingFormRef.current?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }, 100);
+    }
+  }, [editingEntryId]);
+
   const cancelEdit = () => {
     setEditingEntryId(null);
+    setEditingDateKey(null); // Clear editing date key
     // Reset to current date view and clear fields
     setReflectionDate('today');
     const today = new Date();
@@ -1575,7 +1601,7 @@ const MicroDiaryContent: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   return (
     <div className="max-w-4xl mx-auto">
       {/* Today's Reflection */}
-      <div className="mb-8">
+      <div ref={editingFormRef} className="mb-8">
         <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-md p-6">
           <p className="text-slate-700 leading-relaxed mb-6">
             <span className="font-bold text-purple-600 text-base">{t.reflectionExplanationTitle}</span>
@@ -1590,30 +1616,43 @@ const MicroDiaryContent: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-xl font-bold text-slate-700">
-              {reflectionDate === 'today' ? t.todaysReflection : t.reflectionForDate?.replace('{date}', selectedDate.toLocaleDateString(locale, { month: 'long', day: 'numeric' })) || `${selectedDate.toLocaleDateString(locale, { month: 'long', day: 'numeric' })} Reflection`}
+              {editingEntryId
+                ? `${t.editing || 'Editing'}: ${selectedDate.toLocaleDateString(locale, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}`
+                : reflectionDate === 'today'
+                  ? t.todaysReflection
+                  : t.reflectionForDate?.replace('{date}', selectedDate.toLocaleDateString(locale, { month: 'long', day: 'numeric' })) || `${selectedDate.toLocaleDateString(locale, { month: 'long', day: 'numeric' })} Reflection`
+              }
             </h2>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setReflectionDate('today')}
-                className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
-                  reflectionDate === 'today'
-                    ? 'bg-purple-600 text-white'
-                    : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
-                }`}
-              >
-                {t.today || 'Today'}
-              </button>
-              <button
-                onClick={() => setReflectionDate('yesterday')}
-                className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
-                  reflectionDate === 'yesterday'
-                    ? 'bg-purple-600 text-white'
-                    : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
-                }`}
-              >
-                {t.yesterday || 'Yesterday'}
-              </button>
-            </div>
+            {!editingEntryId && (
+              <div className="flex gap-2">
+                <button
+                  onClick={() => {
+                    setReflectionDate('today');
+                    setEditingDateKey(null);
+                  }}
+                  className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
+                    reflectionDate === 'today' && !editingDateKey
+                      ? 'bg-purple-600 text-white'
+                      : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                  }`}
+                >
+                  {t.today || 'Today'}
+                </button>
+                <button
+                  onClick={() => {
+                    setReflectionDate('yesterday');
+                    setEditingDateKey(null);
+                  }}
+                  className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
+                    reflectionDate === 'yesterday' && !editingDateKey
+                      ? 'bg-purple-600 text-white'
+                      : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                  }`}
+                >
+                  {t.yesterday || 'Yesterday'}
+                </button>
+              </div>
+            )}
           </div>
 
           <div className="space-y-4">

@@ -177,6 +177,7 @@ export const translations = {
     // Micro-Diary
     microDiary: 'Micro-Diary',
     todaysReflection: 'Today\'s Reflection',
+    editing: 'Editing',
     reflectionExplanationTitle: 'Reflection exercise (daily, 1–3 minutes)',
     reflectionExplanationText: ' - one of the most powerful tools for caring for your mental well-being. Noting your thoughts helps you see patterns, discover what lifts your spirits. Journaling can support coping and reduce the impact of stressful events – potentially avoiding burnout and chronic anxiety.',
     reflectionLearnMore: 'Learn more about the benefits of journaling',
@@ -652,6 +653,7 @@ export const translations = {
     // Micro-Diary
     microDiary: 'Micro-diário',
     todaysReflection: 'Reflexão de hoje',
+    editing: 'Editando',
     reflectionExplanationTitle: 'Exercício de reflexão (diariamente, 1–3 minutos)',
     reflectionExplanationText: ' - uma das ferramentas mais poderosas para cuidar do seu bem-estar mental. Anotar seus pensamentos ajuda a ver padrões, descobrir o que eleva seu ânimo. Manter um diário pode apoiar o enfrentamento e reduzir o impacto de eventos estressantes – potencialmente evitando burnout e ansiedade crônica.',
     reflectionLearnMore: 'Saiba mais sobre os benefícios do diário',
@@ -928,6 +930,7 @@ export const translations = {
     // Micro-Diary
     microDiary: 'Micro-journal',
     todaysReflection: 'Réflexion d\'aujourd\'hui',
+    editing: 'Modification',
     reflectionExplanationTitle: 'Exercice de réflexion (quotidiennement, 1–3 minutes)',
     reflectionExplanationText: ' - l\'un des outils les plus puissants pour prendre soin de votre bien-être mental. Noter vos pensées vous aide à voir des schémas, à découvrir ce qui élève votre esprit. Tenir un journal peut soutenir le coping et réduire l\'impact des événements stressants – potentiellement évitant l\'épuisement et l\'anxiété chronique.',
     reflectionLearnMore: 'En savoir plus sur les bienfaits de la tenue d\'un journal',
@@ -1204,6 +1207,7 @@ export const translations = {
     // Micro-Diary
     microDiary: 'Mikro-Tagebuch',
     todaysReflection: 'Heutige Reflexion',
+    editing: 'Bearbeiten',
     reflectionExplanationTitle: 'Reflexionsübung (täglich, 1–3 Minuten)',
     reflectionExplanationText: ' - eines der mächtigsten Werkzeuge zur Pflege Ihres psychischen Wohlbefindens. Das Aufschreiben Ihrer Gedanken hilft Ihnen, Muster zu erkennen, herauszufinden, was Ihren Geist hebt. Tagebuch schreiben kann Coping unterstützen und die Auswirkungen von Stressereignissen reduzieren – potenziell Burnout und chronische Angst vermeidend.',
     reflectionLearnMore: 'Erfahren Sie mehr über die Vorteile des Tagebuchschreibens',
@@ -1480,6 +1484,7 @@ export const translations = {
     // Micro-Diary
     microDiary: 'माइक्रो-डायरी',
     todaysReflection: 'आज की प्रतिबिंब',
+    editing: 'संपादन',
     reflectionExplanationTitle: 'प्रतिबिंब अभ्यास (दैनिक, 1–3 मिनट)',
     reflectionExplanationText: ' - आपके मानसिक स्वास्थ्य की देखभाल के लिए सबसे शक्तिशाली उपकरणों में से एक। अपने विचारों को नोट करना आपको पैटर्न देखने, पता लगाने में मदद करता है कि क्या आपके मनोभाव को बढ़ाता है। जर्नलिंग coping का समर्थन कर सकता है और तनावपूर्ण घटनाओं के प्रभाव को कम कर सकता है – संभावित रूप से बर्नआउट और पुरानी चिंता से बचने के लिए।',
     reflectionLearnMore: 'जर्नलिंग के लाभों के बारे में और जानें',
@@ -1756,6 +1761,7 @@ export const translations = {
     // Micro-Diary
     microDiary: 'Mikro-Diary',
     todaysReflection: 'Refleksi Hari Ini',
+    editing: 'Mengedit',
     reflectionExplanationTitle: 'Latihan refleksi (harian, 1–3 menit)',
     reflectionExplanationText: ' - salah satu alat paling kuat untuk merawat kesejahteraan mental Anda. Mencatat pikiran Anda membantu Anda melihat pola, menemukan apa yang meningkatkan semangat Anda. Menulis jurnal dapat mendukung coping dan mengurangi dampak peristiwa stres – berpotensi menghindari burnout dan kecemasan kronis.',
     reflectionLearnMore: 'Pelajari lebih lanjut tentang manfaat journaling',
@@ -2032,6 +2038,7 @@ export const translations = {
     // Micro-Diary
     microDiary: 'Mikro-Günlük',
     todaysReflection: 'Bugünkü Yansıma',
+    editing: 'Düzenleniyor',
     reflectionExplanationTitle: 'Yansıma egzersizi (günlük, 1–3 dakika)',
     reflectionExplanationText: ' - zihinsel sağlığınızı korumak için en güçlü araçlardan biridir. Düşüncelerinizi not almak, kalıpları görmenize, ruh halinizi yükselten şeyleri keşfetmenize yardımcı olur. Günlük tutmak başa çıkmayı destekleyebilir ve stresli olayların etkisini azaltabilir – potansiyel olarak tükenmişlik ve kronik anksiyeteden kaçınarak.',
     reflectionLearnMore: 'Günlük tutmanın faydaları hakkında daha fazla bilgi edinin',
@@ -2308,6 +2315,7 @@ export const translations = {
     // Micro-Diary
     microDiary: 'المذكرة المصغرة',
     todaysReflection: 'تأمل اليوم',
+    editing: 'تعديل',
     reflectionExplanationTitle: 'تمرين التأمل (يومياً، 1–3 دقائق)',
     reflectionExplanationText: ' - أحد أقوى الأدوات للعناية بصحتك النفسية. تدوين أفكارك يساعدك على رؤية الأنماط، واكتشاف ما يرفع من روحك المعنوية. يمكن أن يدعم الكتابة اليومية التكيف وتقليل تأثير الأحداث المجهدة – محتملاً تجنب الإرهاق والقلق المزمن.',
     reflectionLearnMore: 'تعرف على المزيد عن فوائد الكتابة اليومية',
@@ -2584,6 +2592,7 @@ export const translations = {
     // Micro-Diary
     microDiary: 'Микро-дневник',
     todaysReflection: 'Размышления на сегодня',
+    editing: 'Редактирование',
     reflectionExplanationTitle: 'Упражнение на размышление (ежедневно, 1–3 минуты)',
     reflectionExplanationText: ' - один из самых мощных инструментов для заботы о вашем психическом благополучии. Запись мыслей помогает увидеть закономерности, обнаружить, что поднимает настроение. Ведение дневника может поддерживать coping и снижать влияние стрессовых событий – потенциально избегая выгорания и хронической тревоги.',
     reflectionLearnMore: 'Узнайте больше о преимуществах ведения дневника',

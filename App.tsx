@@ -92,23 +92,23 @@ styleSheet.textContent = rtlStyles;
 document.head.appendChild(styleSheet);
 
 const UserAvatar: React.FC<{ user: NonNullable<ReturnType<typeof useAuth>['user']> }> = ({ user }) => {
-    if (user.photoURL) {
-        return <img src={user.photoURL} alt="User" className="w-10 h-10 rounded-full shadow-md" />;
-    }
+  if (user.photoURL) {
+    return <img src={user.photoURL} alt="User" className="w-10 h-10 rounded-full shadow-md" />;
+  }
 
-    const initials = user.isAnonymous || !user.email
-        ? 'GU'
-        : user.email.substring(0, 2).toUpperCase();
-    
-    return (
-        <div 
-            className="w-10 h-10 rounded-full shadow-md bg-purple-500 flex items-center justify-center text-white font-bold text-sm"
-            title={user.isAnonymous ? 'Guest' : user.email ?? ''}
-            aria-label={`User: ${user.isAnonymous ? 'Guest' : user.email}`}
-        >
-            {initials}
-        </div>
-    );
+  const initials = user.isAnonymous || !user.email
+    ? 'GU'
+    : user.email.substring(0, 2).toUpperCase();
+
+  return (
+    <div
+      className="w-10 h-10 rounded-full shadow-md bg-purple-500 flex items-center justify-center text-white font-bold text-sm"
+      title={user.isAnonymous ? 'Guest' : user.email ?? ''}
+      aria-label={`User: ${user.isAnonymous ? 'Guest' : user.email}`}
+    >
+      {initials}
+    </div>
+  );
 };
 
 
@@ -119,7 +119,7 @@ const App: React.FC = () => {
   const [isDataLoading, setIsDataLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [dailyData, setDailyData] = useState<Record<string, DailyEntry>>({});
-  
+
   const [activeTab, setActiveTab] = useState<TabType>('log');
   const [showCycleTracker, setShowCycleTracker] = useState<boolean>(true);
   const [remindersEnabled, setRemindersEnabled] = useState<boolean>(false);
@@ -139,38 +139,38 @@ const App: React.FC = () => {
       setIsDataLoading(true);
       try {
         if (user.isAnonymous) {
-            // GUEST MODE: Load from localStorage
-            const guestDataRaw = localStorage.getItem(GUEST_DATA_KEY);
-            if (guestDataRaw) {
-              const guestData = JSON.parse(guestDataRaw);
-              setShowCycleTracker(guestData.settings?.showCycleTracker ?? true);
-              setRemindersEnabled(guestData.settings?.remindersEnabled ?? false);
-              setDailyData(guestData.dailyData || {});
-            } else {
-              // Default state for new guest user
-              setShowCycleTracker(true);
-              setRemindersEnabled(false);
-              setDailyData({});
-            }
+          // GUEST MODE: Load from localStorage
+          const guestDataRaw = localStorage.getItem(GUEST_DATA_KEY);
+          if (guestDataRaw) {
+            const guestData = JSON.parse(guestDataRaw);
+            setShowCycleTracker(guestData.settings?.showCycleTracker ?? true);
+            setRemindersEnabled(guestData.settings?.remindersEnabled ?? false);
+            setDailyData(guestData.dailyData || {});
+          } else {
+            // Default state for new guest user
+            setShowCycleTracker(true);
+            setRemindersEnabled(false);
+            setDailyData({});
+          }
         } else {
-            // AUTHENTICATED USER: Load from Firestore
-            const settingsDoc = await db.collection('users').doc(user.uid).collection('settings').doc('main').get();
-            if (settingsDoc.exists) {
-              const settings = settingsDoc.data();
-              setShowCycleTracker(settings?.showCycleTracker ?? true);
-              setRemindersEnabled(settings?.remindersEnabled ?? false);
-            }
+          // AUTHENTICATED USER: Load from Firestore
+          const settingsDoc = await db.collection('users').doc(user.uid).collection('settings').doc('main').get();
+          if (settingsDoc.exists) {
+            const settings = settingsDoc.data();
+            setShowCycleTracker(settings?.showCycleTracker ?? true);
+            setRemindersEnabled(settings?.remindersEnabled ?? false);
+          }
 
-            const entriesSnapshot = await db.collection('users').doc(user.uid).collection('entries').get();
-            const entriesData: Record<string, DailyEntry> = {};
-            entriesSnapshot.forEach((doc: any) => {
-              entriesData[doc.id] = doc.data() as DailyEntry;
-            });
-            setDailyData(entriesData);
+          const entriesSnapshot = await db.collection('users').doc(user.uid).collection('entries').get();
+          const entriesData: Record<string, DailyEntry> = {};
+          entriesSnapshot.forEach((doc: any) => {
+            entriesData[doc.id] = doc.data() as DailyEntry;
+          });
+          setDailyData(entriesData);
 
-            // Initialize practice sync for authenticated users
-            const syncService = getPracticeSyncService(user.uid);
-            await syncService.initialSync();
+          // Initialize practice sync for authenticated users
+          const syncService = getPracticeSyncService(user.uid);
+          await syncService.initialSync();
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -189,7 +189,7 @@ const App: React.FC = () => {
       }
     };
   }, [user]);
-  
+
   const predictions = useMemo((): CyclePredictions => {
     if (!showCycleTracker) {
       const emptyPredictions: CyclePredictions = { period: new Set<string>(), fertile: new Set<string>(), ovulation: new Set<string>() };
@@ -249,20 +249,20 @@ const App: React.FC = () => {
     } else {
       setRemindersEnabled(false);
     }
-    
+
     if (user) {
-        if (user.isAnonymous) {
-            const guestDataRaw = localStorage.getItem(GUEST_DATA_KEY);
-            const guestData = guestDataRaw ? JSON.parse(guestDataRaw) : { settings: {}, dailyData };
-            guestData.settings.remindersEnabled = finalEnabledState;
-            localStorage.setItem(GUEST_DATA_KEY, JSON.stringify(guestData));
-        } else {
-            try {
-              await db.collection('users').doc(user.uid).collection('settings').doc('main').set({ remindersEnabled: finalEnabledState }, { merge: true });
-            } catch (error) {
-              console.error("Error saving reminders setting:", error);
-            }
+      if (user.isAnonymous) {
+        const guestDataRaw = localStorage.getItem(GUEST_DATA_KEY);
+        const guestData = guestDataRaw ? JSON.parse(guestDataRaw) : { settings: {}, dailyData };
+        guestData.settings.remindersEnabled = finalEnabledState;
+        localStorage.setItem(GUEST_DATA_KEY, JSON.stringify(guestData));
+      } else {
+        try {
+          await db.collection('users').doc(user.uid).collection('settings').doc('main').set({ remindersEnabled: finalEnabledState }, { merge: true });
+        } catch (error) {
+          console.error("Error saving reminders setting:", error);
         }
+      }
     }
   }, [user, notificationPermission, dailyData]);
 
@@ -287,52 +287,52 @@ const App: React.FC = () => {
     if (note.trim()) {
       entryData.note = note.trim();
     }
-    
+
     const updatedDailyData = { ...dailyData, [formattedSelectedDate]: { ...dailyData[formattedSelectedDate], ...entryData } };
     setDailyData(updatedDailyData);
 
     if (user.isAnonymous) {
-        const guestDataRaw = localStorage.getItem(GUEST_DATA_KEY);
-        const guestData = guestDataRaw ? JSON.parse(guestDataRaw) : { settings: { showCycleTracker, remindersEnabled }, dailyData: {} };
-        guestData.dailyData = updatedDailyData;
-        localStorage.setItem(GUEST_DATA_KEY, JSON.stringify(guestData));
+      const guestDataRaw = localStorage.getItem(GUEST_DATA_KEY);
+      const guestData = guestDataRaw ? JSON.parse(guestDataRaw) : { settings: { showCycleTracker, remindersEnabled }, dailyData: {} };
+      guestData.dailyData = updatedDailyData;
+      localStorage.setItem(GUEST_DATA_KEY, JSON.stringify(guestData));
     } else {
-        const docRef = db.collection('users').doc(user.uid).collection('entries').doc(formattedSelectedDate);
-        try {
-          await docRef.set(entryData, { merge: true });
-        } catch (error) {
-          console.error("Error saving entry to Firestore:", error);
-          setDailyData(dailyData); // Revert on error
-        }
+      const docRef = db.collection('users').doc(user.uid).collection('entries').doc(formattedSelectedDate);
+      try {
+        await docRef.set(entryData, { merge: true });
+      } catch (error) {
+        console.error("Error saving entry to Firestore:", error);
+        setDailyData(dailyData); // Revert on error
+      }
     }
   };
-  
+
   const handleUpdateMood = async (date: Date, mood: Mood) => {
     if (!user) return;
     const formattedDate = getFormattedDate(date);
     const updatedDailyData = {
-        ...dailyData,
-        [formattedDate]: {
-            mood: mood,
-            cycle: dailyData[formattedDate]?.cycle ?? null,
-            note: dailyData[formattedDate]?.note,
-        }
+      ...dailyData,
+      [formattedDate]: {
+        mood: mood,
+        cycle: dailyData[formattedDate]?.cycle ?? null,
+        note: dailyData[formattedDate]?.note,
+      }
     };
     setDailyData(updatedDailyData);
 
     if (user.isAnonymous) {
-        const guestDataRaw = localStorage.getItem(GUEST_DATA_KEY);
-        const guestData = guestDataRaw ? JSON.parse(guestDataRaw) : { settings: { showCycleTracker, remindersEnabled }, dailyData: {} };
-        guestData.dailyData = updatedDailyData;
-        localStorage.setItem(GUEST_DATA_KEY, JSON.stringify(guestData));
+      const guestDataRaw = localStorage.getItem(GUEST_DATA_KEY);
+      const guestData = guestDataRaw ? JSON.parse(guestDataRaw) : { settings: { showCycleTracker, remindersEnabled }, dailyData: {} };
+      guestData.dailyData = updatedDailyData;
+      localStorage.setItem(GUEST_DATA_KEY, JSON.stringify(guestData));
     } else {
-        const docRef = db.collection('users').doc(user.uid).collection('entries').doc(formattedDate);
-        try {
-            await docRef.set({ mood }, { merge: true });
-        } catch (error) {
-            console.error("Error updating mood in Firestore:", error);
-            setDailyData(dailyData); // Revert on error
-        }
+      const docRef = db.collection('users').doc(user.uid).collection('entries').doc(formattedDate);
+      try {
+        await docRef.set({ mood }, { merge: true });
+      } catch (error) {
+        console.error("Error updating mood in Firestore:", error);
+        setDailyData(dailyData); // Revert on error
+      }
     }
   };
 
@@ -340,28 +340,28 @@ const App: React.FC = () => {
     if (!user) return;
     const formattedDate = getFormattedDate(date);
     const updatedDailyData = {
-        ...dailyData,
-        [formattedDate]: {
-            mood: dailyData[formattedDate]?.mood ?? Mood.Okay,
-            cycle: cycle,
-            note: dailyData[formattedDate]?.note,
-        }
+      ...dailyData,
+      [formattedDate]: {
+        mood: dailyData[formattedDate]?.mood ?? Mood.Okay,
+        cycle: cycle,
+        note: dailyData[formattedDate]?.note,
+      }
     };
     setDailyData(updatedDailyData);
 
     if (user.isAnonymous) {
-        const guestDataRaw = localStorage.getItem(GUEST_DATA_KEY);
-        const guestData = guestDataRaw ? JSON.parse(guestDataRaw) : { settings: { showCycleTracker, remindersEnabled }, dailyData: {} };
-        guestData.dailyData = updatedDailyData;
-        localStorage.setItem(GUEST_DATA_KEY, JSON.stringify(guestData));
+      const guestDataRaw = localStorage.getItem(GUEST_DATA_KEY);
+      const guestData = guestDataRaw ? JSON.parse(guestDataRaw) : { settings: { showCycleTracker, remindersEnabled }, dailyData: {} };
+      guestData.dailyData = updatedDailyData;
+      localStorage.setItem(GUEST_DATA_KEY, JSON.stringify(guestData));
     } else {
-        const docRef = db.collection('users').doc(user.uid).collection('entries').doc(formattedDate);
-        try {
-            await docRef.set({ cycle }, { merge: true });
-        } catch (error) {
-            console.error("Error updating cycle in Firestore:", error);
-            setDailyData(dailyData); // Revert on error
-        }
+      const docRef = db.collection('users').doc(user.uid).collection('entries').doc(formattedDate);
+      try {
+        await docRef.set({ cycle }, { merge: true });
+      } catch (error) {
+        console.error("Error updating cycle in Firestore:", error);
+        setDailyData(dailyData); // Revert on error
+      }
     }
   };
 
@@ -370,61 +370,61 @@ const App: React.FC = () => {
     const updatedDailyData = { ...dailyData };
     delete updatedDailyData[formattedSelectedDate];
     setDailyData(updatedDailyData);
-    
+
     if (user.isAnonymous) {
-        const guestDataRaw = localStorage.getItem(GUEST_DATA_KEY);
-        const guestData = guestDataRaw ? JSON.parse(guestDataRaw) : { settings: { showCycleTracker, remindersEnabled }, dailyData: {} };
-        guestData.dailyData = updatedDailyData;
-        localStorage.setItem(GUEST_DATA_KEY, JSON.stringify(guestData));
+      const guestDataRaw = localStorage.getItem(GUEST_DATA_KEY);
+      const guestData = guestDataRaw ? JSON.parse(guestDataRaw) : { settings: { showCycleTracker, remindersEnabled }, dailyData: {} };
+      guestData.dailyData = updatedDailyData;
+      localStorage.setItem(GUEST_DATA_KEY, JSON.stringify(guestData));
     } else {
-        try {
-          await db.collection('users').doc(user.uid).collection('entries').doc(formattedSelectedDate).delete();
-        } catch (error) {
-          console.error("Error deleting entry from Firestore:", error);
-          setDailyData(dailyData); // Revert on error
-        }
+      try {
+        await db.collection('users').doc(user.uid).collection('entries').doc(formattedSelectedDate).delete();
+      } catch (error) {
+        console.error("Error deleting entry from Firestore:", error);
+        setDailyData(dailyData); // Revert on error
+      }
     }
   };
-  
+
   const handleImportData = async (data: { settings: { showCycleTracker: boolean; remindersEnabled: boolean; }; dailyData: Record<string, DailyEntry>; }) => {
     if (!user) return;
 
     if (!window.confirm(t.importWarningMessage)) return;
-    
+
     setIsDataLoading(true);
     try {
-        if (user.isAnonymous) {
-            localStorage.setItem(GUEST_DATA_KEY, JSON.stringify(data));
-        } else {
-            const { settings, dailyData: importedData } = data;
-            const batch = db.batch();
+      if (user.isAnonymous) {
+        localStorage.setItem(GUEST_DATA_KEY, JSON.stringify(data));
+      } else {
+        const { settings, dailyData: importedData } = data;
+        const batch = db.batch();
 
-            const entriesRef = db.collection('users').doc(user.uid).collection('entries');
-            const oldEntriesSnapshot = await entriesRef.get();
-            oldEntriesSnapshot.forEach((doc: any) => batch.delete(doc.ref));
+        const entriesRef = db.collection('users').doc(user.uid).collection('entries');
+        const oldEntriesSnapshot = await entriesRef.get();
+        oldEntriesSnapshot.forEach((doc: any) => batch.delete(doc.ref));
 
-            Object.entries(importedData).forEach(([date, entry]) => {
-                const docRef = entriesRef.doc(date);
-                batch.set(docRef, entry);
-            });
+        Object.entries(importedData).forEach(([date, entry]) => {
+          const docRef = entriesRef.doc(date);
+          batch.set(docRef, entry);
+        });
 
-            const settingsRef = db.collection('users').doc(user.uid).collection('settings').doc('main');
-            batch.set(settingsRef, settings, { merge: true });
+        const settingsRef = db.collection('users').doc(user.uid).collection('settings').doc('main');
+        batch.set(settingsRef, settings, { merge: true });
 
-            await batch.commit();
-        }
-        
-        // Update local state for both user types
-        setDailyData(data.dailyData);
-        setShowCycleTracker(data.settings.showCycleTracker);
-        setRemindersEnabled(data.settings.remindersEnabled);
-        setShowSettings(false); // Close settings modal on success
+        await batch.commit();
+      }
+
+      // Update local state for both user types
+      setDailyData(data.dailyData);
+      setShowCycleTracker(data.settings.showCycleTracker);
+      setRemindersEnabled(data.settings.remindersEnabled);
+      setShowSettings(false); // Close settings modal on success
 
     } catch (error) {
-        console.error("Error importing data:", error);
-        alert(t.importError);
+      console.error("Error importing data:", error);
+      alert(t.importError);
     } finally {
-        setIsDataLoading(false);
+      setIsDataLoading(false);
     }
   };
 
@@ -505,9 +505,9 @@ const App: React.FC = () => {
             <div className="lg:col-span-2 space-y-6">
               <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-compact card-padding relative">
                 {user.isAnonymous && (
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-yellow-300 text-yellow-800 text-xs font-bold px-3 py-1 rounded-full shadow">
-                        GUEST MODE - Data is saved on this device only
-                    </div>
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-yellow-300 text-yellow-800 text-xs font-bold px-3 py-1 rounded-full shadow">
+                    GUEST MODE - Data is saved on this device only
+                  </div>
                 )}
                 <h2 className="text-lg sm:text-xl font-bold text-slate-700 gap-heading text-compact leading-tight break-words">
                   {t.howAreYouFeeling.replace('{date}', selectedDate.toLocaleDateString(locale, { month: 'long', day: 'numeric' }))}
@@ -516,8 +516,8 @@ const App: React.FC = () => {
                   {isToday
                     ? ""
                     : isFuture
-                    ? t.logFutureError
-                    : t.viewingPastEntry}
+                      ? t.logFutureError
+                      : t.viewingPastEntry}
                 </p>
                 <MoodTracker selectedMood={selectedMood} onSelect={setSelectedMood} />
 
@@ -545,7 +545,7 @@ const App: React.FC = () => {
                   />
                 </div>
 
-                <div className="mt-6 text-center flex flex-row justify-center items-center gap-cards">
+                <div className="mt-6 text-center flex flex-row justify-center items-center gap-3">
                   {selectedMood && (
                     <button
                       onClick={handleSaveEntry}

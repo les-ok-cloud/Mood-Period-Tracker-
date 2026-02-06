@@ -1,4 +1,3 @@
-
 import { Mood, CycleFlow } from '../types';
 
 export const translations = {
@@ -49,7 +48,7 @@ export const translations = {
     saveEntryAria: 'Save entry for {date}',
     updateEntryAria: 'Update entry for {date}',
     deleteEntryAria: 'Delete entry for {date}',
-    
+
     // Moods
     [Mood.Amazing]: 'Amazing',
     [Mood.Good]: 'Good',
@@ -57,7 +56,7 @@ export const translations = {
     [Mood.Bad]: 'Bad',
     [Mood.Terrible]: 'Terrible',
     selectMood: 'Select mood: {mood}',
-    
+
     // Cycle Tracker
     trackCycle: 'Track your cycle',
     todayPeriodDay: 'Today: Period Day {day}',
@@ -74,7 +73,7 @@ export const translations = {
     prevMonth: 'Previous month',
     nextMonth: 'Next month',
     weekDays: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
-    
+
     // Calendar Legend
     legendTitle: 'Predictions:',
     legendPeriod: 'Period',
@@ -90,7 +89,7 @@ export const translations = {
     positiveMood: 'Positive',
     neutralMood: 'Neutral',
     negativeMood: 'Negative',
-    
+
     // Wellness Tips (formerly AI Tips)
     aiWellnessTips: 'Wellness Tips',
     getNewTips: 'Get New Tips',
@@ -139,7 +138,7 @@ export const translations = {
         "Practice self-compassion and kindness."
       ]
     },
-    
+
     // Share App
     shareApp: 'Share app with friends',
     shareAppMessage: 'I\'ve been using Mood & Period Tracker to track my mood and cycle 💜\nTry it here: ',
@@ -159,11 +158,25 @@ export const translations = {
     resetChooseType: 'Choose Your Reset',
     resetDescription: 'Take a moment to find your calm',
     resetBreathingTitle: 'Breathing Reset',
-    resetBreathingDesc: 'Guided breathing with grounding',
+    resetBreathingDesc: 'Guided breathing',
     resetBodyTitle: 'Body Reset',
     resetBodyDesc: 'Relax your shoulders, jaw, and breath',
+    resetBodyStep1: 'Take a slow breath in…\nand gently breathe out.',
+    resetBodyStep2: 'Gently lift your shoulders…\nand let them drop.',
+    resetBodyStep3: 'Unclench your jaw.\nLet your tongue rest softly.',
+    resetBodyStep4: 'Relax your hands.\nLet your fingers soften.',
+    resetBodyStep5: 'Breathe in slowly…\nBreathe out gently…',
+    resetBodyStep6: 'Notice how your body feels now.\nEven a small shift is enough.',
+    resetBodyComplete: 'Reset complete',
     resetThoughtTitle: 'Thought Reset',
     resetThoughtDesc: 'Gentle reflective prompts',
+    resetThoughtStep1: 'Take a slow breath.\nYou don’t need to change anything.',
+    resetThoughtStep2: 'Notice what thoughts are present right now.\nThere’s no need to judge them.',
+    resetThoughtStep3: 'Gently name the thought:\nplanning, worrying, remembering.',
+    resetThoughtStep4: 'Imagine the thought floating by,\nlike a cloud.',
+    resetThoughtStep5: 'Bring your attention back to your body.\nFeel your breath or your feet.',
+    resetThoughtStep6: 'You don’t have to solve everything right now.',
+    resetThoughtComplete: 'Thought reset complete',
     resetBreatheIn: 'Breathe in',
     resetHold: 'Hold',
     resetBreatheOut: 'Breathe out',
@@ -175,6 +188,34 @@ export const translations = {
     resetCompletedDesc: 'Take a moment to notice how you feel',
     resetAgain: 'Do Another Reset',
     resetSubtitle: 'A gentle reset to find your calm',
+    resetGroundingAllSensesTitle: 'Grounding Reset',
+    resetGroundingAllSensesDesc: 'Gently reconnect with the present moment',
+    resetGroundingStep1: 'Take one slow breath in…\nAnd gently breathe out.',
+    resetGroundingStep2: 'Notice one sound around you.\nNear or far.',
+    resetGroundingStep3: 'Find one thing you can see.\nLet your eyes rest on it.',
+    resetGroundingStep4: 'Feel one physical sensation.\nYour feet, hands, or the surface you’re on.',
+    resetGroundingStep5: 'Notice a smell or taste.\nIf nothing stands out, that’s okay.',
+    resetGroundingStep6: 'You are here.\nThis moment is enough.',
+    resetGroundingComplete: 'Grounding complete',
+
+    // Grounding Set 2: Sensory Connection
+    resetGroundingS2S1: 'Let your breath be soft.\nLike a gentle wave.',
+    resetGroundingS2S2: 'Listen for a quiet sound.\nSomething you normally ignore.',
+    resetGroundingS2S3: 'Look for a color you like.\nNotice its shade and light.',
+    resetGroundingS2S4: 'Notice the weight of your body.\nFeeling held and supported.',
+    resetGroundingS2S5: 'Air can have a texture.\nNotice how it feels in your nose or mouth.',
+    resetGroundingS2S6: 'Rest in this stillness.\nYou have everything you need.',
+
+    // Grounding Set 3: Gentle Awareness
+    resetGroundingS3S1: 'Fill your lungs slowly.\nRelease all tension as you exhale.',
+    resetGroundingS3S2: 'What is the furthest sound you can hear?\nJust observe it.',
+    resetGroundingS3S3: 'Observe a shape nearby.\nTrace its edges with your eyes.',
+    resetGroundingS3S4: 'Feel the fabric of your clothes.\nNotice its texture against your skin.',
+    resetGroundingS3S5: 'Is there a scent in the air?\nSimply name it and let it go.',
+    resetGroundingS3S6: 'Your feet are on the ground.\nYou are safe and steady.',
+
+    resetGroundingStepProgress: 'Step {current} of {total}',
+    resetGroundingTimeProgress: '~{seconds}s left',
 
     // Micro-Diary
     microDiary: 'Micro-Diary',
@@ -301,7 +342,6 @@ export const translations = {
     practicesTitle: 'Prácticas',
     pinnedPractices: 'Prácticas Fijadas',
     allPractices: 'Todas las Prácticas',
-    practicesSubtitle: 'Herramientas suaves para la conciencia emocional',
     yearOverviewTitle: 'Vista Anual',
     profileTitle: 'Perfil',
     settings: 'Abrir configuración',
@@ -430,6 +470,124 @@ export const translations = {
         "Practica la autocompasión y la bondad."
       ]
     },
+
+    // Share App
+    shareApp: 'Compartir app con amigos',
+    shareAppMessage: 'He estado usando Mood & Period Tracker para rastrear mi estado de ánimo y ciclo 💜\nPruébalo aquí: ',
+    shareAppUrl: 'https://play.google.com/store/apps/details?id=com.github.les_ok_cloud.Mood_Period_Tracker_&pcampaignid=web_share',
+    shareAppTitle: 'Mood & Period Tracker',
+    shareViaSystem: 'Compartir…',
+    copyLink: 'Copiar enlace',
+    linkCopied: 'Enlace copiado',
+
+    // Rate App
+    rateUs: 'Califícanos',
+    rateUsMessage: 'Somos un equipo pequeño creando esta app con cuidado 💜 Si te gusta, tu calificación nos ayuda mucho a crecer.',
+    rateAppUrl: 'https://play.google.com/store/apps/details?id=com.github.les_ok_cloud.Mood_Period_Tracker_&pcampaignid=web_share',
+    rateAppError: 'No se pudo abrir Google Play. Por favor inténtalo de nuevo.',
+
+    // 1-Minute Reset
+    resetChooseType: 'Elige tu Reset',
+    resetDescription: 'Tómate un momento para encontrar tu calma',
+    resetBreathingTitle: 'Reset de Respiración',
+    resetBreathingDesc: 'Respiración guiada',
+    resetBodyTitle: 'Reset de Cuerpo',
+    resetBodyDesc: 'Relaja tus hombros, mandíbula y respiración',
+    resetThoughtTitle: 'Reset de Pensamiento',
+    resetThoughtDesc: 'Prompts reflexivos suaves',
+    resetBreatheIn: 'Inhala',
+    resetHold: 'Mantén',
+    resetBreatheOut: 'Exhala',
+    resetGroundingTitle: 'Conéctate con la tierra',
+    resetGroundingSee: 'Nombra 1 cosa que puedas ver',
+    resetGroundingHear: 'Nota 1 sonido que puedas oír',
+    resetGroundingFeel: 'Siente 1 sensación física en tu cuerpo',
+    resetCompleted: 'Reset completado',
+    resetCompletedDesc: 'Tómate un momento para notar cómo te sientes',
+    resetAgain: 'Hacer otro reset',
+    resetSubtitle: 'Un reset suave para encontrar tu calma',
+    resetGroundingAllSensesTitle: 'Reset de Grounding',
+    resetGroundingAllSensesDesc: 'Reconéctate suavemente con el momento presente',
+    resetGroundingStep1: 'Toma una respiración lenta...\nY exhala suavemente.',
+    resetGroundingStep2: 'Nota un sonido a tu alrededor.\nCerca o lejos.',
+    resetGroundingStep3: 'Encuentra una cosa que puedas ver.\nDeja que tus ojos descansen en ella.',
+    resetGroundingStep4: 'Siente una sensación física.\nTus pies, manos o la superficie en la que estás.',
+    resetGroundingStep5: 'Nota un olor o sabor.\nSi nada destaca, está bien.',
+    resetGroundingStep6: 'Estás aquí.\nEste momento es suficiente.',
+    resetGroundingComplete: 'Grounding completado',
+
+    // Grounding Set 2: Sensory Connection
+    resetGroundingS2S1: 'Deja que tu respiración sea suave.\nComo una ola gentil.',
+    resetGroundingS2S2: 'Busca un sonido silencioso.\nAlgo que normalmente ignoras.',
+    resetGroundingS2S3: 'Busca un color que te guste.\nObserva su tono y luz.',
+    resetGroundingS2S4: 'Nota el peso de tu cuerpo.\nSintiéndote sostenido/a y apoyado/a.',
+    resetGroundingS2S5: 'El aire puede tener una textura.\nNota cómo se siente en tu nariz o boca.',
+    resetGroundingS2S6: 'Descansa en esta quietud.\nTienes todo lo que necesitas.',
+
+    // Grounding Set 3: Gentle Awareness
+    resetGroundingS3S1: 'Llena tus pulmones lentamente.\nLibera toda la tensión al exhalar.',
+    resetGroundingS3S2: '¿Cuál es el sonido más lejano que puedes oír?\nSolo obsérvalo.',
+    resetGroundingS3S3: 'Observa una forma cercana.\nSigue sus bordes con tus ojos.',
+    resetGroundingS3S4: 'Siente la tela de tu ropa.\nNota su textura contra tu piel.',
+    resetGroundingS3S5: '¿Hay algún aroma en el aire?\nSimplemente nómbralo y déjalo ir.',
+    resetGroundingS3S6: 'Tus pies están en el suelo.\nEstás a salvo y firme.',
+
+    resetGroundingStepProgress: 'Paso {current} de {total}',
+    resetGroundingTimeProgress: '~{seconds}s restantes',
+
+    // Micro-Diary
+    microDiary: 'Micro-diario',
+    todaysReflection: 'Reflexión de hoy',
+    editing: 'Editando',
+    reflectionExplanationTitle: 'Ejercicio de reflexión (diario, 1–3 minutos)',
+    reflectionExplanationText: ' - una de las herramientas más poderosas para cuidar tu bienestar mental. Anotar tus pensamientos te ayuda a ver patrones, descubrir qué eleva tu estado de ánimo. Llevar un diario puede apoyar el afrontamiento y reducir el impacto de eventos estresantes – potencialmente evitando el agotamiento y la ansiedad crónica.',
+    reflectionLearnMore: 'Aprende más sobre los beneficios de llevar un diario',
+
+    // Practices
+    practices: 'Prácticas',
+    practicesSubtitle: 'Herramientas suaves para la conciencia del estado de ánimo y bienestar',
+    dailyReflection: 'Reflexión Diaria (Micro-diario)',
+    dailyReflectionDesc: 'Una de las herramientas más poderosas para entender e mejorar tu estado de ánimo.',
+    dailyReflectionTime: '2–3 minutos',
+    gratitudePractice: 'Práctica de Gratitud',
+    gratitudePracticeDesc: 'Observa pequeños momentos positivos de hoy.',
+    gratitudePracticeTime: '1–2 minutos',
+    moodInfluencers: 'Influencers del Humor',
+    moodInfluencersDesc: 'Identifica qué influenció tu humor hoy.',
+    moodInfluencersTime: '1 minuto',
+    oneMinuteReset: 'Reset de 1 Minuto',
+    oneMinuteResetDesc: 'Una pausa rápida para calmar el cuerpo y la mente.',
+    oneMinuteResetTime: '1 minuto',
+    helpfulReading: 'Lectura Útil',
+    helpfulReadingDesc: 'Artículos cortos para apoyar el humor y el autocuidado.',
+    helpfulReadingTime: 'Opcional',
+    backToPractices: 'Volver a Prácticas',
+
+    reflectionPrompt1: '¿Qué te hizo sentir bien hoy?',
+    reflectionPrompt2: '¿Qué drenó tu energía hoy?',
+    reflectionPrompt1Yesterday: '¿Qué te hizo sentir bien ayer?',
+    reflectionPrompt2Yesterday: '¿Qué drenó tu energía ayer?',
+    reflectionForDate: 'Reflexión para el {date}',
+    today: 'Hoy',
+    yesterday: 'Ayer',
+    reflectionHistory: 'Historial de reflexiones',
+    noReflections: 'Aún no hay reflexiones. Empieza agregando la reflexión de hoy arriba.',
+    reflectionSaved: 'Gracias por tomarte un momento para ti.',
+    gratitudeHistory: 'Historial de gratitud',
+    noGratitudeEntries: 'Aún no hay entradas de gratitud. Empieza agregando la gratitud de hoy arriba.',
+    gratitudeSaved: '¡Gratitud guardada!',
+    moodInfluencersHistory: 'Historial de influencers del humor',
+    noMoodInfluencersEntries: 'Aún no hay entradas de influencers del humor. Empieza agregando tus influencers de hoy arriba.',
+    moodInfluencersSaved: '¡Influencers del humor guardados!',
+    shortNotesEnough: 'Las notas cortas son suficientes 💜',
+    exportHistoryAsPDF: 'Exportar Historial como PDF',
+    exportReflections: 'Exportar Reflexiones',
+    exportAll: 'Exportar Todo',
+    exportRange: 'Exportar Rango de Fechas',
+    fromDate: 'Desde',
+    toDate: 'Hasta',
+    cancel: 'Cancelar',
+    export: 'Exportar',
 
     // Settings
     settingsTitle: 'Configuración',
@@ -639,7 +797,7 @@ export const translations = {
     resetChooseType: 'Escolha Seu Reset',
     resetDescription: 'Tire um momento para encontrar sua calma',
     resetBreathingTitle: 'Reset Respiratório',
-    resetBreathingDesc: 'Respiração guiada com aterramento',
+    resetBreathingDesc: 'Respiração guiada',
     resetBodyTitle: 'Reset Corporal',
     resetBodyDesc: 'Relaxe seus ombros, mandíbula e respiração',
     resetThoughtTitle: 'Reset Mental',
@@ -655,6 +813,34 @@ export const translations = {
     resetCompletedDesc: 'Tire um momento para notar como você se sente',
     resetAgain: 'Faça Outro Reset',
     resetSubtitle: 'Um reset gentil para encontrar sua calma',
+    resetGroundingAllSensesTitle: 'Grounding Reset',
+    resetGroundingAllSensesDesc: 'Gently reconnect with the present moment',
+    resetGroundingStep1: 'Tome uma respiração lenta...\nE expire suavemente.',
+    resetGroundingStep2: 'Note um som ao seu redor.\nPerto ou longe.',
+    resetGroundingStep3: 'Encontre uma coisa que você possa ver.\nDeixe seus olhos descansarem nela.',
+    resetGroundingStep4: 'Sinta uma sensação física.\nSeus pés, mãos ou a superfície em que você está.',
+    resetGroundingStep5: 'Note um cheiro ou gosto.\nSe nada se destacar, tudo bem.',
+    resetGroundingStep6: 'Você está aqui.\nEste momento é suficiente.',
+    resetGroundingComplete: 'Aterramento concluído',
+
+    // Grounding Set 2: Sensory Connection
+    resetGroundingS2S1: 'Deixe sua respiração ser suave.\nComo uma onda gentil.',
+    resetGroundingS2S2: 'Ouça um som baixo.\nAlgo que você costuma ignorar.',
+    resetGroundingS2S3: 'Procure uma cor que você goste.\nNote sua tonalidade e luz.',
+    resetGroundingS2S4: 'Note o peso do seu corpo.\nSentindo-se segurado e apoiado.',
+    resetGroundingS2S5: 'O ar pode ter uma textura.\nNote como ele se sente em seu nariz ou boca.',
+    resetGroundingS2S6: 'Descanse nesta quietude.\nVocê tem tudo o que precisa.',
+
+    // Grounding Set 3: Gentle Awareness
+    resetGroundingS3S1: 'Encha seus pulmões lentamente.\nSolte toda a tensão ao expirar.',
+    resetGroundingS3S2: 'Qual é o som mais distante que você pode ouvir?\nApenas observe-o.',
+    resetGroundingS3S3: 'Observe uma forma próxima.\nSiga suas bordas com seus olhos.',
+    resetGroundingS3S4: 'Sinta o tecido da sua roupa.\nNote sua textura contra sua pele.',
+    resetGroundingS3S5: 'Existe um aroma no ar?\nSimplesmente dê um nome e deixe-o ir.',
+    resetGroundingS3S6: 'Seus pés estão no chão.\nVocê está seguro e firme.',
+
+    resetGroundingStepProgress: 'Passo {current} de {total}',
+    resetGroundingTimeProgress: '~{seconds}s restantes',
 
     // Micro-Diary
     microDiary: 'Micro-diário',
@@ -918,7 +1104,7 @@ export const translations = {
     resetChooseType: 'Choisissez Votre Reset',
     resetDescription: 'Prenez un moment pour trouver votre calme',
     resetBreathingTitle: 'Reset Respiratoire',
-    resetBreathingDesc: 'Respiration guidée avec ancrage',
+    resetBreathingDesc: 'Respiration guidée',
     resetBodyTitle: 'Reset Corporel',
     resetBodyDesc: 'Détendez vos épaules, mâchoire et respiration',
     resetThoughtTitle: 'Reset Mental',
@@ -934,6 +1120,15 @@ export const translations = {
     resetCompletedDesc: 'Prenez un moment pour remarquer comment vous vous sentez',
     resetAgain: 'Faire un Autre Reset',
     resetSubtitle: 'Un reset doux pour trouver votre calme',
+    resetGroundingAllSensesTitle: 'Grounding Reset',
+    resetGroundingAllSensesDesc: 'Gently reconnect with the present moment',
+    resetGroundingStep1: 'Take one slow breath in…\nAnd gently breathe out.',
+    resetGroundingStep2: 'Notice one sound around you.\nNear or far.',
+    resetGroundingStep3: 'Find one thing you can see.\nLet your eyes rest on it.',
+    resetGroundingStep4: 'Feel one physical sensation.\nYour feet, hands, or the surface you’re on.',
+    resetGroundingStep5: 'Notice a smell or taste.\nIf nothing stands out, that’s okay.',
+    resetGroundingStep6: 'You are here.\nThis moment is enough.',
+    resetGroundingComplete: 'Grounding complete',
 
     // Micro-Diary
     microDiary: 'Micro-journal',
@@ -1197,7 +1392,7 @@ export const translations = {
     resetChooseType: 'Wählen Sie Ihren Reset',
     resetDescription: 'Nehmen Sie sich einen Moment, um Ihre Ruhe zu finden',
     resetBreathingTitle: 'Atmungs-Reset',
-    resetBreathingDesc: 'Geführte Atmung mit Erdung',
+    resetBreathingDesc: 'Geführte Atmung',
     resetBodyTitle: 'Körper-Reset',
     resetBodyDesc: 'Entspannen Sie Ihre Schultern, Kiefer und Atmung',
     resetThoughtTitle: 'Gedanken-Reset',
@@ -1476,7 +1671,7 @@ export const translations = {
     resetChooseType: 'अपना रीसेट चुनें',
     resetDescription: 'अपनी शांति खोजने के लिए एक पल लें',
     resetBreathingTitle: 'श्वसन रीसेट',
-    resetBreathingDesc: 'ग्राउंडिंग के साथ निर्देशित श्वसन',
+    resetBreathingDesc: 'निर्देशित श्वसन',
     resetBodyTitle: 'शरीर रीसेट',
     resetBodyDesc: 'अपने कंधों, जबड़े और श्वसन को आराम दें',
     resetThoughtTitle: 'विचार रीसेट',
@@ -1755,7 +1950,7 @@ export const translations = {
     resetChooseType: 'Pilih Reset Anda',
     resetDescription: 'Luangkan waktu sejenak untuk menemukan ketenangan Anda',
     resetBreathingTitle: 'Reset Pernapasan',
-    resetBreathingDesc: 'Pernapasan terpandu dengan grounding',
+    resetBreathingDesc: 'Pernapasan terpandu',
     resetBodyTitle: 'Reset Tubuh',
     resetBodyDesc: 'Rilekskan bahu, rahang, dan napas Anda',
     resetThoughtTitle: 'Reset Pikiran',
@@ -2034,7 +2229,7 @@ export const translations = {
     resetChooseType: 'Reset\'inizi Seçin',
     resetDescription: 'Sakinliğinizi bulmak için bir an ayırın',
     resetBreathingTitle: 'Nefes Reset',
-    resetBreathingDesc: 'Yer grounding ile rehberli nefes',
+    resetBreathingDesc: 'Rehberli nefes',
     resetBodyTitle: 'Vücut Reset',
     resetBodyDesc: 'Omuzlarınızı, çenenizi ve nefesinizi gevşetin',
     resetThoughtTitle: 'Düşünce Reset',
@@ -2313,7 +2508,7 @@ export const translations = {
     resetChooseType: 'اختر إعادة التعيين الخاصة بك',
     resetDescription: 'خذ لحظة للعثور على هدوئك',
     resetBreathingTitle: 'إعادة تعيين التنفس',
-    resetBreathingDesc: 'تنفس موجه مع التأريض',
+    resetBreathingDesc: 'تنفس موجه',
     resetBodyTitle: 'إعادة تعيين الجسم',
     resetBodyDesc: 'استرخِ كتفيك وفكك وتنفسك',
     resetThoughtTitle: 'إعادة تعيين الأفكار',
@@ -2507,7 +2702,7 @@ export const translations = {
     prevMonth: 'Предыдущий месяц',
     nextMonth: 'Следующий месяц',
     weekDays: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
-    
+
     // Calendar Legend
     legendTitle: 'Прогнозы:',
     legendPeriod: 'Период',
@@ -2592,7 +2787,7 @@ export const translations = {
     resetChooseType: 'Выберите Ваш Сброс',
     resetDescription: 'Возьмите момент, чтобы найти своё спокойствие',
     resetBreathingTitle: 'Сброс Дыхания',
-    resetBreathingDesc: 'Направленное дыхание с заземлением',
+    resetBreathingDesc: 'Направленное дыхание',
     resetBodyTitle: 'Сброс Тела',
     resetBodyDesc: 'Расслабьте плечи, челюсть и дыхание',
     resetThoughtTitle: 'Сброс Мыслей',
@@ -2674,7 +2869,7 @@ export const translations = {
     remindersDeniedDescription: 'Уведомления заблокированы. Пожалуйста, включите их в настройках вашего браузера, чтобы использовать эту функцию.',
     notificationTitle: 'Как вы себя чувствуете?',
     notificationBody: 'Не забудьте записать свое настроение в Дневнике хорошего самочувствия!',
-    
+
     // Data Management
     dataManagement: 'Управление данными',
     exportData: 'Экспорт данных',

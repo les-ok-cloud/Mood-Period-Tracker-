@@ -4,15 +4,15 @@ import { ReflectionEntry } from '../types';
 // Utility to detect mobile devices
 export const isMobileDevice = (): boolean => {
   return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-         (window.innerWidth <= 768 && window.innerHeight <= 1024);
+    (window.innerWidth <= 768 && window.innerHeight <= 1024);
 };
 
 // Utility to detect if we're in a WebView
 export const isWebView = (): boolean => {
   const userAgent = navigator.userAgent;
   return /wv|WebView/i.test(userAgent) ||
-         (window.webkit && window.webkit.messageHandlers) ||
-         !window.navigator.standalone;
+    (window.webkit && window.webkit.messageHandlers) ||
+    !window.navigator.standalone;
 };
 
 // Utility to check if the Web Share API is supported and has file sharing
@@ -132,7 +132,7 @@ export class ReflectionPDFExporter {
   }
 
   public generatePDF(
-    reflections: Record<string, ReflectionEntry>,
+    reflections: ReflectionEntry[] | Record<string, ReflectionEntry>,
     filters: PDFExportFilters = {},
     appTitle: string = 'Mood Period Tracker'
   ): Promise<Blob> {
@@ -150,7 +150,9 @@ export class ReflectionPDFExporter {
       this.currentY += this.lineHeight * 2;
 
       // Filter and sort entries
-      let filteredEntries = Object.values(reflections);
+      let filteredEntries = Array.isArray(reflections)
+        ? [...reflections]
+        : Object.values(reflections);
 
       // Apply date filters
       if (filters.startDate) {
@@ -198,7 +200,7 @@ export class ReflectionPDFExporter {
   }
 
   public downloadPDF(
-    reflections: Record<string, ReflectionEntry>,
+    reflections: ReflectionEntry[] | Record<string, ReflectionEntry>,
     filters: PDFExportFilters = {},
     filename: string = 'reflection-history.pdf',
     appTitle?: string
@@ -210,7 +212,7 @@ export class ReflectionPDFExporter {
   }
 
   public async exportPDF(
-    reflections: Record<string, ReflectionEntry>,
+    reflections: ReflectionEntry[] | Record<string, ReflectionEntry>,
     filters: PDFExportFilters = {},
     filename: string = 'reflection-history.pdf',
     appTitle?: string

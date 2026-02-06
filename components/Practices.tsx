@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
 import { usePracticeSync } from '../hooks/usePracticeSync';
@@ -166,13 +166,12 @@ export const Practices: React.FC = () => {
       <div className="container mx-auto screen-padding max-w-5xl safe-bottom">
         {/* Sync Status Indicator */}
         <div className="mb-4 flex justify-center">
-          <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm ${
-            syncStatus.isOnline
-              ? syncStatus.isSyncing
-                ? 'bg-blue-100 text-blue-700'
-                : 'bg-green-100 text-green-700'
-              : 'bg-orange-100 text-orange-700'
-          }`}>
+          <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm ${syncStatus.isOnline
+            ? syncStatus.isSyncing
+              ? 'bg-blue-100 text-blue-700'
+              : 'bg-green-100 text-green-700'
+            : 'bg-orange-100 text-orange-700'
+            }`}>
             {syncStatus.isOnline ? (
               syncStatus.isSyncing ? (
                 <>
@@ -288,11 +287,10 @@ const PracticeCard: React.FC<PracticeCardProps> = ({ practice, onClick, onToggle
           e.stopPropagation();
           onTogglePin(practice.id);
         }}
-        className={`absolute top-3 ${isRTL ? 'left-3' : 'right-3'} p-2 rounded-full transition-all duration-200 ${
-          practice.isPinned
-            ? 'bg-yellow-100 text-yellow-600 hover:bg-yellow-200'
-            : 'bg-slate-100 text-slate-400 hover:bg-slate-200 hover:text-slate-600'
-        }`}
+        className={`absolute top-3 ${isRTL ? 'left-3' : 'right-3'} p-2 rounded-full transition-all duration-200 ${practice.isPinned
+          ? 'bg-yellow-100 text-yellow-600 hover:bg-yellow-200'
+          : 'bg-slate-100 text-slate-400 hover:bg-slate-200 hover:text-slate-600'
+          }`}
         title={practice.isPinned ? 'Unpin practice' : 'Pin practice'}
       >
         <svg className="w-4 h-4" fill={practice.isPinned ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
@@ -380,7 +378,7 @@ const GratitudePractice: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   const today = new Date();
   const yesterday = new Date(today);
   yesterday.setDate(yesterday.getDate() - 1);
-  
+
   const selectedDate = gratitudeDate === 'today' ? today : yesterday;
   const selectedDateKey = getFormattedDate(selectedDate);
 
@@ -550,10 +548,10 @@ const GratitudePractice: React.FC<{ onBack: () => void }> = ({ onBack }) => {
           <div className="mb-4 flex items-center justify-between">
             <div>
               <h3 className="text-xl font-bold text-slate-700">
-                {editingDate && editingDate !== selectedDateKey 
+                {editingDate && editingDate !== selectedDateKey
                   ? `Editing: ${new Date(editingDate).toLocaleDateString(locale || 'en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`
-                  : gratitudeDate === 'today' 
-                    ? 'Today\'s Gratitude' 
+                  : gratitudeDate === 'today'
+                    ? 'Today\'s Gratitude'
                     : `Gratitude for ${selectedDate.toLocaleDateString(locale || 'en-US', { month: 'long', day: 'numeric' })}`}
               </h3>
               {editingDate && editingDate !== selectedDateKey && (
@@ -566,11 +564,10 @@ const GratitudePractice: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                   setGratitudeDate('today');
                   setEditingDate(null); // Clear editing date when switching to today
                 }}
-                className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
-                  gratitudeDate === 'today'
-                    ? 'bg-pink-600 text-white'
-                    : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
-                }`}
+                className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${gratitudeDate === 'today'
+                  ? 'bg-pink-600 text-white'
+                  : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                  }`}
               >
                 {t.today || 'Today'}
               </button>
@@ -579,11 +576,10 @@ const GratitudePractice: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                   setGratitudeDate('yesterday');
                   setEditingDate(null); // Clear editing date when switching to yesterday
                 }}
-                className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
-                  gratitudeDate === 'yesterday'
-                    ? 'bg-pink-600 text-white'
-                    : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
-                }`}
+                className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${gratitudeDate === 'yesterday'
+                  ? 'bg-pink-600 text-white'
+                  : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                  }`}
               >
                 {t.yesterday || 'Yesterday'}
               </button>
@@ -601,29 +597,29 @@ const GratitudePractice: React.FC<{ onBack: () => void }> = ({ onBack }) => {
             />
           </div>
 
-            <div className="flex justify-between items-center">
-              <div className="flex gap-2">
+          <div className="flex justify-between items-center">
+            <div className="flex gap-2">
+              <button
+                onClick={saveGratitude}
+                disabled={isSaving || !gratitude.trim()}
+                className="bg-pink-600 text-white font-medium py-2 px-6 rounded-lg hover:bg-pink-700 disabled:bg-pink-400 disabled:cursor-not-allowed transition-colors"
+              >
+                {isSaving ? 'Saving...' : 'Save Gratitude'}
+              </button>
+              {editingEntryId && (
                 <button
-                  onClick={saveGratitude}
-                  disabled={isSaving || !gratitude.trim()}
-                  className="bg-pink-600 text-white font-medium py-2 px-6 rounded-lg hover:bg-pink-700 disabled:bg-pink-400 disabled:cursor-not-allowed transition-colors"
+                  onClick={cancelEdit}
+                  className="bg-slate-600 text-white font-medium py-2 px-6 rounded-lg hover:bg-slate-700 transition-colors"
                 >
-                  {isSaving ? 'Saving...' : 'Save Gratitude'}
+                  Cancel Edit
                 </button>
-                {editingEntryId && (
-                  <button
-                    onClick={cancelEdit}
-                    className="bg-slate-600 text-white font-medium py-2 px-6 rounded-lg hover:bg-slate-700 transition-colors"
-                  >
-                    Cancel Edit
-                  </button>
-                )}
-              </div>
-
-              {savedMessage && (
-                <span className="text-sm text-green-600 font-medium">{savedMessage}</span>
               )}
             </div>
+
+            {savedMessage && (
+              <span className="text-sm text-green-600 font-medium">{savedMessage}</span>
+            )}
+          </div>
         </div>
       </div>
 
@@ -748,7 +744,7 @@ const MoodInfluencersPractice: React.FC<{ onBack: () => void }> = ({ onBack }) =
   const today = new Date();
   const yesterday = new Date(today);
   yesterday.setDate(yesterday.getDate() - 1);
-  
+
   const selectedDate = influencerDate === 'today' ? today : yesterday;
   const selectedDateKey = getFormattedDate(selectedDate);
 
@@ -934,11 +930,10 @@ const MoodInfluencersPractice: React.FC<{ onBack: () => void }> = ({ onBack }) =
                   setInfluencerDate('today');
                   setEditingDate(null); // Clear editing date when switching to today
                 }}
-                className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
-                  influencerDate === 'today'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
-                }`}
+                className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${influencerDate === 'today'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                  }`}
               >
                 {t.today || 'Today'}
               </button>
@@ -947,11 +942,10 @@ const MoodInfluencersPractice: React.FC<{ onBack: () => void }> = ({ onBack }) =
                   setInfluencerDate('yesterday');
                   setEditingDate(null); // Clear editing date when switching to yesterday
                 }}
-                className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
-                  influencerDate === 'yesterday'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
-                }`}
+                className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${influencerDate === 'yesterday'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                  }`}
               >
                 {t.yesterday || 'Yesterday'}
               </button>
@@ -963,11 +957,10 @@ const MoodInfluencersPractice: React.FC<{ onBack: () => void }> = ({ onBack }) =
               <button
                 key={influencer}
                 onClick={() => toggleInfluencer(influencer)}
-                className={`p-4 rounded-lg border-2 text-left transition-all duration-200 ${
-                  selectedInfluencers.includes(influencer)
-                    ? 'border-blue-500 bg-blue-50 text-blue-700'
-                    : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
-                }`}
+                className={`p-4 rounded-lg border-2 text-left transition-all duration-200 ${selectedInfluencers.includes(influencer)
+                  ? 'border-blue-500 bg-blue-50 text-blue-700'
+                  : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
+                  }`}
               >
                 {influencer}
               </button>
@@ -1096,8 +1089,8 @@ const OneMinuteResetPractice: React.FC<{ onBack: () => void }> = ({ onBack }) =>
   const { createEntry } = usePracticeSync(user?.uid || '');
 
   // Main states
-  const [currentPhase, setCurrentPhase] = useState<'selection' | 'breathing' | 'grounding' | 'completed'>('selection');
-  const [resetType, setResetType] = useState<'breathing' | 'body' | 'thought'>('breathing');
+  const [currentPhase, setCurrentPhase] = useState<'selection' | 'breathing' | 'grounding' | 'grounding_reset' | 'thought' | 'body' | 'completed'>('selection');
+  const [resetType, setResetType] = useState<'breathing' | 'body' | 'thought' | 'grounding'>('breathing');
 
   // Breathing states
   const [breathingStep, setBreathingStep] = useState<'inhale' | 'hold' | 'exhale'>('inhale');
@@ -1108,6 +1101,13 @@ const OneMinuteResetPractice: React.FC<{ onBack: () => void }> = ({ onBack }) =>
   // Grounding states
   const [groundingStep, setGroundingStep] = useState(0);
   const [showPrompt, setShowPrompt] = useState(true);
+  const [groundingSetIndex, setGroundingSetIndex] = useState(0);
+
+  // Thought states
+  const [thoughtStep, setThoughtStep] = useState(0);
+
+  // Body states
+  const [bodyStep, setBodyStep] = useState(0);
 
   // Check for reduced motion preference
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1117,6 +1117,51 @@ const OneMinuteResetPractice: React.FC<{ onBack: () => void }> = ({ onBack }) =>
     t.resetGroundingHear || "Notice 1 sound you can hear",
     t.resetGroundingFeel || "Feel 1 physical sensation in your body"
   ];
+
+  const groundingSets = useMemo(() => [
+    [
+      t.resetGroundingStep1 || "Take one slow breath in…\nAnd gently breathe out.",
+      t.resetGroundingStep2 || "Notice one sound around you.\nNear or far.",
+      t.resetGroundingStep3 || "Find one thing you can see.\nLet your eyes rest on it.",
+      t.resetGroundingStep4 || "Feel one physical sensation.\nYour feet, hands, or the surface you’re on.",
+      t.resetGroundingStep5 || "Notice a smell or taste.\nIf nothing stands out, that’s okay.",
+      t.resetGroundingStep6 || "You are here.\nThis moment is enough."
+    ],
+    [
+      t.resetGroundingS2S1 || "Let your breath be soft.\nLike a gentle wave.",
+      t.resetGroundingS2S2 || "Listen for a quiet sound.\nSomething you normally ignore.",
+      t.resetGroundingS2S3 || "Look for a color you like.\nNotice its shade and light.",
+      t.resetGroundingS2S4 || "Notice the weight of your body.\nFeeling held and supported.",
+      t.resetGroundingS2S5 || "Air can have a texture.\nNotice how it feels in your nose or mouth.",
+      t.resetGroundingS2S6 || "Rest in this stillness.\nYou have everything you need."
+    ],
+    [
+      t.resetGroundingS3S1 || "Fill your lungs slowly.\nRelease all tension as you exhale.",
+      t.resetGroundingS3S2 || "What is the furthest sound you can hear?\nJust observe it.",
+      t.resetGroundingS3S3 || "Observe a shape nearby.\nTrace its edges with your eyes.",
+      t.resetGroundingS3S4 || "Feel the fabric of your clothes.\nNotice its texture against your skin.",
+      t.resetGroundingS3S5 || "Is there a scent in the air?\nSimply name it and let it go.",
+      t.resetGroundingS3S6 || "Your feet are on the ground.\nYou are safe and steady."
+    ]
+  ], [t]);
+
+  const thoughtResetSteps = useMemo(() => [
+    { text: t.resetThoughtStep1 || "Take a slow breath.\nYou don’t need to change anything.", duration: 6000 },
+    { text: t.resetThoughtStep2 || "Notice what thoughts are present right now.\nThere’s no need to judge them.", duration: 10000 },
+    { text: t.resetThoughtStep3 || "Gently name the thought:\nplanning, worrying, remembering.", duration: 10000 },
+    { text: t.resetThoughtStep4 || "Imagine the thought floating by,\nlike a cloud.", duration: 15000 },
+    { text: t.resetThoughtStep5 || "Bring your attention back to your body.\nFeel your breath or your feet.", duration: 10000 },
+    { text: t.resetThoughtStep6 || "You don’t have to solve everything right now.", duration: 10000 }
+  ], [t]);
+
+  const bodyResetSteps = useMemo(() => [
+    { text: t.resetBodyStep1 || "Take a slow breath in…\nand gently breathe out.", duration: 7000 },
+    { text: t.resetBodyStep2 || "Gently lift your shoulders…\nand let them drop.", duration: 10000 },
+    { text: t.resetBodyStep3 || "Unclench your jaw.\nLet your tongue rest softly.", duration: 10000 },
+    { text: t.resetBodyStep4 || "Relax your hands.\nLet your fingers soften.", duration: 10000 },
+    { text: t.resetBodyStep5 || "Breathe in slowly…\nBreathe out gently…", duration: 15000 },
+    { text: t.resetBodyStep6 || "Notice how your body feels now.\nEven a small shift is enough.", duration: 7000 }
+  ], [t]);
 
   // Breathing animation effect
   React.useEffect(() => {
@@ -1149,7 +1194,7 @@ const OneMinuteResetPractice: React.FC<{ onBack: () => void }> = ({ onBack }) =>
             setTimeLeft(4);
             setCycleCount(prev => prev + 1);
           } else {
-            // Breathing complete, move to grounding
+            // Breathing complete, move to grounding (normal grounding sub-phase)
             setCurrentPhase('grounding');
             setGroundingStep(0);
             setShowPrompt(true);
@@ -1162,13 +1207,18 @@ const OneMinuteResetPractice: React.FC<{ onBack: () => void }> = ({ onBack }) =>
     return () => clearInterval(interval);
   }, [currentPhase, breathingStep, timeLeft, cycleCount]);
 
-  // Grounding auto-advance effect
+
+  // Grounding auto-advance effect (for both normal grounding and new grounding reset)
   React.useEffect(() => {
-    if (currentPhase !== 'grounding' || !showPrompt) return;
+    if ((currentPhase !== 'grounding' && currentPhase !== 'grounding_reset') || !showPrompt) return;
+
+    const isFullReset = currentPhase === 'grounding_reset';
+    const prompts = isFullReset ? groundingSets[groundingSetIndex] : groundingPrompts;
+    const duration = isFullReset ? 10000 : 4000; // 10s for new reset steps, 4s for breathing-sub-phase
 
     const timer = setTimeout(() => {
       setShowPrompt(false);
-      if (groundingStep < groundingPrompts.length - 1) {
+      if (groundingStep < prompts.length - 1) {
         setTimeout(() => {
           setGroundingStep(prev => prev + 1);
           setShowPrompt(true);
@@ -1187,39 +1237,113 @@ const OneMinuteResetPractice: React.FC<{ onBack: () => void }> = ({ onBack }) =>
           }
         }, 2000); // Show completion for 2 seconds
       }
-    }, 4000); // Show each prompt for 4 seconds
+    }, duration);
 
     return () => clearTimeout(timer);
-  }, [currentPhase, groundingStep, showPrompt, groundingPrompts.length, resetType, user?.uid, createEntry]);
 
-  const startReset = (type: 'breathing' | 'body' | 'thought') => {
+    return () => clearTimeout(timer);
+  }, [currentPhase, groundingStep, showPrompt, groundingSets, groundingSetIndex, groundingPrompts, resetType, user?.uid, createEntry]);
+
+  // Thought Reset auto-advance effect
+  React.useEffect(() => {
+    if (currentPhase !== 'thought' || !showPrompt) return;
+
+    const currentStepConfig = thoughtResetSteps[thoughtStep];
+    const duration = currentStepConfig?.duration || 10000;
+
+    const timer = setTimeout(() => {
+      setShowPrompt(false);
+
+      const nextStepDelay = setTimeout(() => {
+        if (thoughtStep < thoughtResetSteps.length - 1) {
+          setThoughtStep(prev => prev + 1);
+          setShowPrompt(true);
+        } else {
+          // Completed
+          setCurrentPhase('completed');
+          if (user?.uid) {
+            createEntry(PracticeType.OneMinuteReset, {
+              type: 'thought',
+              completed: true,
+              completedAt: new Date().toISOString()
+            }).catch(error => console.error('Error saving reset completion:', error));
+          }
+        }
+      }, 1500); // 1.5s fade transition between thought prompts
+
+    }, duration);
+
+    return () => {
+      clearTimeout(timer);
+    };
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [currentPhase, thoughtStep, showPrompt, thoughtResetSteps, user?.uid, createEntry]);
+
+  // Body Reset auto-advance effect
+  React.useEffect(() => {
+    if (currentPhase !== 'body' || !showPrompt) return;
+
+    const currentStepConfig = bodyResetSteps[bodyStep];
+    const duration = currentStepConfig?.duration || 10000;
+
+    const timer = setTimeout(() => {
+      setShowPrompt(false);
+
+      const nextStepDelay = setTimeout(() => {
+        if (bodyStep < bodyResetSteps.length - 1) {
+          setBodyStep(prev => prev + 1);
+          setShowPrompt(true);
+        } else {
+          // Completed
+          setCurrentPhase('completed');
+          if (user?.uid) {
+            createEntry(PracticeType.OneMinuteReset, {
+              type: 'body',
+              completed: true,
+              completedAt: new Date().toISOString()
+            }).catch(error => console.error('Error saving reset completion:', error));
+          }
+        }
+      }, 1500); // 1.5s fade transition between body prompts
+
+    }, duration);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [currentPhase, bodyStep, showPrompt, bodyResetSteps, user?.uid, createEntry]);
+
+  const startReset = (type: 'breathing' | 'body' | 'thought' | 'grounding') => {
     setResetType(type);
-    setCurrentPhase(type === 'breathing' ? 'breathing' : 'completed');
 
     if (type === 'breathing') {
+      setCurrentPhase('breathing');
       setBreathingStep('inhale');
       setCycleCount(1);
       setTimeLeft(4);
       setCircleScale(1);
-    } else if (type === 'body') {
-      // Body reset - just mark as completed immediately
-      setTimeout(() => {
-        setCurrentPhase('completed');
-        if (user?.uid) {
-          createEntry(PracticeType.OneMinuteReset, {
-            type: 'body',
-            completed: true,
-            completedAt: new Date().toISOString()
-          }).catch(error => console.error('Error saving reset completion:', error));
-        }
-      }, 2000);
+    } else if (type === 'grounding') {
+      // Pick a random copy set for the full Grounding Reset
+      setGroundingSetIndex(Math.floor(Math.random() * groundingSets.length));
+      setCurrentPhase('grounding_reset');
+      setGroundingStep(0);
+      setShowPrompt(true);
     } else if (type === 'thought') {
-      // Thought reset - just mark as completed immediately
+      setCurrentPhase('thought');
+      setThoughtStep(0);
+      setShowPrompt(true);
+    } else if (type === 'body') {
+      setCurrentPhase('body');
+      setBodyStep(0);
+      setShowPrompt(true);
+    } else {
+      setCurrentPhase('completed');
       setTimeout(() => {
-        setCurrentPhase('completed');
         if (user?.uid) {
           createEntry(PracticeType.OneMinuteReset, {
-            type: 'thought',
+            type: type,
             completed: true,
             completedAt: new Date().toISOString()
           }).catch(error => console.error('Error saving reset completion:', error));
@@ -1235,6 +1359,8 @@ const OneMinuteResetPractice: React.FC<{ onBack: () => void }> = ({ onBack }) =>
     setTimeLeft(4);
     setCircleScale(1);
     setGroundingStep(0);
+    setThoughtStep(0);
+    setBodyStep(0);
     setShowPrompt(true);
   };
 
@@ -1258,9 +1384,8 @@ const OneMinuteResetPractice: React.FC<{ onBack: () => void }> = ({ onBack }) =>
         <div className="w-48 h-48 rounded-full border-4 border-green-200 flex items-center justify-center">
           {/* Breathing circle */}
           <div
-            className={`w-24 h-24 rounded-full bg-green-100 border-4 border-green-400 transition-all duration-1000 ease-out ${
-              prefersReducedMotion ? '' : ''
-            }`}
+            className={`w-24 h-24 rounded-full bg-green-100 border-4 border-green-400 transition-all duration-1000 ease-out ${prefersReducedMotion ? '' : ''
+              }`}
             style={{
               transform: `scale(${circleScale})`,
               transition: prefersReducedMotion ? 'none' : 'transform 1s ease-out'
@@ -1282,49 +1407,232 @@ const OneMinuteResetPractice: React.FC<{ onBack: () => void }> = ({ onBack }) =>
     </div>
   );
 
-  const GroundingExercise = () => (
-    <div className="text-center">
-      <div className="mb-8">
-        <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-blue-100 flex items-center justify-center">
-          <svg className="w-12 h-12 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-          </svg>
-        </div>
-        <h3 className="text-xl font-semibold text-slate-700 mb-4">
-          {t.resetGroundingTitle || 'Ground Yourself'}
-        </h3>
-      </div>
+  const GroundingExercise = () => {
+    const isFullReset = currentPhase === 'grounding_reset';
+    const prompts = isFullReset ? groundingSets[groundingSetIndex] : groundingPrompts;
+    const currentPrompt = prompts[groundingStep];
+    const title = isFullReset ? t.resetGroundingAllSensesTitle : t.resetGroundingTitle;
+    const stepDuration = isFullReset ? 10000 : 4000;
 
-      {showPrompt && (
-        <div className="mb-8">
-          <p className="text-xl text-slate-700 leading-relaxed mb-6">
-            {groundingPrompts[groundingStep]}
-          </p>
-          <button
-            onClick={() => setShowPrompt(false)}
-            className="bg-blue-600 text-white font-medium py-2 px-6 rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            {t.next || 'Next'}
-          </button>
-        </div>
-      )}
+    // Calculate session progress
+    const totalSteps = prompts.length;
+    const secondsRemaining = (totalSteps - groundingStep) * (stepDuration / 1000);
 
-      {!showPrompt && groundingStep < groundingPrompts.length - 1 && (
-        <div className="flex items-center justify-center space-x-2">
-          <div className="flex space-x-1">
-            {groundingPrompts.map((_, index) => (
-              <div
-                key={index}
-                className={`w-2 h-2 rounded-full ${
-                  index <= groundingStep ? 'bg-blue-600' : 'bg-slate-300'
-                }`}
-              />
-            ))}
+    const stepLabel = (t.resetGroundingStepProgress || 'Step {current} of {total}')
+      .replace('{current}', (groundingStep + 1).toString())
+      .replace('{total}', totalSteps.toString());
+
+    const timeLabel = (t.resetGroundingTimeProgress || '~{seconds}s left')
+      .replace('{seconds}', secondsRemaining.toString());
+
+    return (
+      <div className="text-center min-h-[350px] flex flex-col justify-center relative overflow-hidden">
+        {/* Step Progress Bar */}
+        <div className="absolute top-0 left-0 w-full h-1.5 bg-slate-200/50 overflow-hidden">
+          <div
+            key={`grounding-bar-${groundingStep}`} // Reset element and animation on each step
+            className="h-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.4)]"
+            style={{
+              width: '100%',
+              transformOrigin: 'left',
+              animation: `grounding-progress-scale ${stepDuration}ms linear forwards`,
+              opacity: showPrompt ? 1 : 0,
+              transition: 'opacity 0.2s ease-out'
+            }}
+          />
+        </div>
+
+        <div className="mb-10 mt-4">
+          <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-blue-50 flex items-center justify-center">
+            <svg className="w-10 h-10 text-blue-500 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+          </div>
+
+          <div className="space-y-1">
+            <h3 className="text-2xl font-bold text-slate-800">
+              {title || (isFullReset ? 'Grounding Reset' : 'Ground Yourself')}
+            </h3>
+            {isFullReset && (
+              <div className="flex items-center justify-center gap-3 text-xs font-medium text-slate-400 uppercase tracking-widest">
+                <span>{stepLabel}</span>
+                <span className="w-1 h-1 rounded-full bg-slate-200" />
+                <span>{timeLabel}</span>
+              </div>
+            )}
           </div>
         </div>
-      )}
-    </div>
-  );
+
+        <div className="h-40 flex flex-col justify-center px-6">
+          {showPrompt ? (
+            <div className={`animate-fade-in ${prefersReducedMotion ? 'opacity-100' : ''}`}>
+              <p className="text-2xl text-slate-700 leading-relaxed whitespace-pre-line font-medium">
+                {currentPrompt}
+              </p>
+            </div>
+          ) : (
+            <div className="flex items-center justify-center space-x-3">
+              <div className="flex space-x-2">
+                {prompts.map((_, index) => (
+                  <div
+                    key={index}
+                    className={`w-2 h-2 rounded-full transition-all duration-700 ${index <= groundingStep ? 'bg-blue-400 scale-110' : 'bg-slate-200 scale-100'
+                      }`}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {isFullReset && (
+          <div className="mt-8">
+            <button
+              onClick={() => {
+                setShowPrompt(false);
+                if (groundingStep < prompts.length - 1) {
+                  setGroundingStep(prev => prev + 1);
+                  setTimeout(() => setShowPrompt(true), 100);
+                } else {
+                  setCurrentPhase('completed');
+                }
+              }}
+              className="px-6 py-2 text-slate-400 hover:text-blue-500 hover:bg-blue-50 rounded-full text-sm font-medium transition-all"
+            >
+              Skip Step
+            </button>
+          </div>
+        )}
+
+        <style>{`
+          @keyframes grounding-progress-scale {
+            from { transform: scaleX(0); }
+            to { transform: scaleX(1); }
+          }
+          .animate-fade-in {
+            animation: fadeIn 1s ease-out forwards;
+          }
+          @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+        `}</style>
+      </div>
+    );
+  };
+
+
+
+  const ThoughtExercise = () => {
+    const step = thoughtResetSteps[thoughtStep];
+
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] relative overflow-hidden">
+        {/* Background drifting clouds/shapes */}
+        <div className="absolute inset-0 z-0 opacity-20 pointer-events-none">
+          <div className={`absolute top-10 left-10 w-32 h-32 bg-blue-100 rounded-full blur-3xl ${!prefersReducedMotion ? 'animate-drift-slow' : ''}`} />
+          <div className={`absolute bottom-20 right-10 w-48 h-48 bg-purple-100 rounded-full blur-3xl ${!prefersReducedMotion ? 'animate-drift-slower' : ''}`} style={{ animationDelay: '2s' }} />
+          <div className={`absolute top-1/2 left-1/2 w-40 h-40 bg-slate-100 rounded-full blur-3xl ${!prefersReducedMotion ? 'animate-drift-reverse' : ''}`} />
+        </div>
+
+        <div className={`relative z-10 max-w-lg px-6 text-center transition-opacity duration-1000 ${showPrompt ? 'opacity-100' : 'opacity-0'}`}>
+          <h3 className="text-2xl md:text-3xl font-medium text-slate-700 leading-relaxed whitespace-pre-line">
+            {step?.text}
+          </h3>
+        </div>
+
+        <div className="absolute bottom-10 z-20">
+          <button
+            onClick={() => {
+              setShowPrompt(false);
+              setTimeout(() => {
+                if (thoughtStep < thoughtResetSteps.length - 1) {
+                  setThoughtStep(prev => prev + 1);
+                  setShowPrompt(true);
+                } else {
+                  setCurrentPhase('completed');
+                }
+              }, 500);
+            }}
+            className="text-slate-400 hover:text-slate-600 text-sm font-medium px-4 py-2 transition-colors"
+          >
+            Skip
+          </button>
+        </div>
+
+        <style>{`
+          @keyframes drift {
+            0% { transform: translate(0, 0); }
+            50% { transform: translate(10px, -10px); }
+            100% { transform: translate(0, 0); }
+          }
+          .animate-drift-slow {
+             animation: drift 10s ease-in-out infinite;
+          }
+          .animate-drift-slower {
+             animation: drift 15s ease-in-out infinite reverse;
+          }
+          .animate-drift-reverse {
+             animation: drift 12s ease-in-out infinite;
+          }
+        `}</style>
+      </div>
+    );
+  };
+
+
+
+  const BodyExercise = () => {
+    const step = bodyResetSteps[bodyStep];
+
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] relative overflow-hidden">
+        {/* Background pulse effect */}
+        <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none">
+          <div className={`w-64 h-64 bg-green-50 rounded-full ${!prefersReducedMotion ? 'animate-pulse-slow' : ''}`} />
+          <div className={`absolute w-48 h-48 bg-green-100/50 rounded-full ${!prefersReducedMotion ? 'animate-pulse-slow delay-700' : ''}`} />
+        </div>
+
+        <div className={`relative z-10 max-w-lg px-6 text-center transition-opacity duration-1000 ${showPrompt ? 'opacity-100' : 'opacity-0'}`}>
+          <h3 className="text-2xl md:text-3xl font-medium text-slate-700 leading-relaxed whitespace-pre-line">
+            {step?.text}
+          </h3>
+        </div>
+
+        <div className="absolute bottom-10 z-20">
+          <button
+            onClick={() => {
+              setShowPrompt(false);
+              setTimeout(() => {
+                if (bodyStep < bodyResetSteps.length - 1) {
+                  setBodyStep(prev => prev + 1);
+                  setShowPrompt(true);
+                } else {
+                  setCurrentPhase('completed');
+                }
+              }, 500);
+            }}
+            className="text-slate-400 hover:text-slate-600 text-sm font-medium px-4 py-2 transition-colors"
+          >
+            Skip
+          </button>
+        </div>
+
+        <style>{`
+          @keyframes pulse-slow {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+          }
+          .animate-pulse-slow {
+             animation: pulse-slow 6s ease-in-out infinite;
+          }
+          .delay-700 {
+            animation-delay: 700ms;
+          }
+        `}</style>
+      </div>
+    );
+  };
 
   const ResetSelection = () => (
     <div className="space-y-4">
@@ -1353,7 +1661,61 @@ const OneMinuteResetPractice: React.FC<{ onBack: () => void }> = ({ onBack }) =>
               {t.resetBreathingTitle || 'Breathing Reset'}
             </h4>
             <p className="text-sm text-slate-600">
-              {t.resetBreathingDesc || 'Guided breathing with grounding'}
+              {t.resetBreathingDesc || 'Guided breathing'}
+            </p>
+          </div>
+          <svg className={`w-5 h-5 text-slate-400 ${isRTL ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </div>
+      </button>
+
+      {/* Grounding Reset (NEW) */}
+      <button
+        onClick={() => startReset('grounding')}
+        className="w-full bg-white border-2 border-slate-200 rounded-2xl p-6 hover:border-blue-400 transition-colors text-left"
+      >
+        <div className={`flex items-center gap-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
+          <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center">
+            <svg className="w-6 h-6 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          </div>
+          <div className={`flex-1 ${isRTL ? 'text-right' : ''}`}>
+            <h4 className="font-semibold text-slate-800">
+              {t.resetGroundingAllSensesTitle || 'Grounding Reset'}
+            </h4>
+            <div className="flex items-center gap-2">
+              <p className="text-sm text-slate-600">
+                {t.resetGroundingAllSensesDesc || 'Gently reconnect with the present moment'}
+              </p>
+              <span className="text-[10px] bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded uppercase font-bold tracking-wider">~1 min</span>
+            </div>
+          </div>
+          <svg className={`w-5 h-5 text-slate-400 ${isRTL ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </div>
+      </button>
+
+      {/* Thought Reset */}
+      <button
+        onClick={() => startReset('thought')}
+        className="w-full bg-white border-2 border-blue-200 rounded-2xl p-6 hover:border-blue-400 transition-colors text-left"
+      >
+        <div className={`flex items-center gap-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
+          <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
+            <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+            </svg>
+          </div>
+          <div className={`flex-1 ${isRTL ? 'text-right' : ''}`}>
+            <h4 className="font-semibold text-slate-800">
+              {t.resetThoughtTitle || 'Thought Reset'}
+            </h4>
+            <p className="text-sm text-slate-600">
+              {t.resetThoughtDesc || 'Gentle reflective prompts'}
             </p>
           </div>
           <svg className={`w-5 h-5 text-slate-400 ${isRTL ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1386,31 +1748,6 @@ const OneMinuteResetPractice: React.FC<{ onBack: () => void }> = ({ onBack }) =>
           </svg>
         </div>
       </button>
-
-      {/* Thought Reset */}
-      <button
-        onClick={() => startReset('thought')}
-        className="w-full bg-white border-2 border-blue-200 rounded-2xl p-6 hover:border-blue-400 transition-colors text-left"
-      >
-        <div className={`flex items-center gap-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
-          <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
-            <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-            </svg>
-          </div>
-          <div className={`flex-1 ${isRTL ? 'text-right' : ''}`}>
-            <h4 className="font-semibold text-slate-800">
-              {t.resetThoughtTitle || 'Thought Reset'}
-            </h4>
-            <p className="text-sm text-slate-600">
-              {t.resetThoughtDesc || 'Gentle reflective prompts'}
-            </p>
-          </div>
-          <svg className={`w-5 h-5 text-slate-400 ${isRTL ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-        </div>
-      </button>
     </div>
   );
 
@@ -1422,7 +1759,7 @@ const OneMinuteResetPractice: React.FC<{ onBack: () => void }> = ({ onBack }) =>
         </svg>
       </div>
       <h3 className="text-xl font-semibold text-slate-700 mb-2">
-        {t.resetCompleted || 'Reset Complete'}
+        {resetType === 'grounding' ? (t.resetGroundingComplete || 'Grounding complete') : (t.resetCompleted || 'Reset Complete')}
       </h3>
       <p className="text-slate-600 mb-8">
         {t.resetCompletedDesc || 'Take a moment to notice how you feel'}
@@ -1457,7 +1794,9 @@ const OneMinuteResetPractice: React.FC<{ onBack: () => void }> = ({ onBack }) =>
       <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-md p-8">
         {currentPhase === 'selection' && <ResetSelection />}
         {currentPhase === 'breathing' && <BreathingAnimation />}
-        {currentPhase === 'grounding' && <GroundingExercise />}
+        {(currentPhase === 'grounding' || currentPhase === 'grounding_reset') && <GroundingExercise />}
+        {currentPhase === 'thought' && <ThoughtExercise />}
+        {currentPhase === 'body' && <BodyExercise />}
         {currentPhase === 'completed' && <CompletedScreen />}
       </div>
     </div>
@@ -1803,11 +2142,10 @@ const MicroDiaryContent: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                     setReflectionDate('today');
                     setEditingDateKey(null);
                   }}
-                  className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
-                    reflectionDate === 'today' && !editingDateKey
-                      ? 'bg-purple-600 text-white'
-                      : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
-                  }`}
+                  className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${reflectionDate === 'today' && !editingDateKey
+                    ? 'bg-purple-600 text-white'
+                    : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                    }`}
                 >
                   {t.today || 'Today'}
                 </button>
@@ -1816,11 +2154,10 @@ const MicroDiaryContent: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                     setReflectionDate('yesterday');
                     setEditingDateKey(null);
                   }}
-                  className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
-                    reflectionDate === 'yesterday' && !editingDateKey
-                      ? 'bg-purple-600 text-white'
-                      : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
-                  }`}
+                  className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${reflectionDate === 'yesterday' && !editingDateKey
+                    ? 'bg-purple-600 text-white'
+                    : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                    }`}
                 >
                   {t.yesterday || 'Yesterday'}
                 </button>
@@ -1931,12 +2268,12 @@ const MicroDiaryContent: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                     <div className="mb-2 flex items-start gap-2">
                       <span className="text-green-600 font-bold text-lg leading-none mt-0.5">+</span>
                       <p className="text-slate-700 leading-relaxed flex-1 overflow-wrap-anywhere"
-                         style={{
-                           wordWrap: 'break-word',
-                           overflowWrap: 'break-word',
-                           wordBreak: 'break-word',
-                           hyphens: 'auto'
-                         }}>
+                        style={{
+                          wordWrap: 'break-word',
+                          overflowWrap: 'break-word',
+                          wordBreak: 'break-word',
+                          hyphens: 'auto'
+                        }}>
                         {reflection.goodFeeling.startsWith('+ ') ? reflection.goodFeeling.substring(2) : reflection.goodFeeling}
                       </p>
                     </div>
@@ -1946,12 +2283,12 @@ const MicroDiaryContent: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                     <div className="flex items-start gap-2">
                       <span className="text-orange-600 font-bold text-lg leading-none mt-0.5">-</span>
                       <p className="text-slate-700 leading-relaxed flex-1 overflow-wrap-anywhere"
-                         style={{
-                           wordWrap: 'break-word',
-                           overflowWrap: 'break-word',
-                           wordBreak: 'break-word',
-                           hyphens: 'auto'
-                         }}>
+                        style={{
+                          wordWrap: 'break-word',
+                          overflowWrap: 'break-word',
+                          wordBreak: 'break-word',
+                          hyphens: 'auto'
+                        }}>
                         {reflection.drainedEnergy.startsWith('- ') ? reflection.drainedEnergy.substring(2) : reflection.drainedEnergy}
                       </p>
                     </div>

@@ -19,6 +19,7 @@ import { useAuth } from './contexts/AuthContext';
 import { Login } from './components/Login';
 import { db } from './lib/firebase';
 import { getPracticeSyncService, destroyPracticeSyncService } from './lib/practiceSync';
+import './lib/spacing.css';
 
 declare const firebase: any;
 const GUEST_DATA_KEY = 'moodTrackerGuestData';
@@ -444,7 +445,7 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className={`bg-gradient-to-b from-sky-50 to-cyan-100 min-h-screen font-sans ${isRTL ? 'rtl' : 'ltr'}`}>
+    <div className={`bg-gradient-to-b from-sky-50 to-cyan-100 min-h-screen font-sans space-compact ${isRTL ? 'rtl' : 'ltr'}`}>
       <div className="container mx-auto p-4 sm:p-5 lg:p-6 max-w-5xl safe-bottom">
         {activeTab === 'log' && (
           <>
@@ -500,18 +501,18 @@ const App: React.FC = () => {
         )}
 
         {activeTab === 'log' && (
-          <main className="grid grid-cols-1 lg:grid-cols-3 gap-6 safe-bottom">
+          <main className="grid grid-cols-1 lg:grid-cols-3 gap-cards safe-bottom screen-padding">
             <div className="lg:col-span-2 space-y-6">
-              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-md p-5 relative">
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-compact card-padding relative">
                 {user.isAnonymous && (
                     <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-yellow-300 text-yellow-800 text-xs font-bold px-3 py-1 rounded-full shadow">
                         GUEST MODE - Data is saved on this device only
                     </div>
                 )}
-                <h2 className="text-lg sm:text-xl font-bold text-slate-700 mb-2 leading-tight break-words">
+                <h2 className="text-lg sm:text-xl font-bold text-slate-700 gap-heading text-compact leading-tight break-words">
                   {t.howAreYouFeeling.replace('{date}', selectedDate.toLocaleDateString(locale, { month: 'long', day: 'numeric' }))}
                 </h2>
-                <p className="text-sm text-slate-500 mb-4">
+                <p className="text-sm text-slate-500 gap-heading text-compact">
                   {isToday
                     ? ""
                     : isFuture
@@ -522,7 +523,7 @@ const App: React.FC = () => {
 
                 {showCycleTracker && (
                   <>
-                    <div className="my-3 border-t border-slate-200"></div>
+                    <div className="my-2 border-t border-slate-200"></div>
                     <CycleTracker
                       selectedCycle={selectedCycle}
                       onSelect={setSelectedCycle}
@@ -532,19 +533,19 @@ const App: React.FC = () => {
                   </>
                 )}
 
-                <div className="mt-6">
+                <div className="mt-3">
                   <input
                     type="text"
                     value={note}
                     onChange={(e) => setNote(e.target.value)}
                     placeholder={isFuture ? t.addNotePlaceholderFuture : t.addNotePlaceholder}
                     disabled={isFuture}
-                    className="w-full p-3 bg-slate-100 rounded-lg border-2 border-transparent focus:ring-2 focus:ring-purple-400 focus:bg-white transition-all duration-200 disabled:bg-slate-50 disabled:cursor-not-allowed text-slate-700"
+                    className="w-full input-compact bg-slate-100 rounded-lg border-2 border-transparent focus:ring-2 focus:ring-purple-400 focus:bg-white transition-all duration-200 disabled:bg-slate-50 disabled:cursor-not-allowed text-slate-700 touch-target"
                     aria-label="Daily note"
                   />
                 </div>
 
-                <div className="mt-8 text-center flex flex-row justify-center items-center gap-3 sm:gap-4">
+                <div className="mt-6 text-center flex flex-row justify-center items-center gap-cards">
                   {selectedMood && (
                     <button
                       onClick={handleSaveEntry}

@@ -1,0 +1,123 @@
+/* Responsive Spacing System for Mobile-First Design */
+
+/* Spacing scale (in px):
+ * 4 = 4px, 6 = 6px, 8 = 8px, 10 = 10px, 12 = 12px, 14 = 14px, 16 = 16px, 20 = 20px, 24 = 24px
+ */
+
+:root {
+  /* Screen padding - compact on mobile */
+  --screen-padding-mobile: 12px;
+  --screen-padding-tablet: 20px;
+  --screen-padding-desktop: 24px;
+
+  /* Card padding - compact on mobile */
+  --card-padding-mobile: 12px;
+  --card-padding-tablet: 16px;
+  --card-padding-desktop: 20px;
+
+  /* Gap between elements */
+  --gap-cards-mobile: 10px;
+  --gap-cards-tablet: 12px;
+  --gap-cards-desktop: 16px;
+
+  /* Heading to content gap */
+  --gap-heading-mobile: 6px;
+  --gap-heading-tablet: 8px;
+  --gap-heading-desktop: 12px;
+
+  /* Input padding */
+  --input-padding-mobile: 10px;
+  --input-padding-tablet: 12px;
+  --input-padding-desktop: 14px;
+
+  /* Button padding */
+  --button-padding-mobile: 10px 16px;
+  --button-padding-tablet: 12px 20px;
+  --button-padding-desktop: 14px 24px;
+
+  /* Touch target minimums */
+  --touch-target-min: 44px;
+}
+
+/* Mobile-first responsive spacing utilities */
+.space-compact {
+  --current-screen-padding: var(--screen-padding-mobile);
+  --current-card-padding: var(--card-padding-mobile);
+  --current-gap-cards: var(--gap-cards-mobile);
+  --current-gap-heading: var(--gap-heading-mobile);
+  --current-input-padding: var(--input-padding-mobile);
+  --current-button-padding: var(--button-padding-mobile);
+}
+
+/* Tablet breakpoint (640px+) */
+@media (min-width: 640px) {
+  .space-compact {
+    --current-screen-padding: var(--screen-padding-tablet);
+    --current-card-padding: var(--card-padding-tablet);
+    --current-gap-cards: var(--gap-cards-tablet);
+    --current-gap-heading: var(--gap-heading-tablet);
+    --current-input-padding: var(--input-padding-tablet);
+    --current-button-padding: var(--button-padding-tablet);
+  }
+}
+
+/* Desktop breakpoint (1024px+) */
+@media (min-width: 1024px) {
+  .space-compact {
+    --current-screen-padding: var(--screen-padding-desktop);
+    --current-card-padding: var(--card-padding-desktop);
+    --current-gap-cards: var(--gap-cards-desktop);
+    --current-gap-heading: var(--gap-heading-desktop);
+    --current-input-padding: var(--input-padding-desktop);
+    --current-button-padding: var(--button-padding-desktop);
+  }
+}
+
+/* Utility classes for consistent spacing */
+.screen-padding {
+  padding-left: var(--current-screen-padding, 12px);
+  padding-right: var(--current-screen-padding, 12px);
+}
+
+.card-padding {
+  padding: var(--current-card-padding, 12px);
+}
+
+.gap-cards > * + * {
+  margin-top: var(--current-gap-cards, 10px);
+}
+
+.gap-heading {
+  margin-bottom: var(--current-gap-heading, 6px);
+}
+
+/* Ensure touch targets remain accessible */
+.touch-target {
+  min-height: var(--touch-target-min);
+  min-width: var(--touch-target-min);
+}
+
+/* Text line-height adjustments for tighter spacing */
+.text-compact {
+  line-height: 1.4;
+}
+
+/* Button and input specific spacing */
+.btn-compact {
+  padding: var(--current-button-padding, 10px 16px);
+}
+
+.input-compact {
+  padding: var(--current-input-padding, 10px);
+}
+
+/* Reduced shadow sizes for mobile */
+.shadow-compact {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+@media (min-width: 640px) {
+  .shadow-compact {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07), 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+}

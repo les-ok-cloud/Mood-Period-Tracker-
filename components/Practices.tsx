@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
 import { usePracticeSync } from '../hooks/usePracticeSync';
-import { ReflectionEntry, PracticeType } from '../types';
+import { useUserPreferences } from '../hooks/useUserPreferences';
+import { ReflectionEntry, PracticeType, PinnedPractice } from '../types';
 import { getFormattedDate } from '../utils/dateUtils';
 import { BookIcon, HeartIcon, SparklesIcon, ClockIcon, NewspaperIcon, WifiIcon, WifiOffIcon } from './Icons';
 import { TextareaWithLimit } from './TextareaWithLimit';
@@ -18,15 +19,19 @@ interface Practice {
   time: string;
   icon: React.ComponentType<{ className?: string }>;
   color: string;
+  isPinned?: boolean;
+  pinnedAt?: string;
 }
 
 export const Practices: React.FC = () => {
-  const { t } = useLanguage();
+  const { t, isRTL } = useLanguage();
   const { user } = useAuth();
   const { syncStatus } = usePracticeSync(user?.uid || '');
+  const { preferences, updatePinnedPractices, isLoading: preferencesLoading } = useUserPreferences(user?.uid || '');
   const [selectedPractice, setSelectedPractice] = useState<string | null>(null);
 
-  const practices: Practice[] = [
+  // Base practice definitions - defined outside useEffect so they update with language changes
+  const basePractices: Practice[] = [
     {
       id: 'reflection',
       name: t.dailyReflection,
@@ -69,8 +74,87 @@ export const Practices: React.FC = () => {
     }
   ];
 
+  const [practices, setPractices] = useState<Practice[]>(basePractices);
+
+  // Load and merge preferences with practices
+  useEffect(() => {
+    try {
+      const updatedPractices = basePractices.map(practice => {
+        // Only apply pinning if preferences exist
+        const pinnedPractice = preferences?.pinnedPractices?.find(p => p.practiceId === practice.id);
+        return {
+          ...practice,
+          isPinned: !!pinnedPractice,
+          pinnedAt: pinnedPractice?.pinnedAt
+        };
+      }).sort((a, b) => {
+        // Sort pinned practices first by pinnedAt timestamp, then unpinned by original order
+        if (a.isPinned && !b.isPinned) return -1;
+        if (!a.isPinned && b.isPinned) return 1;
+        if (a.isPinned && b.isPinned) {
+          // Both pinned - sort by pinnedAt timestamp (earliest first)
+          return new Date(a.pinnedAt || 0).getTime() - new Date(b.pinnedAt || 0).getTime();
+        }
+        // Both unpinned - maintain original order
+        return basePractices.findIndex(p => p.id === a.id) - basePractices.findIndex(p => p.id === b.id);
+      });
+
+      console.log('Updated practices:', updatedPractices.length, 'practices loaded');
+      setPractices(updatedPractices);
+    } catch (error) {
+      console.error('Error loading practices:', error);
+      // Fallback to base practices without pinning
+      setPractices(basePractices);
+    }
+  }, [preferences, t]); // Re-run when preferences or language changes
+
+  // Toggle pin status for a practice
+  const togglePinPractice = async (practiceId: string) => {
+    const currentPractice = practices.find(p => p.id === practiceId);
+    if (!currentPractice) return;
+
+    let updatedPinnedPractices: PinnedPractice[];
+
+    if (currentPractice.isPinned) {
+      // Unpin: remove from pinned practices
+      updatedPinnedPractices = (preferences?.pinnedPractices || []).filter(p => p.practiceId !== practiceId);
+    } else {
+      // Pin: add to pinned practices with current timestamp
+      const newPinnedPractice: PinnedPractice = {
+        practiceId,
+        pinnedAt: new Date().toISOString()
+      };
+      updatedPinnedPractices = [...(preferences?.pinnedPractices || []), newPinnedPractice];
+    }
+
+    // Update preferences
+    await updatePinnedPractices(updatedPinnedPractices);
+
+    // Add haptic feedback if available
+    if (navigator.vibrate) {
+      navigator.vibrate(50); // Short vibration for feedback
+    }
+  };
+
   if (selectedPractice) {
     return <PracticeDetail practiceId={selectedPractice} onBack={() => setSelectedPractice(null)} />;
+  }
+
+  // Show loading state if preferences are still loading and we have no practices yet
+  if (preferencesLoading && practices.length === 0) {
+    return (
+      <div className="bg-gradient-to-b from-sky-50 to-cyan-100 min-h-screen font-sans">
+        <SimpleHeader
+          title={t.practicesTitle || 'Practices'}
+          subtitle={t.practicesSubtitle || 'Gentle tools for mood awareness and well-being'}
+        />
+        <div className="container mx-auto screen-padding max-w-5xl safe-bottom">
+          <div className="flex justify-center items-center min-h-[200px]">
+            <div className="animate-spin rounded-full h-8 w-8 border-2 border-purple-500 border-t-transparent"></div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -79,7 +163,7 @@ export const Practices: React.FC = () => {
         title={t.practicesTitle || 'Practices'}
         subtitle={t.practicesSubtitle || 'Gentle tools for mood awareness and well-being'}
       />
-      <div className="container mx-auto p-4 sm:p-5 lg:p-6 max-w-5xl safe-bottom">
+      <div className="container mx-auto screen-padding max-w-5xl safe-bottom">
         {/* Sync Status Indicator */}
         <div className="mb-4 flex justify-center">
           <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm ${
@@ -113,14 +197,46 @@ export const Practices: React.FC = () => {
           </div>
         </div>
 
-        <div className="space-y-4">
-          {practices.map((practice) => (
-            <PracticeCard
-              key={practice.id}
-              practice={practice}
-              onClick={() => setSelectedPractice(practice.id)}
-            />
-          ))}
+        <div className="space-y-6">
+          {/* Pinned Practices Section */}
+          {practices.filter(p => p.isPinned).length > 0 && (
+            <div>
+              <h2 className={`text-lg font-semibold text-slate-700 mb-4 ${isRTL ? 'text-right' : ''}`}>
+                {t.pinnedPractices || 'Pinned Practices'}
+              </h2>
+              <div className="gap-cards">
+                {practices.filter(p => p.isPinned).map((practice) => (
+                  <PracticeCard
+                    key={practice.id}
+                    practice={practice}
+                    onClick={() => setSelectedPractice(practice.id)}
+                    onTogglePin={togglePinPractice}
+                    isRTL={isRTL}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* All Practices Section */}
+          <div>
+            {practices.filter(p => p.isPinned).length > 0 && (
+              <h2 className={`text-lg font-semibold text-slate-700 mb-4 ${isRTL ? 'text-right' : ''}`}>
+                {t.allPractices || 'All Practices'}
+              </h2>
+            )}
+            <div className="gap-cards">
+              {practices.filter(p => !p.isPinned).map((practice) => (
+                <PracticeCard
+                  key={practice.id}
+                  practice={practice}
+                  onClick={() => setSelectedPractice(practice.id)}
+                  onTogglePin={togglePinPractice}
+                  isRTL={isRTL}
+                />
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -130,35 +246,60 @@ export const Practices: React.FC = () => {
 interface PracticeCardProps {
   practice: Practice;
   onClick: () => void;
+  onTogglePin: (practiceId: string) => void;
+  isRTL: boolean;
 }
 
-const PracticeCard: React.FC<PracticeCardProps> = ({ practice, onClick }) => {
+const PracticeCard: React.FC<PracticeCardProps> = ({ practice, onClick, onTogglePin, isRTL }) => {
   const Icon = practice.icon;
 
   return (
-    <button
-      onClick={onClick}
-      className="w-full bg-white/90 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-100/80 p-6 hover:shadow-md transition-all duration-200 hover:scale-[1.02] text-left"
-    >
-      <div className="flex items-start gap-4">
-        <div className={`p-3 rounded-xl bg-slate-50 ${practice.color}`}>
-          <Icon className="w-6 h-6" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <h3 className="text-lg font-semibold text-slate-700 mb-1">{practice.name}</h3>
-          <p className="text-slate-600 text-sm leading-relaxed mb-3">{practice.description}</p>
-          <div className="flex items-center gap-2">
-            <ClockIcon className="w-4 h-4 text-slate-400" />
-            <span className="text-sm text-slate-500">{practice.time}</span>
+    <div className="relative">
+      <button
+        onClick={onClick}
+        className="w-full bg-white/90 backdrop-blur-sm rounded-2xl shadow-compact border border-slate-100/80 card-padding hover:shadow-md transition-all duration-200 hover:scale-[1.02] text-left"
+      >
+        <div className={`flex items-start gap-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
+          <div className={`p-3 rounded-xl bg-slate-50 ${practice.color} relative`}>
+            <Icon className="w-6 h-6" />
+            {practice.isPinned && (
+              <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full border border-white" />
+            )}
+          </div>
+          <div className="flex-1 min-w-0">
+            <h3 className={`text-lg font-semibold text-slate-700 mb-1 ${isRTL ? 'text-right' : ''}`}>{practice.name}</h3>
+            <p className={`text-slate-600 text-sm leading-relaxed mb-3 ${isRTL ? 'text-right' : ''}`}>{practice.description}</p>
+            <div className={`flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
+              <ClockIcon className="w-4 h-4 text-slate-400" />
+              <span className="text-sm text-slate-500">{practice.time}</span>
+            </div>
+          </div>
+          <div className={`text-slate-400 ${isRTL ? 'rotate-180' : ''}`}>
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
           </div>
         </div>
-        <div className="text-slate-400">
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-        </div>
-      </div>
-    </button>
+      </button>
+
+      {/* Pin/Unpin Button */}
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          onTogglePin(practice.id);
+        }}
+        className={`absolute top-3 ${isRTL ? 'left-3' : 'right-3'} p-2 rounded-full transition-all duration-200 ${
+          practice.isPinned
+            ? 'bg-yellow-100 text-yellow-600 hover:bg-yellow-200'
+            : 'bg-slate-100 text-slate-400 hover:bg-slate-200 hover:text-slate-600'
+        }`}
+        title={practice.isPinned ? 'Unpin practice' : 'Pin practice'}
+      >
+        <svg className="w-4 h-4" fill={practice.isPinned ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+        </svg>
+      </button>
+    </div>
   );
 };
 
@@ -202,7 +343,7 @@ const PracticeDetail: React.FC<PracticeDetailProps> = ({ practiceId, onBack }) =
 
   return (
     <div className="bg-gradient-to-b from-sky-50 to-cyan-100 min-h-screen font-sans">
-      <div className="container mx-auto p-4 sm:p-5 lg:p-6 max-w-5xl safe-bottom">
+      <div className="container mx-auto screen-padding max-w-5xl safe-bottom">
         <button
           onClick={onBack}
           className="mb-6 flex items-center gap-2 text-slate-600 hover:text-slate-800 transition-colors"
@@ -232,6 +373,9 @@ const GratitudePractice: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   const [editingDate, setEditingDate] = useState<string | null>(null); // Track if editing a specific date from history
   const [editingEntryId, setEditingEntryId] = useState<string | null>(null); // Track which entry is being edited
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null); // Track entry being deleted
+
+  // Ref for the editing form area
+  const editingFormRef = useRef<HTMLDivElement>(null);
 
   const today = new Date();
   const yesterday = new Date(today);
@@ -371,6 +515,19 @@ const GratitudePractice: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     setSelectedHistoryDate(date);
   };
 
+  // Auto-scroll to editing form when entering edit mode
+  useEffect(() => {
+    if (editingEntryId && editingFormRef.current) {
+      // Small delay to ensure the form is rendered before scrolling
+      setTimeout(() => {
+        editingFormRef.current?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }, 100);
+    }
+  }, [editingEntryId]);
+
   const cancelEdit = () => {
     setEditingEntryId(null);
     setEditingDate(null);
@@ -382,8 +539,8 @@ const GratitudePractice: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   return (
     <div className="max-w-4xl mx-auto">
       {/* Gratitude Entry Form */}
-      <div className="mb-8">
-        <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-md p-6">
+      <div ref={editingFormRef} className="mb-8">
+        <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-compact card-padding">
           <div className="text-center mb-6">
             <HeartIcon className="w-16 h-16 text-pink-600 mx-auto mb-4" />
             <h2 className="text-2xl font-bold text-slate-700 mb-2">{t.gratitudePractice}</h2>
@@ -472,13 +629,13 @@ const GratitudePractice: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
       {/* Gratitude History */}
       <div className="mb-8">
-        <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-md p-6">
+        <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-compact card-padding">
           <h2 className="text-xl font-bold text-slate-700 mb-6">{t.gratitudeHistory || 'Gratitude History'}</h2>
 
           {getSortedGratitudeEntries().length === 0 ? (
             <p className="text-slate-500 text-center py-8">{t.noGratitudeEntries || 'No gratitude entries yet. Start by adding today\'s gratitude above.'}</p>
           ) : (
-            <div className="space-y-4">
+            <div className="gap-cards">
               {getSortedGratitudeEntries().map((entry) => (
                 <div
                   key={entry.entryId}
@@ -572,6 +729,9 @@ const MoodInfluencersPractice: React.FC<{ onBack: () => void }> = ({ onBack }) =
   const [editingDate, setEditingDate] = useState<string | null>(null); // Track if editing a specific date from history
   const [editingEntryId, setEditingEntryId] = useState<string | null>(null); // Track which entry is being edited
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null); // Track entry being deleted
+
+  // Ref for the editing form area
+  const editingFormRef = useRef<HTMLDivElement>(null);
 
   const influencers = [
     '😴 Sleep quality',
@@ -723,6 +883,19 @@ const MoodInfluencersPractice: React.FC<{ onBack: () => void }> = ({ onBack }) =
     setSelectedHistoryDate(date);
   };
 
+  // Auto-scroll to editing form when entering edit mode
+  useEffect(() => {
+    if (editingEntryId && editingFormRef.current) {
+      // Small delay to ensure the form is rendered before scrolling
+      setTimeout(() => {
+        editingFormRef.current?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }, 100);
+    }
+  }, [editingEntryId]);
+
   const cancelEdit = () => {
     setEditingEntryId(null);
     setEditingDate(null);
@@ -734,8 +907,8 @@ const MoodInfluencersPractice: React.FC<{ onBack: () => void }> = ({ onBack }) =
   return (
     <div className="max-w-4xl mx-auto">
       {/* Mood Influencers Entry Form */}
-      <div className="mb-8">
-        <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-md p-6">
+      <div ref={editingFormRef} className="mb-8">
+        <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-compact card-padding">
           <div className="text-center mb-6">
             <SparklesIcon className="w-16 h-16 text-blue-600 mx-auto mb-4" />
             <h2 className="text-2xl font-bold text-slate-700 mb-2">{t.moodInfluencers}</h2>
@@ -829,13 +1002,13 @@ const MoodInfluencersPractice: React.FC<{ onBack: () => void }> = ({ onBack }) =
 
       {/* Mood Influencers History */}
       <div className="mb-8">
-        <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-md p-6">
+        <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-compact card-padding">
           <h2 className="text-xl font-bold text-slate-700 mb-6">{t.moodInfluencersHistory || 'Mood Influencers History'}</h2>
 
           {getSortedInfluencerEntries().length === 0 ? (
             <p className="text-slate-500 text-center py-8">{t.noMoodInfluencersEntries || 'No mood influencer entries yet. Start by adding today\'s mood influencers above.'}</p>
           ) : (
-            <div className="space-y-4">
+            <div className="gap-cards">
               {getSortedInfluencerEntries().map((entry) => (
                 <div
                   key={entry.entryId}
@@ -1602,7 +1775,7 @@ const MicroDiaryContent: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     <div className="max-w-4xl mx-auto">
       {/* Today's Reflection */}
       <div ref={editingFormRef} className="mb-8">
-        <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-md p-6">
+        <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-compact card-padding">
           <p className="text-slate-700 leading-relaxed mb-6">
             <span className="font-bold text-purple-600 text-base">{t.reflectionExplanationTitle}</span>
             <span className="text-slate-600 text-sm">{t.reflectionExplanationText}</span>
@@ -1655,7 +1828,7 @@ const MicroDiaryContent: React.FC<{ onBack: () => void }> = ({ onBack }) => {
             )}
           </div>
 
-          <div className="space-y-4">
+          <div className="gap-cards">
             <div>
               <label className="block text-sm font-medium text-slate-600 mb-2">
                 {reflectionDate === 'today' ? t.reflectionPrompt1 : (t.reflectionPrompt1Yesterday || t.reflectionPrompt1.replace('today', 'yesterday'))}
@@ -1713,7 +1886,7 @@ const MicroDiaryContent: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
       {/* Reflection History */}
       <div className="mb-8">
-        <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-md p-6">
+        <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-compact card-padding">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-bold text-slate-700">{t.reflectionHistory}</h2>
             <button
@@ -1727,7 +1900,7 @@ const MicroDiaryContent: React.FC<{ onBack: () => void }> = ({ onBack }) => {
           {getSortedReflections().length === 0 ? (
             <p className="text-slate-500 text-center py-8">{t.noReflections}</p>
           ) : (
-            <div className="space-y-4">
+            <div className="gap-cards">
               {getSortedReflections().map((reflection) => (
                 <div key={reflection.entryId} className="border border-slate-200 rounded-lg p-4 hover:bg-slate-50 transition-colors">
                   <div className="flex justify-between items-start mb-3">

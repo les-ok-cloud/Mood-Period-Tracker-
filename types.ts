@@ -68,3 +68,14 @@ export interface HelpfulReadingContent {
   articleUrl: string;
   readAt: string; // When the article was read
 }
+
+export interface UserPreferences {
+  pinnedPractices: PinnedPractice[];
+  updatedAt: string; // ISO string
+  synced: boolean; // Whether this preference has been synced to backend
+}
+
+export interface PinnedPractice {
+  practiceId: string;
+  pinnedAt: string; // ISO string timestamp when pinned
+}

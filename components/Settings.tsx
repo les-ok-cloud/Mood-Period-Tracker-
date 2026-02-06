@@ -101,8 +101,8 @@ export const Settings: React.FC<SettingsProps> = ({ showCycleTracker, onToggleCy
         aria-modal="true"
         aria-labelledby="settings-title"
     >
-      <div 
-        className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md m-4 animate-fade-in-up"
+      <div
+        className="bg-white rounded-2xl shadow-compact card-padding w-full max-w-md m-3 animate-fade-in-up"
         onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
       >
         <div className="flex justify-between items-center mb-6">

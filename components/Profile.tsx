@@ -470,9 +470,9 @@ export const Profile: React.FC<ProfileProps> = ({
 
   return (
     <div className="bg-gradient-to-b from-sky-50 to-cyan-100 min-h-screen font-sans">
-      <div className="container mx-auto p-4 sm:p-5 lg:p-6 max-w-5xl safe-bottom">
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-md p-6">
-          <div className="text-center mb-8">
+      <div className="container mx-auto screen-padding max-w-5xl safe-bottom">
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-compact card-padding">
+          <div className="text-center mb-6">
             <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-purple-100 flex items-center justify-center">
               <UserIcon className="w-10 h-10 text-purple-600" />
             </div>
@@ -608,7 +608,7 @@ export const Profile: React.FC<ProfileProps> = ({
       {/* Delete Account Confirmation Modal */}
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
+          <div className="bg-white rounded-2xl shadow-compact max-w-md w-full card-padding">
             <div className="text-center mb-6">
               <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-100 flex items-center justify-center">
                 <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">

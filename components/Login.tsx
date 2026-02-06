@@ -180,7 +180,7 @@ export const Login: React.FC = () => {
   
   return (
     <div className="bg-gradient-to-b from-sky-50 to-cyan-100 min-h-screen flex items-center justify-center font-sans p-4">
-      <div className="relative text-center p-6 sm:p-8 bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl max-w-md w-full mx-4 animate-fade-in-up">
+      <div className="relative text-center card-padding bg-white/80 backdrop-blur-sm rounded-2xl shadow-compact max-w-md w-full mx-3 animate-fade-in-up">
         <div className="absolute bottom-4 right-4">
           <LanguageSwitcher />
         </div>

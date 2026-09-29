@@ -34,5 +34,5 @@ View your app in AI Studio: https://ai.studio/apps/drive/1JLvfOkcRaRbNGBurL04oPq
 - 🐛 [Report an issue](https://github.com/les-ok-cloud/Mood-Period-Tracker-/issues).
 - 👤 [Explore the creator's projects](https://omgithub.com/les-ok-cloud).
 - 🌍 [Create with OMGithub](https://omgithub.com).
-- 🧬 [Explore the remix source](https://github.com/les-ok-cloud/mood-period-tracker-/tree/3a6e02fc0afc2a2c1c50a3931d074aaac771a4c9).
+- 🧬 [Explore the remix source](https://github.com/les-ok-cloud/Mood-Period-Tracker-/tree/47a88070191747da8f8f084094e04e9251f8777a).
 <!-- omgithub:readme:end -->
